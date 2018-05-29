@@ -18,7 +18,7 @@ define((require, exports) => {
         let text;
         for (let i = 1; i <= 8; i++) {
             text = snippetTexts[`snippet${i}`];
-            snippetTexts[`snippet${i}`] = text.substring(text.indexOf("\n") + 1);
+            snippetTexts[`snippet${i}`] = text.substring(text.indexOf("\n") + 1).replace(/\r\n/g, "\n");
         }
     }
 
@@ -49,7 +49,7 @@ define((require, exports) => {
                 });
 
                 snippets.insertSnippet1(testEditor.editor);
-                expect(testEditor.doc.getText()).toBe(`${line1}${newline}${snippetTexts.snippet1}`);
+                expect(testEditor.doc.getText()).toEqual(`${line1}${newline}${snippetTexts.snippet1}`);
             });
 
             it("Should insert the snippet6 after the comment in the first line", () => {
