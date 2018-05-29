@@ -18,5 +18,9 @@
     ],
     "engines": {
         "brackets": ">=1.11.0"
+    },
+    "devDependencies": {
+        "eslint": "^4.19.1",
+        "grunt": "^1.0.2"
     }
 }
