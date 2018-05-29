@@ -1,0 +1,221 @@
+.brackets-ui5-path-link {
+    word-wrap: break-word;
+}
+
+.brackets-ui5-path-search {
+    width: 98%;
+    margin: 0 10px 0 0;
+}
+
+.brackets-ui5-insert-link,
+.brackets-ui5-insert-link:hover {
+    padding-left: 15px;
+    color: black;
+}
+
+.brackets-ui5-red {
+    color: red;
+}
+
+a.brackets-ui5-docs-more-info {
+    position: absolute;
+    bottom: 0px;
+    right: 50px;
+    padding: 4px 10px 4px 10px;
+    border: 1px solid #b2b5b5;
+    border-radius: 3px 3px 0 0;
+    border-bottom: none;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    font-size: 12px;
+    font-weight: 500;
+    color: #333;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+a.brackets-ui5-docs-expand {
+    position: absolute;
+    bottom: 0px;
+    right: 180px;
+    padding: 4px 10px 4px 10px;
+    border: 1px solid #b2b5b5;
+    border-radius: 3px 3px 0 0;
+    border-bottom: none;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    font-size: 12px;
+    font-weight: 500;
+    color: #333;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.brackets-ui5-element-list span:not(:last-of-type)::after {
+    content: ", "
+}
+
+.brackets-ui5-object-members {
+    list-style-type: none;
+    font-size: 90%;
+}
+
+.brackets-ui5-object-members-wrapper {
+    padding-bottom: 20px;
+}
+
+.brackets-ui5-return-type {
+    font-style: italic
+}
+
+.brackets-ui5-api-description {
+    margin-bottom: 3px;
+    display: none;
+}
+
+.brackets-ui5-docs-toolbar {
+    margin-top: 4px;
+    text-align: right;
+}
+
+#brackets-ui5-docs-panel-icon {
+    background-image: url(icon.svg);
+}
+
+#brackets-ui5-docs-panel-icon.enabled {
+    background-position: 0 -24px;
+}
+
+#brackets-ui5-docs-panel {
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    color: #adb9bd;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.brackets-ui5-docs-panel-main {
+    background-color: #47484b;
+    bottom: 0;
+    max-width: 45%;
+    padding-bottom: 40px;
+    position: absolute;
+    top: 0;
+}
+
+#brackets-ui5-docs-panel-header {
+    font-size: 13px;
+    padding: 8px 0 9px 12px;
+    position: relative;
+}
+
+#brackets-ui5-docs-panel-list {
+    height: 96%;
+    overflow: auto;
+}
+
+#brackets-ui5-docs-panel-search {
+    background-color: #bbbbbb;
+    width: 80%;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+#brackets-ui5-docs-panel-message {
+    margin-left: 5px;
+    margin-right: 5px;
+    white-space: normal;
+}
+
+#brackets-ui5-docs-panel-hits {
+    white-space: normal;
+}
+
+.brackets-ui5-panel-name {
+    font-weight: bolder;
+    color: #ffffff !important;
+}
+
+.brackets-ui5-docs-panel-hitlist-link,
+.brackets-ui5-docs-panel-hitlist-link:hover,
+.brackets-ui5-docs-panel-hitlist-link:visited {
+    color: inherit;
+}
+
+.brackets-ui5-font-90 {
+    font-size: 90%;
+}
+
+.brackets-ui5-docs-panel-object {
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.brackets-ui5-docs-panel-object h5 {
+    color: inherit;
+}
+
+.brackets-ui5-element-list span:not(:last-of-type)::after {
+    content: ", "
+}
+
+.brackets-ui5-docs-panel-hr {
+    width: 80%;
+    margin: 5px 0 5px 0;
+}
+
+.brackets-ui5-api-description {
+    display: none;
+}
+
+.brackets-ui5-docs-panel-object a:link {
+    color: #bbbbbb;
+}
+
+.brackets-ui5-expand-link,
+.brackets-ui5-expand-link:hover,
+.brackets-ui5-expand-link:visited,
+.brackets-ui5-expand-link:active {
+    color: #bbbbbb;
+    text-decoration: none;
+}
+
+.brackets-ui5-docs-panel-button {
+    background-color: transparent;
+    background-origin: content-box;
+    background-repeat: no-repeat;
+    box-sizing: content-box;
+    font-size: 12px;
+    height: 13px;
+    padding: 4px 6px;
+    position: absolute;
+    top: 7px;
+    width: 13px;
+}
+
+.brackets-ui5-docs-panel-button:focus {
+    box-shadow: 0 0 0 1px #94ceff;
+    outline: none;
+}
+
+.brackets-ui5-docs-panel-button:active {
+    box-shadow: none;
+}
+
+#brackets-ui5-docs-panel-close {
+    background-image: url("close.svg");
+    right: 4px;
+}
+
+.brackets-ui5-hint-summary {
+    font-size: 94%;
+    font-style: italic;
+    margin-left: 9px;
+}
+
+.brackets-ui5-hint-container {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.jshint-jsdoc {
+    min-width: 19em !important;
+}
+
+.brackets-ui5-hint-name {
+    float: left;
+}

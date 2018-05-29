@@ -1,0 +1,53 @@
+//index.html
+<!DOCTYPE HTML>
+<html>
+
+    <head>
+        <meta http-equiv="X-UA-Compatible"
+            content="IE=edge" />
+        <meta charset="UTF-8">
+        <meta name="viewport"
+            content="width=device-width, initial-scale=1.0" />
+        <title>TITLE</title>
+
+        <script id="sap-ui-bootstrap"
+            src="resources/sap-ui-core.js"
+            data-sap-ui-libs="sap.m"
+            data-sap-ui-theme="sap_belize"
+            data-sap-ui-compatVersion="edge"
+            data-sap-ui-bindingSyntax="complex"
+            data-sap-ui-resourceroots='{"RESOURCE.ROOT": "./"}'>
+
+
+        </script>
+
+        <link rel="stylesheet"
+            type="text/css"
+            href="css/style.css">
+
+        <script>
+            sap.ui.getCore().attachInit(function() {
+                var componentContainer = new sap.ui.core.ComponentContainer({
+                    height: "100%"
+                });
+                new sap.m.Shell({
+                    app: componentContainer,
+                    showLogout: false
+                }).placeAt("content");
+                var component = sap.ui.component({
+                    name: "RESOURCE.ROOT",
+                    manifestFirst: true,
+                    async: true
+                }).then(function(component) {
+                    componentContainer.setComponent(component);
+                });
+            });
+
+        </script>
+    </head>
+
+    <body class="sapUiBody"
+        id="content">
+    </body>
+
+</html>

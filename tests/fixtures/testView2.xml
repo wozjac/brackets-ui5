@@ -1,0 +1,4 @@
+<mvc:View controllerName="RESOURCE.PATH.CONTROLLER_NAME"
+    displayBlock="true">
+
+    < </mvc:View>

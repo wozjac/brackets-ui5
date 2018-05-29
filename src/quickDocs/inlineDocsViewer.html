@@ -1,0 +1,67 @@
+<div class="css-prop-defn {{#fullscreenSummary}}fullscreen-summary{{/fullscreenSummary}}"
+    tabIndex="0">
+    <!-- tabIndex needed: otherwise click focuses CodeMirror scroller and Esc won't work -->
+    {{#objects}}
+    <div class="css-prop-summary">
+        <h1>{{name}}</h1>
+        <div class="brackets-ui5-font-90">{{{description}}}</div>
+    </div>
+    <div class="divider-holder no-focus">
+        <div class="divider"></div>
+    </div>
+    <div class="css-prop-values quiet-scrollbars">
+        <!-- tabIndex needed: otherwise can't be focused on open or via click -->
+        <div class="scroller brackets-ui5-object-members-wrapper"
+            tabIndex="0">
+            {{#hasMethods}}
+            <h4>{{strings.METHODS}}:</h4>
+            <ul class="brackets-ui5-object-members">
+                {{#methods}}
+                <li>
+                    <strong>{{name}}</strong>(<span class="brackets-ui5-element-list">{{#parameters}}<span>{{name}}</span>{{/parameters}})</span> : <span class="brackets-ui5-return-type">{{returnValue.type}}</span>
+                    <div class="brackets-ui5-api-description">{{description}}</div>
+                {{/methods}}
+                </li>
+            </ul>
+            {{/hasMethods}}
+            {{#hasEvents}}
+            <h4>{{strings.EVENTS}}:</h4>
+            <ul class="brackets-ui5-object-members">
+                {{#events}}
+                <li>
+                    <strong>{{name}}</strong>(<span class="brackets-ui5-element-list">{{#parameters}}<span>{{name}}</span>{{/parameters}})</span> <span class="brackets-ui5-api-description">{{description}}</span>
+                {{/events}}
+                </li>
+            </ul>
+            {{/hasEvents}}
+            {{#hasProperties}}
+            <h4>{{strings.PROPERTIES}}:</h4>
+            <ul class="brackets-ui5-object-members">
+                {{#properties}}
+                <li>
+                    <strong>{{name}}</strong><span class="brackets-ui5-return-type"> {{type}}</span><span class="brackets-ui5-api-description"> | {{description}}</span>
+                </li>
+                {{/properties}}
+            </ul>
+            {{/hasProperties}}
+            {{#hasConstructor}}
+            <h4>{{strings.CONSTRUCTOR}}:</h4>
+            <ul class="brackets-ui5-object-members">
+                {{#constructorParams}}
+                <li>
+                    <strong>{{name}}</strong><span class="brackets-ui5-return-type"> {{type}}</span><span class="brackets-ui5-api-description"> | {{description}}</span>
+                {{/constructorParams}}
+                </li>
+            </ul>
+            {{/hasConstructor}}
+        </div>
+    </div>
+    <div class="content-bottom"></div>
+    <a class="brackets-ui5-docs-more-info"
+        href="{{apiDocUrl}}"
+        title="{{apiDocUrl}}">{{strings.FULL_DOC}}</a>
+    <a class="brackets-ui5-docs-expand"
+        href="#"
+        title="Show/hide descriptions">{{strings.SHOW_DESC}}</a>
+    {{/objects}}
+</div>

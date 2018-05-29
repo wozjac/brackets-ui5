@@ -1,0 +1,51 @@
+//component
+/* global sap, jQuery, document */
+sap.ui.define([
+    "sap/ui/core/UIComponent",
+    "sap/ui/Device",
+    "sap/ui/model/json/JSONModel"
+], function (UIComponent, Device, JSONModel) {
+    "use strict";
+
+    return UIComponent.extend("RESOURCE_ROOT.Component", {
+        metadata: {
+            manifest: "json"
+        },
+
+        contentDensityClass: null,
+
+        init: function () {
+            UIComponent.prototype.init.apply(this, arguments);
+            this.setModel(this.createDeviceModel(), "device");
+            this.getRouter().initialize();
+        },
+
+        destroy: function () {
+            UIComponent.prototype.destroy.apply(this, arguments);
+        },
+
+        getContentDensityClass: function () {
+            if (this.contentDensityClass === null) {
+                this.recognizeContentDensityClass();
+            }
+            return this.contentDensityClass;
+        },
+
+        recognizeContentDensityClass: function () {
+            // check whether FLP has already set the content density class; do nothing in this case
+            if (jQuery(document.body).hasClass("sapUiSizeCozy") || jQuery(document.body).hasClass("sapUiSizeCompact")) {
+                this.contentDensityClass = "";
+            } else if (!Device.support.touch) {
+                this.contentDensityClass = "sapUiSizeCompact";
+            } else {
+                this.contentDensityClass = "sapUiSizeCozy";
+            }
+        },
+
+        createDeviceModel: function () {
+            var model = new JSONModel(Device);
+            model.setDefaultBindingMode("OneWay");
+            return model;
+        }
+    });
+});

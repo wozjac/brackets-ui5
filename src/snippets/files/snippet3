@@ -1,0 +1,14 @@
+//controller
+/* global sap */
+sap.ui.define([
+	"sap/ui/core/mvc/Controller"
+], function (Controller) {
+    "use strict";
+
+    return Controller.extend("CONTROLLER.ID", {
+        //onInit: function () {},
+        //onExit: function () {},
+        //onAfterRendering: function () {},
+        //onBeforeRendering: function () {}
+    });
+});

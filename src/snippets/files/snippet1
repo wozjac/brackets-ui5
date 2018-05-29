@@ -1,0 +1,4 @@
+// define statement
+sap.ui.define([], function () {
+    "use strict";
+});
