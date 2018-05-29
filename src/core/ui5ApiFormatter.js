@@ -58,15 +58,6 @@ define((require, exports) => {
             case "enum":
             case "namespace":
                 properties = ui5ObjectApi.properties;
-
-                properties.forEach((property) => {
-                    if (!property.type
-                        || property.type === "undefined") {
-
-                        property.type = "";
-                    }
-                });
-
                 break;
         }
 
@@ -74,6 +65,12 @@ define((require, exports) => {
             api.hasProperties = true;
             api.properties = properties;
             api.properties.forEach((property) => {
+                if (!property.type
+                    || property.type === "undefined") {
+
+                    property.type = "";
+                }
+
                 property.description = codeEditor.formatJsDoc(property.description, cleanHtml);
             });
         }
