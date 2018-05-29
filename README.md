@@ -21,7 +21,7 @@ For quick docs and code hints not all cases are handled - please check the docum
 Brackets version >= 1.11
 
 ## Installation
-The extension is not yet added to the Bracket extensions repository. It can be installed using a downloaded ZIP file or extension's GitHub url - .
+The extension is not yet added to the Bracket extensions repository. It can be installed using a downloaded ZIP file, extension's GitHub repository URL: https://github.com/wozjac/brackets-ui5 or ZIP file URL: https://github.com/wozjac/brackets-ui5/archive/master.zip.
 
 ![install](https://www.mediafire.com/convkey/6a27/l6ae100r9dj3azy6g.jpg)
 
@@ -52,10 +52,12 @@ It can be opened via the *UI5 tools* menu, Ctrl + 2 or the side icon ![api icon]
 
 Functionality:
 - search can be done with or without namespace objects
-- clicking the [+]/[-] sign will expand or collapse the description
+- clicking the [+]/[-] sign will expand or collapse the description 
+
 ![api panel expanded](https://www.mediafire.com/convkey/b230/bcvp4hg6vfkvijo6g.jpg)
 - clicking object's name will show the object API documentation page in the default browser.
 - *Insert (define)* will insert the object at the end of the **existing** define statement; formatting or beautifying is **not** applied. The object name (without its namespace) will be inserted at the current cursor position if the preference *brackets.Ui5.insertObjectsInDefine* is set to true (default: false)
+
 ![insert into define](https://www.mediafire.com/convkey/392d/2c72n124v4errdv6g.jpg)
 - *Insert* - will insert the object full name at the cursor position
 - *Insert (/)* - will insert the object full name with "/" at the cursor position, for example, "sap/m/Button", useful sometimes to fill a define statement list
@@ -65,6 +67,7 @@ The last two inserts uses additional preferences: *"bracketsUi5.objectPathsInQuo
 Please check the [preferences](#preferences) for details about preferences.
 
 The panel shows object's **public** methods and properties, events and constructor.
+
 ![object API](https://www.mediafire.com/convkey/a47c/8hjbu1ric40fqdd6g.jpg)
 
 The format is:
@@ -105,15 +108,16 @@ The default root URI is an empty string, it can be changed by setting *"brackets
 Please check the [preferences](#preferences) for details about preferences.
 
 ### Quick docs
-Quick docs is a Brackets feature and provides inline documentation for the token at the current cursor position (Ctrl + k).
+Quick docs is a Brackets feature and provides inline documentation for a token at the current cursor position (Ctrl + k).
 
-** Please check the section *UI5 object resolving* to see when the extension recognizes a UI5 object type.**
+**Please check the section *UI5 object resolving* to see when the extension recognizes a UI5 object type.**
 
 ![quick docs](https://www.mediafire.com/convkey/77cf/8t1z4r9u20x1ibf6g.jpg)
 
 ### Code hints for UI5 objects
 Code hints in JS files are displaying properties & methods of a UI5 object.
-** Please check the section *UI5 object resolving* to see when the extension recognizes a UI5 object type.**
+
+**Please check the section *UI5 object resolving* to see when the extension recognizes a UI5 object type.**
 ![code hints](https://www.mediafire.com/convkey/e4ae/6ib3y61o6x0geb16g.jpg)
 
 ### UI5 object resolving
