@@ -35,13 +35,19 @@ define((require, exports) => {
     function extractComplexTypes(data) {
         const result = {};
         let attributes = [];
-        const complexTypes = data["xsd:schema"]["xsd:complexType"];
+        let complexTypes = data["xsd:schema"]["xsd:complexType"];
 
         if (!complexTypes) {
             return null;
         }
 
-        for (const complex of data["xsd:schema"]["xsd:complexType"]) {
+        if (!(complexTypes instanceof Array)) {
+            const t = complexTypes;
+            complexTypes = [];
+            complexTypes.push(t);
+        }
+
+        for (const complex of complexTypes) {
             let content = complex["xsd:complexContent"];
 
             if (!content) {
@@ -74,7 +80,19 @@ define((require, exports) => {
         const result = [];
         let type, restrictions, extendsElement, documentation;
 
-        for (const element of data["xsd:schema"]["xsd:element"]) {
+        let elements = data["xsd:schema"]["xsd:element"];
+
+        if (!elements) {
+            return;
+        }
+
+        if (!(elements instanceof Array)) {
+            const t = elements;
+            elements = [];
+            elements.push(t);
+        }
+
+        for (const element of elements) {
             try {
                 type = element["@type"].split(":")[1].replace("_", "");
             } catch (error) {
