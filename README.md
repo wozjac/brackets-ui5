@@ -43,6 +43,10 @@ Switching to SAPUI5:
 }
 ```
 
+If something is not working please check the console (F12). Extension's messages are prefixed with [wozjac.ui5].
+
+![console](https://www.mediafire.com/convkey/e45c/kbwi4ux1p6bxd676g.jpg)
+
 ## Features
 ### API reference panel
 The API reference panel shows UI5 documentation in a side panel (thanks to Hirse and his [Brackets Outline List](https://github.com/Hirse/brackets-outline-list) for the example).
