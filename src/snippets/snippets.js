@@ -7,8 +7,12 @@ define((require, exports, module) => {
 
     function insertSnippet(snippet) {
         return function (editor) {
-            const snippetText = snippet.substring(snippet.indexOf("\n") + 1);
-            codeEditor.insertAtPosition(snippetText, editor);
+            const firstNewline = snippet.indexOf("\n");
+
+            if (firstNewline !== -1) {
+                const snippetText = snippet.substring(firstNewline + 1);
+                codeEditor.insertAtPosition(snippetText, editor);
+            }
         };
     }
 
