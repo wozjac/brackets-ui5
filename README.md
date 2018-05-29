@@ -5,7 +5,7 @@ An extension for [Brackets](http://brackets.io) editor providing helpers (quick 
 
 Works with UI5 versions >= 1.52.0. As the majority of the older versions is out of maintenance, I do not plan to add support for them.
 
-** Please notice (if you are new to UI5)! [OpenUI5](https://openui5.org) is open source, but SAPUI5 - although SAP shares publicly SAPUI5 library runtime & SDK etc. - is not free. Please check the company [site](sap.com) for more details. **
+**Please notice (if you are new to UI5)! [OpenUI5](https://openui5.org) is open source, but SAPUI5 - although SAP shares publicly SAPUI5 library runtime & SDK etc. - is not free. Please check the company [site](sap.com) for more details.**
 
 ## Features summary
 - API reference panel
