@@ -227,7 +227,7 @@ define((require, exports) => {
             const findings = ui5ApiFinder.findUi5ObjectByName(token);
 
             if (findings) {
-                ui5Objects.concat(findings);
+                ui5Objects = ui5Objects.concat(findings);
             }
         }
 
