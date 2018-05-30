@@ -1,5 +1,8 @@
 # brackets-ui5 changelog
 
+## 1.0.2-beta
+- README update
+
 ## 1.0.1-beta
 - README update
 
