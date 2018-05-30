@@ -1,4 +1,4 @@
-# Brackets-UI5
+# Brackets UI5
 
 ## Info
 An extension for [Brackets](http://brackets.io) editor providing helpers (quick docs, code hints, API reference and more) for SAP© UI5 library [OpenUI5](openui5.hana.ondemand.com)/[SAPUI5](https://sapui5.hana.ondemand.com).
