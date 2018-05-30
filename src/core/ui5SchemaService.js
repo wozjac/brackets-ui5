@@ -1,7 +1,7 @@
 define((require, exports) => {
     "use strict";
 
-    const ui5XmlProcessor = require("src/core/ui5XmlProcessor"),
+    const Ui5XmlProcessor = require("src/core/Ui5XmlProcessor"),
         preferences = require("src/main/preferences"),
         strings = require("strings"),
         constants = require("src/core/constants");
@@ -39,6 +39,7 @@ define((require, exports) => {
     sapUi5Namespaces = sapUi5Namespaces.concat(openUi5Namespaces);
 
     const loadedNamespaces = {};
+    let subNamespacedObjects = {};
 
     function fetchSchema(namespace) {
         const url = `${preferences.get(constants.prefs.API_URL)}/downloads/schemas/${namespace}.xsd`;
@@ -48,9 +49,10 @@ define((require, exports) => {
     function prepareSchema(namespace) {
         return new Promise((resolve, reject) => {
             fetchSchema(namespace).done((schemaXml) => {
-                const schemaJson = ui5XmlProcessor.parseXml(schemaXml);
-                const objects = ui5XmlProcessor.extractTags(schemaJson);
+                const ui5XmlProcessor = new Ui5XmlProcessor(schemaXml);
+                const objects = ui5XmlProcessor.getObjects();
                 loadedNamespaces[namespace] = objects;
+                subNamespacedObjects = Object.assign(ui5XmlProcessor.getSubNamespacedObjects(), subNamespacedObjects);
                 console.log(`${strings.XML_SCHEMA_READY} ${namespace}`);
                 resolve();
             }).fail((error) => {
@@ -60,14 +62,23 @@ define((require, exports) => {
         });
     }
 
-    function adjustFormNamespace() {
-        const formObjects = ["Form", "FormContainer", "FormElement", "FormLayout", "GridContainerData", "GridElementData", "GridLayout", "ResponsiveGridLayout", "ResponsiveLayout", "SimpleForm"];
+    function adjustNamespaces() {
+        let subNamespace, movedObject, subObject;
 
-        loadedNamespaces["sap.ui.layout.form"] = {};
+        for (const subObjectName in subNamespacedObjects) {
+            subObject = subNamespacedObjects[subObjectName];
+            movedObject = loadedNamespaces[subObject.targetNamespace][subObjectName];
 
-        for (const objectName of formObjects) {
-            loadedNamespaces["sap.ui.layout.form"][objectName] = loadedNamespaces["sap.ui.layout"][objectName];
-            delete loadedNamespaces["sap.ui.layout"][objectName];
+            if (movedObject) {
+                subNamespace = loadedNamespaces[`${subObject.targetNamespace}.${subObject.subNamespace}`];
+
+                if (!subNamespace) {
+                    loadedNamespaces[`${subObject.targetNamespace}.${subObject.subNamespace}`] = {};
+                }
+
+                loadedNamespaces[`${subObject.targetNamespace}.${subObject.subNamespace}`][subObjectName] = movedObject;
+                delete loadedNamespaces[subObject.targetNamespace][subObjectName];
+            }
         }
     }
 
@@ -116,7 +127,7 @@ define((require, exports) => {
 
         Promise.all(promises).then(() => {
             fillInheritedAttributes();
-            adjustFormNamespace();
+            adjustNamespaces();
         });
     }
 

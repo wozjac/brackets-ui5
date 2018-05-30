@@ -2,4 +2,4 @@
 /.gitattributes
 /localService/**
 /.brackets.json
-/working/**
+/working**
