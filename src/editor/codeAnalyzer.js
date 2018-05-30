@@ -161,7 +161,7 @@ define((require, exports) => {
             }
         } while (match);
 
-        const ui5Objects = [];
+        let ui5Objects = [];
 
         if (matches.length > 0) {
             const tokenIndex = textTool.getIndexFromPosition(sourceCode, position);
@@ -191,7 +191,7 @@ define((require, exports) => {
                         ui5Objects.push(defineObject);
                     } else {
                         //otherwise try to find using only the name
-                        ui5Objects.concat(ui5ApiFinder.findUi5ObjectByName(token));
+                        ui5Objects = ui5Objects.concat(ui5ApiFinder.findUi5ObjectByName(constructorToken));
                     }
                 }
             }
