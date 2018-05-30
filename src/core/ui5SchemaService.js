@@ -63,11 +63,12 @@ define((require, exports) => {
     }
 
     function adjustNamespaces() {
-        let subNamespace, movedObject, subObject;
+        let subNamespace, movedObject, subObject, objectName;
 
         for (const subObjectName in subNamespacedObjects) {
             subObject = subNamespacedObjects[subObjectName];
-            movedObject = loadedNamespaces[subObject.targetNamespace][subObjectName];
+            objectName = subObjectName.substring(subObjectName.lastIndexOf(".") + 1);
+            movedObject = loadedNamespaces[subObject.targetNamespace][objectName];
 
             if (movedObject) {
                 subNamespace = loadedNamespaces[`${subObject.targetNamespace}.${subObject.subNamespace}`];
@@ -76,8 +77,8 @@ define((require, exports) => {
                     loadedNamespaces[`${subObject.targetNamespace}.${subObject.subNamespace}`] = {};
                 }
 
-                loadedNamespaces[`${subObject.targetNamespace}.${subObject.subNamespace}`][subObjectName] = movedObject;
-                delete loadedNamespaces[subObject.targetNamespace][subObjectName];
+                loadedNamespaces[`${subObject.targetNamespace}.${subObject.subNamespace}`][objectName] = movedObject;
+                delete loadedNamespaces[subObject.targetNamespace][objectName];
             }
         }
     }

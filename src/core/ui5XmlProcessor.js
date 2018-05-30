@@ -191,7 +191,7 @@ define((require, exports, module) => {
                     if (match && match[1]) {
                         const parts = match[1].split(".");
                         if (parts.length > 1) {
-                            result[parts[1]] = {
+                            result[`${this._targetNamespace}.${parts[1]}`] = {
                                 subNamespace: parts[0],
                                 targetNamespace: this._targetNamespace
                             };
