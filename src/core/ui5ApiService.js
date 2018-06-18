@@ -134,7 +134,11 @@ define((require, exports) => {
                     dataType: "json"
                 }).done((api) => {
                     const objectApi = api.symbols.find((element) => {
-                        return element.basename === ui5objectName;
+                        if (element.kind === "class") {
+                            return element.name === ui5ObjectPath;
+                        } else {
+                            return element.basename === ui5objectName;
+                        }
                     });
                     objectApi.apiDocUrl = apiDocUrl;
                     addToDesignApiBuffer(objectApi);

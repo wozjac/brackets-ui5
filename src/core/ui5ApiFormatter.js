@@ -43,15 +43,22 @@ define((require, exports) => {
         let properties;
         switch (ui5ObjectApi.kind) {
             case "class":
-                properties = ui5ObjectApi["ui5-metadata"].properties;
+                try {
+                    properties = ui5ObjectApi["ui5-metadata"].properties;
+                } catch (error) {
+                    properties = [];
+                }
 
                 if (ui5ObjectApi.constructor) {
                     api.hasConstructor = true;
-                    api.constructorParams = ui5ObjectApi.constructor.parameters;
 
-                    api.constructorParams.forEach((param) => {
-                        param.description = codeEditor.formatJsDoc(param.description, cleanHtml);
-                    });
+                    if (ui5ObjectApi.constructor.parameters) {
+                        api.constructorParams = ui5ObjectApi.constructor.parameters;
+
+                        api.constructorParams.forEach((param) => {
+                            param.description = codeEditor.formatJsDoc(param.description, cleanHtml);
+                        });
+                    }
                 }
 
                 break;

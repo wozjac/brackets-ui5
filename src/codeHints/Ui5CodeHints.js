@@ -8,6 +8,7 @@ define((require, exports, module) => {
         EditorManager = brackets.getModule("editor/EditorManager"),
         ui5ApiService = require("src/core/ui5ApiService"),
         strings = require("strings"),
+        hintUtils = require("src/codeHints/hintsUtils"),
         ui5ApiFormatter = require("src/core/ui5ApiFormatter"),
         codeAnalyzer = require("src/editor/codeAnalyzer");
 
@@ -225,7 +226,7 @@ define((require, exports, module) => {
 
             properties.push(...methods);
 
-            return properties;
+            return properties.sort(hintUtils.sortWrappedHintList);
         }
 
         _resolveWithCachedHints(deferredObject) {

@@ -3,7 +3,6 @@ define((require, exports) => {
 
     function buildHintListEntry(item) {
         const entryElement = $("<span>").addClass("brackets-js-hints");
-        //entryElement.text(item.name);
         $(`<span>${item.name}</span>`).appendTo(entryElement).addClass("brackets-ui5-hint-name");
         entryElement.addClass("brackets-js-hints-with-type-details");
 
