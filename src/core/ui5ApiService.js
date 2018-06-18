@@ -35,7 +35,7 @@ define((require, exports) => {
                             apiUrl: `${apiUrl}/#docs/api/${$(this).children("ref").text()}`
                         });
                     });
-                    console.info(`${strings.API_LOADED_INFO} ${apiUrl}`);
+                    console.log(`${strings.API_LOADED_INFO} ${apiUrl}`);
                     exports.ui5Objects = ui5Objects; //unit testing only
                     resolve(true);
                 }).fail(() => {
@@ -123,8 +123,8 @@ define((require, exports) => {
             const ui5objectName = ui5ObjectPath.replace(/\./g, "/").substr(ui5ObjectPath.lastIndexOf(".") + 1);
             const apiDocUrl = `${apiBaseUrl}/#docs/api/symbols/${ui5ObjectPath}.html`;
             const apiUrl = `${apiBaseUrl}/test-resources/${libraryName}/designtime/api.json`;
-
             const bufferedDesignApi = searchDesignApiBuffer(ui5ObjectPath);
+
             if (bufferedDesignApi) {
                 resolve(bufferedDesignApi);
             } else {

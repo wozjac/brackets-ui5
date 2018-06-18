@@ -1,8 +1,8 @@
 {
     "name": "wozjac.ui5",
     "title": "Brackets UI5",
-    "version": "1.0.2-beta",
-    "homepage": "https://github.com/wozjac/brackets-ui5#readme",
+    "version": "1.0.3-beta",
+    "homepage": "https: //github.com/wozjac/brackets-ui5#readme",
     "description": "Brackets extension providing helpers (quick docs, code hints and more) for SAP© UI5 library.",
     "keywords": [
         "ui5",
@@ -20,7 +20,6 @@
         "brackets": ">=1.11.0"
     },
     "devDependencies": {
-        "eslint": "^4.19.1",
-        "grunt": "^1.0.2"
+        "eslint": "^4.19.1"
     }
 }
