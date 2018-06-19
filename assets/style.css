@@ -21,7 +21,7 @@ a.brackets-ui5-docs-more-info {
     position: absolute;
     bottom: 0px;
     right: 50px;
-    padding: 4px 10px 4px 10px;
+    padding: 1px 10px 2px 10px;
     border: 1px solid #b2b5b5;
     border-radius: 3px 3px 0 0;
     border-bottom: none;
@@ -36,7 +36,7 @@ a.brackets-ui5-docs-expand {
     position: absolute;
     bottom: 0px;
     right: 180px;
-    padding: 4px 10px 4px 10px;
+    padding: 1px 10px 2px 10px;
     border: 1px solid #b2b5b5;
     border-radius: 3px 3px 0 0;
     border-bottom: none;
