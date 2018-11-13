@@ -1,15 +1,15 @@
 sap.ui.define([
     "test/BaseController",
-    "sap/m/Tree",
-    "sap/m/ColumnListItem"
-], function (BaseController, Tree, ColumnListItem) {
+    "sap/ui/base/EventProvider",
+    "sap/ui/base/Object"
+], function (BaseController, EventProvider, SapObject) {
     "use strict";
 
     return BaseController.extend("test.App", {
 
         onInit: function () {
-            const tree = new Tree();
-            const item = new ColumnListItem();
+            const tree = new EventProvider();
+            const item = new SapObject();
             tree
             tree.
             tree.ex
@@ -17,7 +17,7 @@ sap.ui.define([
             item.g
             tree.ex(param1)
 
-            this.param = new Tree();
+            this.param = new EventProvider();
             this.param.ex
         }
     });

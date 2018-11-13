@@ -219,3 +219,42 @@ a.brackets-ui5-docs-expand {
 .brackets-ui5-hint-name {
     float: left;
 }
+
+.brackets-ui5-hint-borrowed {
+    font-style: normal;
+}
+
+.brackets-ui5-hint-type {
+    color: #658dc4 !important;
+}
+
+.brackets-ui5-hint-name {
+    min-width: 7em !important;
+}
+
+.brackets-ui5-hint-member-type {
+    font-style: italic;
+}
+
+.brackets-ui5-extends-name {
+    font-style: italic;
+}
+
+.brackets-ui5-separator {
+    padding: 0 !important;
+    margin: 0 !important;
+    border-bottom: none !important;
+    border-top: 1px solid #9A9797;
+}
+
+.brackets-ui5-param-type {
+    font-style: italic
+}
+
+.brackets-ui5-hidden {
+    display: none;
+}
+
+.brackets-ui5-docs-extends {
+    margin-bottom: 7px;
+}

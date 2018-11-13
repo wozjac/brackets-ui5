@@ -22,8 +22,8 @@ define((require, exports, module) => {
         const docToShim = new DocumentManager.Document(dummyFile, new Date(), content);
 
         // Prevent adding doc to working set by not dispatching "dirtyFlagChange".
-        // TODO: Other functionality here needs to be kept in sync with Document._handleEditorChange(). In the
-        // future, we should fix things so that we either don't need mock documents or that this
+        // Other functionality here needs to be kept in sync with Document._handleEditorChange().
+        // we should fix things so that we either don't need mock documents or that this
         // is factored so it will just run in both.
         docToShim._handleEditorChange = function (event, editor, changeList) {
             this.isDirty = !editor._codeMirror.isClean();

@@ -5,6 +5,7 @@ define((require, exports, module) => {
         KeyEvent = brackets.getModule("utils/KeyEvent"),
         Mustache = brackets.getModule("thirdparty/mustache/mustache"),
         inlineEditorTemplate = require("text!./inlineDocsViewer.html"),
+        membersTemplate = require("text!./members.html"),
         strings = require("strings"),
         SCROLL_LINE_HEIGHT = 40;
 
@@ -14,6 +15,8 @@ define((require, exports, module) => {
         const html = Mustache.render(inlineEditorTemplate, {
             objects,
             strings
+        }, {
+            membersTemplate
         });
 
         this.$wrapperDiv = $(html);
@@ -28,6 +31,7 @@ define((require, exports, module) => {
 
         this._expanded = false;
         this._bindExpandCollapseAction(this.$wrapperDiv.find(".brackets-ui5-docs-expand"));
+        this.id = "ui5-docs";
     }
 
     InlineDocsViewer.prototype = Object.create(InlineWidget.prototype);

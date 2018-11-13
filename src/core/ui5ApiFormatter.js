@@ -6,15 +6,23 @@ define((require, exports) => {
     function getFormattedObjectApi(ui5ObjectApi, cleanHtml = false) {
         const api = {
             name: ui5ObjectApi.name,
+            extends: ui5ObjectApi.extends,
             hasMethods: false,
             hasEvents: false,
             apiDocUrl: ui5ObjectApi.apiDocUrl,
             hasConstructor: false,
+            hasConstructorParams: false,
             hasProperties: false,
-            isDeprecated: false
+            isDeprecated: false,
+            hasInheritedMethods: false,
+            hasBaseObject: false
         };
 
         api.description = codeEditor.formatJsDoc(ui5ObjectApi.description, cleanHtml);
+
+        if (ui5ObjectApi.extends) {
+            api.hasBaseObject = true;
+        }
 
         if (ui5ObjectApi.methods) {
             api.hasMethods = true;
@@ -41,6 +49,7 @@ define((require, exports) => {
         }
 
         let properties;
+
         switch (ui5ObjectApi.kind) {
             case "class":
                 try {
@@ -53,6 +62,7 @@ define((require, exports) => {
                     api.hasConstructor = true;
 
                     if (ui5ObjectApi.constructor.parameters) {
+                        api.hasConstructorParams = true;
                         api.constructorParams = ui5ObjectApi.constructor.parameters;
 
                         api.constructorParams.forEach((param) => {
@@ -69,8 +79,13 @@ define((require, exports) => {
         }
 
         if (properties && properties.length > 0) {
+            properties = properties.filter((property) => {
+                return property.visibility === "public";
+            });
+
             api.hasProperties = true;
             api.properties = properties;
+
             api.properties.forEach((property) => {
                 if (!property.type
                     || property.type === "undefined") {
@@ -84,6 +99,18 @@ define((require, exports) => {
 
         if (ui5ObjectApi.deprecated) {
             api.isDeprecated = true;
+        }
+
+        if (ui5ObjectApi.inheritedApi) {
+            api.inheritedApi = {};
+
+            for (const objectKey in ui5ObjectApi.inheritedApi) {
+                api.inheritedApi[objectKey] = getFormattedObjectApi(ui5ObjectApi.inheritedApi[objectKey], cleanHtml);
+
+                if (ui5ObjectApi.inheritedApi[objectKey].methods) {
+                    api.hasInheritedMethods = true;
+                }
+            }
         }
 
         return api;

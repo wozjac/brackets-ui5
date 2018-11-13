@@ -4,6 +4,9 @@
     {{#objects}}
     <div class="css-prop-summary">
         <h1>{{name}}</h1>
+        {{#hasBaseObject}}
+            <div class="brackets-ui5-docs-extends">Extends: {{extends}}</div>
+        {{/hasBaseObject}}
         <div class="brackets-ui5-font-90">{{{description}}}</div>
     </div>
     <div class="divider-holder no-focus">
@@ -13,47 +16,11 @@
         <!-- tabIndex needed: otherwise can't be focused on open or via click -->
         <div class="scroller brackets-ui5-object-members-wrapper"
             tabIndex="0">
-            {{#hasMethods}}
-            <h4>{{strings.METHODS}}:</h4>
-            <ul class="brackets-ui5-object-members">
-                {{#methods}}
-                <li>
-                    <strong>{{name}}</strong>(<span class="brackets-ui5-element-list">{{#parameters}}<span>{{name}}</span>{{/parameters}})</span> : <span class="brackets-ui5-return-type">{{returnValue.type}}</span>
-                    <div class="brackets-ui5-api-description">{{description}}</div>
-                {{/methods}}
-                </li>
-            </ul>
-            {{/hasMethods}}
-            {{#hasEvents}}
-            <h4>{{strings.EVENTS}}:</h4>
-            <ul class="brackets-ui5-object-members">
-                {{#events}}
-                <li>
-                    <strong>{{name}}</strong>(<span class="brackets-ui5-element-list">{{#parameters}}<span>{{name}}</span>{{/parameters}})</span> <span class="brackets-ui5-api-description">{{description}}</span>
-                {{/events}}
-                </li>
-            </ul>
-            {{/hasEvents}}
-            {{#hasProperties}}
-            <h4>{{strings.PROPERTIES}}:</h4>
-            <ul class="brackets-ui5-object-members">
-                {{#properties}}
-                <li>
-                    <strong>{{name}}</strong><span class="brackets-ui5-return-type"> {{type}}</span><span class="brackets-ui5-api-description"> | {{description}}</span>
-                </li>
-                {{/properties}}
-            </ul>
-            {{/hasProperties}}
-            {{#hasConstructor}}
-            <h4>{{strings.CONSTRUCTOR}}:</h4>
-            <ul class="brackets-ui5-object-members">
-                {{#constructorParams}}
-                <li>
-                    <strong>{{name}}</strong><span class="brackets-ui5-return-type"> {{type}}</span><span class="brackets-ui5-api-description"> | {{description}}</span>
-                {{/constructorParams}}
-                </li>
-            </ul>
-            {{/hasConstructor}}
+            {{> membersTemplate}}
+            {{#inheritedApi}}
+            <h1>Borrowed from {{name}}</h1>
+            {{> membersTemplate}}
+            {{/inheritedApi}}
         </div>
     </div>
     <div class="content-bottom"></div>

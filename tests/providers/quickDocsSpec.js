@@ -24,19 +24,17 @@ define((require, exports) => {
 
             runs(() => {
                 expect(widget).toBeTruthy();
-                expect(widget.$htmlContent.find(".css-prop-summary").find("h1").text()).toBe("sap.m.Tree");
+                expect(widget.$htmlContent.find(".css-prop-summary").find("h1").text()).toBe("sap.ui.base.EventProvider");
 
                 const memberHeaders = widget.$htmlContent.find("h4");
-                expect(memberHeaders.length).toBe(3);
+                expect(memberHeaders.length).toBe(4);
                 expect(memberHeaders.eq(0).text()).toBe("Methods:");
-                expect(memberHeaders.eq(1).text()).toBe("Events:");
-                expect(memberHeaders.eq(2).text()).toBe("Constructor:");
+                expect(memberHeaders.eq(1).text()).toBe("Constructor:");
 
                 const members = widget.$htmlContent.find(".brackets-ui5-object-members");
-                expect(members.length).toBe(3);
-                expect(members.eq(0).find("li").length).toBe(11);
-                expect(members.eq(1).find("li").length).toBe(1);
-                expect(members.eq(2).find("li").length).toBe(2);
+                expect(members.length).toBe(4);
+                expect(members.eq(0).find("li").length).toBe(7);
+                expect(members.eq(1).find("li").length).toBe(0);
             });
         }
 

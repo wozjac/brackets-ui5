@@ -118,7 +118,7 @@ define((require, exports) => {
         }
 
         if (ui5Path) {
-            ui5Object = ui5ApiFinder.findUi5ObjectByPath(ui5Path);
+            ui5Object = ui5ApiFinder.findUi5ObjectByName(ui5Path);
         }
 
         return ui5Object;
@@ -141,7 +141,7 @@ define((require, exports) => {
             let ui5Path = defineObjects[token];
             if (ui5Path) {
                 ui5Path = ui5Path.replace(new RegExp("/", "g"), ".");
-                ui5Object = ui5ApiFinder.findUi5ObjectByPath(ui5Path);
+                ui5Object = ui5ApiFinder.findUi5ObjectByName(ui5Path);
             }
         }
 
@@ -182,7 +182,7 @@ define((require, exports) => {
             if (foundMatch) {
                 const constructorToken = foundMatch[1];
                 if (isFullPath(constructorToken)) {
-                    ui5Objects.push(ui5ApiFinder.findUi5ObjectByPath(constructorToken));
+                    ui5Objects.push(ui5ApiFinder.findUi5ObjectByName(constructorToken));
                 } else {
                     //try to find the full path in define
                     const defineObject = getObjectFromDefineStatement(constructorToken, sourceCode);
@@ -191,7 +191,7 @@ define((require, exports) => {
                         ui5Objects.push(defineObject);
                     } else {
                         //otherwise try to find using only the name
-                        ui5Objects = ui5Objects.concat(ui5ApiFinder.findUi5ObjectByName(constructorToken));
+                        ui5Objects = ui5Objects.concat(ui5ApiFinder.findUi5ObjectByBasename(constructorToken));
                     }
                 }
             }
@@ -224,7 +224,7 @@ define((require, exports) => {
         }
 
         if (!ui5Object && ui5Objects.length === 0) { //compare the token with ui5 object names, may return multiple objects
-            const findings = ui5ApiFinder.findUi5ObjectByName(token);
+            const findings = ui5ApiFinder.findUi5ObjectByBasename(token);
 
             if (findings) {
                 ui5Objects = ui5Objects.concat(findings);
@@ -239,9 +239,10 @@ define((require, exports) => {
         //(for example "Label") which could not been besolved to the full path, for example sap.m.Label */
         if (returnOneObject && ui5Objects.length > 1) {
             ui5Objects = ui5Objects.filter((ui5Object) => {
-                return ui5Object.deprecated !== true && ui5Object.path.startsWith("sap.m");
+                return ui5Object.name.startsWith("sap.m");
             });
 
+            //FIXME: jQuery.sap - resolves to 2 objects, correct the above empty filter result
             if (ui5Objects.length > 1) {
                 const selected = ui5Objects[0];
                 ui5Objects = [];

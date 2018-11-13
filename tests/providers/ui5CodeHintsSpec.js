@@ -9,11 +9,11 @@ define((require, exports) => {
     exports.getTests = function () {
         let testEditor,
             ui5ObjectsLoaded,
-            ui5ApiIndexLoaded;
+            ui5LibrariesLoaded;
 
         function expectHintsEntries(hintList, expectedEntries) {
             const hints = hintList.map((element) => {
-                return element.contents().not(element.children()).text();
+                return element.find("span.brackets-ui5-hint-name").text();
             });
 
             expect(hints).toEqual(expectedEntries);
@@ -21,7 +21,7 @@ define((require, exports) => {
 
         function selectHint(hintText, hintList) {
             return hintList.find((hintObject) => {
-                return hintObject.contents().not(hintObject.children()).text() === hintText;
+                return hintObject.find("span.brackets-ui5-hint-name").text() === hintText;
             });
         }
 
@@ -33,14 +33,13 @@ define((require, exports) => {
 
                 ui5ApiService.loadUi5Objects().then(() => {
                     ui5ObjectsLoaded = true;
-                });
-
-                ui5ApiService.loadUi5ApiIndex().then(() => {
-                    ui5ApiIndexLoaded = true;
+                    ui5ApiService.loadUi5LibrariesDesignApi().then(() => {
+                        ui5LibrariesLoaded = true;
+                    });
                 });
 
                 waitsFor(() => {
-                    return ui5ObjectsLoaded === true && ui5ApiIndexLoaded === true;
+                    return ui5ObjectsLoaded === true && ui5LibrariesLoaded === true;
                 }, "should load ui5 objects", 500);
             });
 
@@ -57,20 +56,9 @@ define((require, exports) => {
                 const provider = ui5HintsProvider.getUi5CodeHintsProvider();
                 expect(provider.hasHints(testEditor.editor, null)).toBe(true);
 
-                let hintsObject = null;
-
-                provider.getHints().then((hintsObj) => {
-                    hintsObject = hintsObj;
-                });
-
-                waitsFor(() => {
-                    return hintsObject !== null;
-                });
-
-                runs(() => {
-                    expect(hintsObject).toBeTruthy();
-                    expect(hintsObject.hints.length).toBe(11);
-                });
+                const hintsObject = provider.getHints();
+                expect(hintsObject).toBeTruthy();
+                expect(hintsObject.hints.length).toBe(9);
             });
 
             it("Should have filtered hints after a partial member string", () => {
@@ -82,21 +70,10 @@ define((require, exports) => {
                 const provider = ui5HintsProvider.getUi5CodeHintsProvider();
                 expect(provider.hasHints(testEditor.editor, null)).toBe(true);
 
-                let hintsObject = null;
-
-                provider.getHints().then((hintsObj) => {
-                    hintsObject = hintsObj;
-                });
-
-                waitsFor(() => {
-                    return hintsObject !== null;
-                });
-
-                runs(() => {
-                    expect(hintsObject).toBeTruthy();
-                    expect(hintsObject.hints.length).toBe(2);
-                    expectHintsEntries(hintsObject.hints, ["expandToLevel", "extend"]);
-                });
+                const hintsObject = provider.getHints();
+                expect(hintsObject).toBeTruthy();
+                expect(hintsObject.hints.length).toBe(1);
+                expectHintsEntries(hintsObject.hints, ["extend"]);
             });
 
             it("Should hint for created as a member", () => {
@@ -108,21 +85,10 @@ define((require, exports) => {
                 const provider = ui5HintsProvider.getUi5CodeHintsProvider();
                 expect(provider.hasHints(testEditor.editor, null)).toBe(true);
 
-                let hintsObject = null;
-
-                provider.getHints().then((hintsObj) => {
-                    hintsObject = hintsObj;
-                });
-
-                waitsFor(() => {
-                    return hintsObject !== null;
-                });
-
-                runs(() => {
-                    expect(hintsObject).toBeTruthy();
-                    expect(hintsObject.hints.length).toBe(2);
-                    expectHintsEntries(hintsObject.hints, ["expandToLevel", "extend"]);
-                });
+                const hintsObject = provider.getHints();
+                expect(hintsObject).toBeTruthy();
+                expect(hintsObject.hints.length).toBe(1);
+                expectHintsEntries(hintsObject.hints, ["extend"]);
             });
 
             describe("Should have valid hints for objects in a serie", () => {
@@ -135,7 +101,7 @@ define((require, exports) => {
                     spyOn(provider, "_resolveWithApiObjectSearch").andCallThrough();
                 });
 
-                it("Should return sap.m.Tree hints", () => {
+                it("Should return EventProvider hints", () => {
                     testEditor.editor.setCursorPos({
                         line: 13,
                         ch: 17
@@ -145,22 +111,13 @@ define((require, exports) => {
                     expect(provider.useCachedHints).toBe(false);
                     expect(provider.useCachedUi5ObjectApi).toBe(false);
 
-                    provider.getHints().then((hintsObj) => {
-                        hintsObject = hintsObj;
-                    });
-
-                    waitsFor(() => {
-                        return hintsObject !== null;
-                    });
-
-                    runs(() => {
-                        expect(hintsObject).toBeTruthy();
-                        expect(hintsObject.hints.length).toBe(11);
-                        expect(provider._resolveWithApiObjectSearch).toHaveBeenCalled();
-                    });
+                    hintsObject = provider.getHints();
+                    expect(hintsObject).toBeTruthy();
+                    expect(hintsObject.hints.length).toBe(9);
+                    expect(provider._resolveWithApiObjectSearch).toHaveBeenCalled();
                 });
 
-                it("Should return sap.m.ColumnListItem hints", () => {
+                it("Should return Object hints", () => {
                     testEditor.editor.setCursorPos({
                         line: 15,
                         ch: 17
@@ -171,22 +128,13 @@ define((require, exports) => {
                     expect(provider.useCachedHints).toBe(false);
                     expect(provider.useCachedUi5ObjectApi).toBe(false);
 
-                    provider.getHints().then((hintsObj) => {
-                        hintsObject = hintsObj;
-                    });
-
-                    waitsFor(() => {
-                        return hintsObject !== null;
-                    });
-
-                    runs(() => {
-                        expect(hintsObject).toBeTruthy();
-                        expect(hintsObject.hints.length).toBe(14);
-                        expect(provider._resolveWithApiObjectSearch).toHaveBeenCalled();
-                    });
+                    hintsObject = provider.getHints();
+                    expect(hintsObject).toBeTruthy();
+                    expect(hintsObject.hints.length).toBe(5);
+                    expect(provider._resolveWithApiObjectSearch).toHaveBeenCalled();
                 });
 
-                it("Should return sap.m.Tree hints again", () => {
+                it("Should return EventProvider hints again", () => {
                     testEditor.editor.setCursorPos({
                         line: 13,
                         ch: 17
@@ -197,22 +145,13 @@ define((require, exports) => {
                     expect(provider.useCachedHints).toBe(false);
                     expect(provider.useCachedUi5ObjectApi).toBe(false);
 
-                    provider.getHints().then((hintsObj) => {
-                        hintsObject = hintsObj;
-                    });
-
-                    waitsFor(() => {
-                        return hintsObject !== null;
-                    });
-
-                    runs(() => {
-                        expect(hintsObject).toBeTruthy();
-                        expect(hintsObject.hints.length).toBe(11);
-                        expect(provider._resolveWithApiObjectSearch).toHaveBeenCalled();
-                    });
+                    hintsObject = provider.getHints();
+                    expect(hintsObject).toBeTruthy();
+                    expect(hintsObject.hints.length).toBe(9);
+                    expect(provider._resolveWithApiObjectSearch).toHaveBeenCalled();
                 });
 
-                it("Should return sap.m.ColumnListItem hints again", () => {
+                it("Should return Object hints again", () => {
                     testEditor.editor.setCursorPos({
                         line: 15,
                         ch: 17
@@ -223,22 +162,13 @@ define((require, exports) => {
                     expect(provider.useCachedHints).toBe(false);
                     expect(provider.useCachedUi5ObjectApi).toBe(false);
 
-                    provider.getHints().then((hintsObj) => {
-                        hintsObject = hintsObj;
-                    });
-
-                    waitsFor(() => {
-                        return hintsObject !== null;
-                    });
-
-                    runs(() => {
-                        expect(hintsObject).toBeTruthy();
-                        expect(hintsObject.hints.length).toBe(14);
-                        expect(provider._resolveWithApiObjectSearch).toHaveBeenCalled();
-                    });
+                    hintsObject = provider.getHints();
+                    expect(hintsObject).toBeTruthy();
+                    expect(hintsObject.hints.length).toBe(5);
+                    expect(provider._resolveWithApiObjectSearch).toHaveBeenCalled();
                 });
 
-                it("Should return sap.m.ColumnListItem hints from cache", () => {
+                it("Should return Object hints from cache", () => {
                     testEditor.editor.setCursorPos({
                         line: 15,
                         ch: 17
@@ -249,22 +179,14 @@ define((require, exports) => {
                     expect(provider.useCachedHints).toBe(true);
                     expect(provider.useCachedUi5ObjectApi).toBe(true);
 
-                    provider.getHints().then((hintsObj) => {
-                        hintsObject = hintsObj;
-                    });
+                    hintsObject = provider.getHints();
+                    expect(hintsObject).toBeTruthy();
+                    expect(hintsObject.hints.length).toBe(5);
+                    expect(provider._resolveWithCachedApiObject).toHaveBeenCalled();
 
-                    waitsFor(() => {
-                        return hintsObject !== null;
-                    });
-
-                    runs(() => {
-                        expect(hintsObject).toBeTruthy();
-                        expect(hintsObject.hints.length).toBe(14);
-                        expect(provider._resolveWithCachedHints).toHaveBeenCalled();
-                    });
                 });
 
-                it("Should use sap.m.ColumnListItem from cache, but not the cached hints", () => {
+                it("Should use Object from cache, but not the cached hints", () => {
                     testEditor.editor.setCursorPos({
                         line: 16,
                         ch: 18
@@ -275,22 +197,13 @@ define((require, exports) => {
                     expect(provider.useCachedHints).toBe(false);
                     expect(provider.useCachedUi5ObjectApi).toBe(true);
 
-                    provider.getHints().then((hintsObj) => {
-                        hintsObject = hintsObj;
-                    });
-
-                    waitsFor(() => {
-                        return hintsObject !== null;
-                    });
-
-                    runs(() => {
-                        expect(hintsObject).toBeTruthy();
-                        expect(hintsObject.hints.length).toBe(3);
-                        expect(provider._resolveWithCachedApiObject).toHaveBeenCalled();
-                    });
+                    hintsObject = provider.getHints();
+                    expect(hintsObject).toBeTruthy();
+                    expect(hintsObject.hints.length).toBe(2);
+                    expect(provider._resolveWithCachedApiObject).toHaveBeenCalled();
                 });
 
-                it("Should return ex- prefixed method hints from sap.m.Tree", () => {
+                it("Should return ex- prefixed method hints from EventProvider", () => {
                     testEditor.editor.setCursorPos({
                         line: 14,
                         ch: 19
@@ -301,24 +214,15 @@ define((require, exports) => {
                     expect(provider.useCachedHints).toBe(false);
                     expect(provider.useCachedUi5ObjectApi).toBe(false);
 
-                    provider.getHints().then((hintsObj) => {
-                        hintsObject = hintsObj;
-                    });
-
-                    waitsFor(() => {
-                        return hintsObject !== null;
-                    });
-
-                    runs(() => {
-                        expect(hintsObject).toBeTruthy();
-                        expect(hintsObject.hints.length).toBe(2);
-                        expectHintsEntries(hintsObject.hints, ["expandToLevel", "extend"]);
-                        expect(provider._resolveWithApiObjectSearch).toHaveBeenCalled();
-                    });
+                    hintsObject = provider.getHints();
+                    expect(hintsObject).toBeTruthy();
+                    expect(hintsObject.hints.length).toBe(1);
+                    expectHintsEntries(hintsObject.hints, ["extend"]);
+                    expect(provider._resolveWithApiObjectSearch).toHaveBeenCalled();
                 });
 
-                it("Should return valid hints after changing the contructor from sap.m.Tree to sap.m.ColumnListItem", () => {
-                    testEditor.doc.replaceRange("ColumnListItem();", {
+                it("Should return valid hints after changing the contructor from EventProvider to Object", () => {
+                    testEditor.doc.replaceRange("Object();", {
                         line: 10,
                         ch: 29
                     }, {
@@ -336,23 +240,14 @@ define((require, exports) => {
                     expect(provider.useCachedHints).toBe(false);
                     expect(provider.useCachedUi5ObjectApi).toBe(false);
 
-                    provider.getHints().then((hintsObj) => {
-                        hintsObject = hintsObj;
-                    });
-
-                    waitsFor(() => {
-                        return hintsObject !== null;
-                    });
-
-                    runs(() => {
-                        expect(hintsObject).toBeTruthy();
-                        expect(hintsObject.hints.length).toBe(14);
-                        expect(provider._resolveWithApiObjectSearch).toHaveBeenCalled();
-                    });
+                    hintsObject = provider.getHints();
+                    expect(hintsObject).toBeTruthy();
+                    expect(hintsObject.hints.length).toBe(5);
+                    expect(provider._resolveWithApiObjectSearch).toHaveBeenCalled();
                 });
 
-                it("Should return valid hints after changing the define object from sap.m.ColumnListItem to sap.m.Tree", () => {
-                    testEditor.doc.replaceRange("\"sap/m/Tree\"", {
+                it("Should return valid hints after changing the define object from Object to EventProvider", () => {
+                    testEditor.doc.replaceRange("\"sap/ui/base/EventProvider\"", {
                         line: 3,
                         ch: 4
                     }, {
@@ -370,19 +265,10 @@ define((require, exports) => {
                     expect(provider.useCachedHints).toBe(false);
                     expect(provider.useCachedUi5ObjectApi).toBe(false);
 
-                    provider.getHints().then((hintsObj) => {
-                        hintsObject = hintsObj;
-                    });
-
-                    waitsFor(() => {
-                        return hintsObject !== null;
-                    });
-
-                    runs(() => {
-                        expect(hintsObject).toBeTruthy();
-                        expect(hintsObject.hints.length).toBe(11);
-                        expect(provider._resolveWithApiObjectSearch).toHaveBeenCalled();
-                    });
+                    hintsObject = provider.getHints();
+                    expect(hintsObject).toBeTruthy();
+                    expect(hintsObject.hints.length).toBe(9);
+                    expect(provider._resolveWithApiObjectSearch).toHaveBeenCalled();
                 });
             });
 
@@ -395,23 +281,12 @@ define((require, exports) => {
                 const provider = ui5HintsProvider.getUi5CodeHintsProvider();
                 expect(provider.hasHints(testEditor.editor, null)).toBe(true);
 
-                let hintsObject = null;
-
-                provider.getHints().then((hintsObj) => {
-                    hintsObject = hintsObj;
-                });
-
-                waitsFor(() => {
-                    return hintsObject !== null;
-                });
-
-                runs(() => {
-                    expect(hintsObject).toBeTruthy();
-                    expect(hintsObject.hints.length).toBe(11);
-                    const selectedHint = selectHint("extend", hintsObject.hints);
-                    provider.insertHint(selectedHint);
-                    expect(testEditor.doc.getLine(13).trim()).toBe("tree.extend(sClassName,oClassInfo,FNMetaImpl)");
-                });
+                const hintsObject = provider.getHints();
+                expect(hintsObject).toBeTruthy();
+                expect(hintsObject.hints.length).toBe(9);
+                const selectedHint = selectHint("extend", hintsObject.hints);
+                provider.insertHint(selectedHint);
+                expect(testEditor.doc.getLine(13).trim()).toBe("tree.extend(sClassName,oClassInfo,FNMetaImpl)");
             });
 
             it("Should insert the hint after a partial name of a method", () => {
@@ -423,23 +298,12 @@ define((require, exports) => {
                 const provider = ui5HintsProvider.getUi5CodeHintsProvider();
                 expect(provider.hasHints(testEditor.editor, null)).toBe(true);
 
-                let hintsObject = null;
-
-                provider.getHints().then((hintsObj) => {
-                    hintsObject = hintsObj;
-                });
-
-                waitsFor(() => {
-                    return hintsObject !== null;
-                });
-
-                runs(() => {
-                    expect(hintsObject).toBeTruthy();
-                    expect(hintsObject.hints.length).toBe(2);
-                    const selectedHint = selectHint("extend", hintsObject.hints);
-                    provider.insertHint(selectedHint);
-                    expect(testEditor.doc.getLine(14).trim()).toBe("tree.extend(sClassName,oClassInfo,FNMetaImpl)");
-                });
+                const hintsObject = provider.getHints();
+                expect(hintsObject).toBeTruthy();
+                expect(hintsObject.hints.length).toBe(1);
+                const selectedHint = selectHint("extend", hintsObject.hints);
+                provider.insertHint(selectedHint);
+                expect(testEditor.doc.getLine(14).trim()).toBe("tree.extend(sClassName,oClassInfo,FNMetaImpl)");
             });
 
             it("Should insert the hint after a dot without parameters", () => {
@@ -451,23 +315,12 @@ define((require, exports) => {
                 const provider = ui5HintsProvider.getUi5CodeHintsProvider();
                 expect(provider.hasHints(testEditor.editor, null)).toBe(true);
 
-                let hintsObject = null;
-
-                provider.getHints().then((hintsObj) => {
-                    hintsObject = hintsObj;
-                });
-
-                waitsFor(() => {
-                    return hintsObject !== null;
-                });
-
-                runs(() => {
-                    expect(hintsObject).toBeTruthy();
-                    expect(hintsObject.hints.length).toBe(2);
-                    const selectedHint = selectHint("extend", hintsObject.hints);
-                    provider.insertHint(selectedHint);
-                    expect(testEditor.doc.getLine(17).trim()).toBe("tree.extend(param1)");
-                });
+                const hintsObject = provider.getHints();
+                expect(hintsObject).toBeTruthy();
+                expect(hintsObject.hints.length).toBe(1);
+                const selectedHint = selectHint("extend", hintsObject.hints);
+                provider.insertHint(selectedHint);
+                expect(testEditor.doc.getLine(17).trim()).toBe("tree.extend(param1)");
             });
         });
     };
