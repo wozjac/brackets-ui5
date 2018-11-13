@@ -138,28 +138,26 @@ define((require, exports, module) => {
             }
 
             if (this.proposedUi5Object) {
-                const deferredResult = $.Deferred(); //eslint-disable-line new-cap
-
                 if (this.useCachedHints === true
                     && this.useCachedUi5ObjectApi === true) {
 
-                    this._resolveWithCachedHints(deferredResult);
+                    //FIXME: restore event handlers for cached events
+                    //return this._resolveWithCachedHints();
+                    return this._resolveWithCachedApiObject();
                 } else if (this.useCachedHints === false
                     && this.useCachedUi5ObjectApi === true) {
 
-                    this._resolveWithCachedApiObject(deferredResult);
+                    return this._resolveWithCachedApiObject();
                 } else {
-                    this._resolveWithApiObjectSearch(deferredResult);
+                    return this._resolveWithApiObjectSearch();
                 }
-
-                return deferredResult;
             } else {
                 return null;
             }
         }
 
         insertHint(hintObject) {
-            let textToInsert = hintObject.contents().not(hintObject.children()).text();
+            let textToInsert = hintObject.find("span.brackets-ui5-hint-name").text();
             const cursor = session.getCursor(),
 
                 start = {
@@ -210,18 +208,15 @@ define((require, exports, module) => {
         }
 
         _searchMembers(apiObject, filterCallback) {
-            let properties = [];
+            let properties = [],
+                methods = [];
 
             if (apiObject.properties) {
-                properties = apiObject.properties.filter(filterCallback);
-                properties = properties.map(this._createEntry(strings.PROPERTY));
+                properties = this._prepareMembers(apiObject.properties, apiObject, filterCallback, strings.PROPERTY);
             }
 
-            let methods = [];
-
             if (apiObject.methods) {
-                methods = apiObject.methods.filter(filterCallback);
-                methods = methods.map(this._createEntry(strings.METHOD));
+                methods = this._prepareMembers(apiObject.methods, apiObject, filterCallback, strings.METHOD);
             }
 
             properties.push(...methods);
@@ -229,56 +224,168 @@ define((require, exports, module) => {
             return properties.sort(hintUtils.sortWrappedHintList);
         }
 
-        _resolveWithCachedHints(deferredObject) {
-            deferredObject.resolveWith(null, [{
+        _prepareMembers(members, apiObject, filterCallback, type) {
+            let parent, parentMembers;
+
+            members = members.filter(filterCallback);
+
+            members = members.map((element) => {
+                element.apiDocUrl = apiObject.apiDocUrl;
+                return element;
+            });
+
+            if (apiObject.inheritedApi) {
+                for (const objectKey in apiObject.inheritedApi) {
+                    parent = apiObject.inheritedApi[objectKey];
+
+                    switch (type) {
+                        case strings.PROPERTY:
+                            if (parent.properties) {
+                                parentMembers = parent.properties;
+                            }
+
+                            break;
+
+                        case strings.METHOD:
+                            if (parent.methods) {
+                                parentMembers = parent.methods;
+                            }
+
+                            break;
+                    }
+
+                    if (parentMembers) {
+                        parentMembers = parentMembers.map((element) => {
+                            element.borrowedFrom = objectKey;
+                            element.apiDocUrl = ui5ApiService.getUi5ObjectApiDocUrl(objectKey);
+                            return element;
+                        });
+
+                        parentMembers = parentMembers.filter(filterCallback);
+
+                        let originMember, parentMember;
+
+                        for (const i in parentMembers) {
+                            parentMember = parentMembers[i];
+
+                            originMember = members.find((element) => {
+                                return element.name === parentMember.name;
+                            });
+
+                            if (originMember === undefined) {
+                                members.push(parentMember);
+                            }
+                        }
+
+                        parentMembers = null;
+                    }
+                }
+            }
+
+            members = members.map(this._createEntry(type));
+
+            return members;
+        }
+
+        _resolveWithCachedHints() {
+            return {
                 hints: this.cachedHints,
                 match: null,
                 selectInitial: true,
                 handleWideResults: false
-            }]);
+            };
         }
 
-        _resolveWithCachedApiObject(deferredObject) {
+        _resolveWithCachedApiObject() {
             const formattedApi = ui5ApiFormatter.getFormattedObjectApi(this.cachedUi5ObjectApi);
             const result = this._findObjectMembers(this.queryToken.string, formattedApi);
 
             this.cachedHints = result;
 
-            deferredObject.resolveWith(null, [{
+            return {
                 hints: result,
                 match: null,
                 selectInitial: true,
                 handleWideResults: false
-            }]);
+            };
         }
 
-        _resolveWithApiObjectSearch(deferredObject) {
-            ui5ApiService.getUi5ObjectDesignApi(this.proposedUi5Object.path).then((ui5ObjectApi) => {
-                const formattedApi = ui5ApiFormatter.getFormattedObjectApi(ui5ObjectApi);
-                const result = this._findObjectMembers(this.queryToken.string, formattedApi);
+        _resolveWithApiObjectSearch() {
+            const api = ui5ApiService.getUi5ObjectDesignApi(this.proposedUi5Object.name);
+            const formattedApi = ui5ApiFormatter.getFormattedObjectApi(api);
+            const result = this._findObjectMembers(this.queryToken.string, formattedApi);
 
-                this.cachedHints = result;
-                this.cachedUi5ObjectApi = ui5ObjectApi;
+            this.cachedHints = result;
+            this.cachedUi5ObjectApi = api;
 
-                deferredObject.resolveWith(null, [{
-                    hints: result,
-                    match: null,
-                    selectInitial: true,
-                    handleWideResults: false
-                }]);
-
-            }, (error) => {
-                deferredObject.reject();
-                console.error(`[wozjac.ui5] ${error}`);
-            });
+            return {
+                hints: result,
+                match: null,
+                selectInitial: true,
+                handleWideResults: false
+            };
         }
 
         _createEntry(type) {
             return function (apiObject) {
                 const entryElement = $("<span>").addClass("brackets-js-hints");
-                entryElement.text(apiObject.name);
                 entryElement.addClass("brackets-js-hints-with-type-details");
-                $(`<span>${type}</span>`).appendTo(entryElement).addClass("brackets-js-hints-keyword");
+                $("<span></span>").text(apiObject.name).appendTo(entryElement).addClass("brackets-ui5-hint-name");
+
+                const documentationLink = $("<a></a>");
+
+                if (type === strings.PROPERTY) {
+                    documentationLink.attr("href", `${apiObject.apiDocUrl}/controlProperties`);
+                }
+
+                if (type === strings.METHOD) {
+                    documentationLink.attr("href", `${apiObject.apiDocUrl}/methods/${apiObject.name}`);
+                }
+
+                documentationLink.addClass("jshint-link brackets-ui5-hint-doc-link");
+                documentationLink.appendTo(entryElement);
+
+                documentationLink.click((event) => {
+                    event.stopImmediatePropagation();
+                    event.stopPropagation();
+                });
+
+                if (type === strings.PROPERTY) {
+                    $("<span></span>").text(apiObject.type).appendTo(entryElement).addClass("jshint-jsdoc brackets-ui5-hint-type");
+                }
+
+                if (type === strings.METHOD) {
+                    let returnText, methodSignature, parameter, parametersText = "";
+
+                    if (apiObject.parameters) {
+                        for (let i = 1; i <= apiObject.parameters.length; i++) {
+                            parameter = apiObject.parameters[i - 1];
+                            parametersText += `${parameter.name} : <span class="brackets-ui5-hint-member-type">${parameter.type}</span>`;
+
+                            if (i !== apiObject.parameters.length) {
+                                parametersText += ", ";
+                            }
+                        }
+                    }
+
+                    methodSignature = `fn(${parametersText})`;
+
+                    if (apiObject.returnValue) {
+                        if (apiObject.returnValue instanceof Object) {
+                            returnText = apiObject.returnValue.type;
+                        } else {
+                            returnText = apiObject.returnValue;
+                        }
+
+                        methodSignature += ` : <span class="brackets-ui5-hint-member-type">${returnText}</span>`;
+                    }
+
+                    $("<span></span>").html(methodSignature).appendTo(entryElement).addClass("jshint-jsdoc brackets-ui5-hint-type");
+                }
+
+                if (apiObject.borrowedFrom) {
+                    $("<span></span>").text(`↑ borrowed from ${apiObject.borrowedFrom} ↑`).addClass("jshint-jsdoc brackets-ui5-hint-borrowed").appendTo(entryElement);
+                }
 
                 if (apiObject.description) {
                     $("<span></span>").text(apiObject.description.trim()).appendTo(entryElement).addClass("jshint-jsdoc");

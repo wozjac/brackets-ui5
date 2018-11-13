@@ -16,11 +16,12 @@ define((require, exports) => {
                     case "https://openui5.hana.ondemand.com/docs/api/api-index.json":
                         result.resolve(fixtures.apiIndex);
                         break;
-                    case "https://openui5.hana.ondemand.com/docs/api/index.xml":
-                        result.resolve(fixtures.ui5Xml);
-                        break;
                     case "https://openui5.hana.ondemand.com/test-resources/sap/m/designtime/api.json":
                         result.resolve(fixtures.sapMApi);
+                        break;
+                    case "https://openui5.hana.ondemand.com/test-resources/sap/ui/core/designtime/api.json":
+                        result.resolve(fixtures.sapUiCoreApi);
+                        break;
                 }
 
                 return result.promise();

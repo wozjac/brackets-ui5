@@ -33,20 +33,30 @@ define((require, exports) => {
         }
 
         //get the API and process - transform to Mustache's template values
-        ui5ApiService.getUi5ObjectDesignApi(ui5Objects[0].path).then((ui5ObjectApi) => {
-            const templateObjects = [];
-            const templateObject = ui5ApiFormatter.getFormattedObjectApi(ui5ObjectApi);
-            templateObjects.push(templateObject);
+        const ui5ObjectApi = ui5ApiService.getUi5ObjectDesignApi(ui5Objects[0].name);
+        const templateObjects = [];
+        const templateObject = ui5ApiFormatter.getFormattedObjectApi(ui5ObjectApi);
+        processApi(templateObject);
+        templateObjects.push(templateObject);
 
-            const inlineWidget = new InlineDocsViewer(templateObjects);
-            inlineWidget.setDescriptionsVisibility();
-            inlineWidget.load(hostEditor);
-            result.resolve(inlineWidget);
-        }, (error) => {
-            console.log(`[wozjac.ui5]: ${error}`);
-        });
+        const inlineWidget = new InlineDocsViewer(templateObjects);
+        inlineWidget.setDescriptionsVisibility();
+        inlineWidget.load(hostEditor);
+        result.resolve(inlineWidget);
 
         return result.promise();
+    }
+
+    function processApi(templateObject) {
+        const inheritedApi = [];
+        let inheritedObject;
+
+        for (const objectName in templateObject.inheritedApi) {
+            inheritedObject = templateObject.inheritedApi[objectName];
+            inheritedApi.push(inheritedObject);
+        }
+
+        templateObject.inheritedApi = inheritedApi;
     }
 
     exports.getInlineProvider = inlineProvider;

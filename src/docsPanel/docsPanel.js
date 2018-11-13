@@ -97,7 +97,7 @@ define((require, exports) => {
         _processSearch(searchInput) {
             this._searchTimeout = setTimeout(() => {
                 const ui5Objects = ui5ApiFinder.findUi5ApiObjects({
-                    path: searchInput
+                    name: searchInput
                 });
 
                 if (ui5Objects && ui5Objects.length > 0) {
@@ -110,7 +110,7 @@ define((require, exports) => {
                     } else {
                         this._elements.hitlistElement.hide();
                         this._setMessage(null);
-                        this._displayObjectApi(ui5Objects[0].path);
+                        this._displayObjectApi(ui5Objects[0].name);
                     }
                 } else {
                     this._setMessage(strings.NOT_FOUND);
@@ -121,7 +121,8 @@ define((require, exports) => {
 
         _resize() {
             const toolbarPx = $("#main-toolbar:visible").width() || 0;
-            $(".content").css("right", ($("#brackets-ui5-docs-panel").width() || 0) + toolbarPx + "px");
+            const size = ($("#brackets-ui5-docs-panel").width() || 0) + toolbarPx;
+            $(".content").css("right", `${size}px`);
         }
 
         _showPanelGui() {
@@ -166,13 +167,13 @@ define((require, exports) => {
             let htmlElement;
             for (const ui5Object of ui5Objects) {
                 htmlElement = $(Mustache.render(hitlistEntryTemplate, {
-                    path: ui5Object.path
+                    path: ui5Object.name
                 }));
 
                 htmlElement.on("click", {
-                    path: ui5Object.path
+                    name: ui5Object.name
                 }, (event) => {
-                    this._displayObjectApi(event.data.path);
+                    this._displayObjectApi(event.data.name);
                 });
 
                 htmlElement.appendTo(this._elements.hitlistElement);
@@ -189,22 +190,18 @@ define((require, exports) => {
 
             const objects = [];
 
-            ui5ApiService.getUi5ObjectDesignApi(ui5ObjectPath).then((designApi) => {
-                objects.push(ui5ApiFormatter.getFormattedObjectApi(designApi, true));
+            const designApi = ui5ApiService.getUi5ObjectDesignApi(ui5ObjectPath);
+            objects.push(ui5ApiFormatter.getFormattedObjectApi(designApi, true));
 
-                const html = Mustache.render(objectApiTemplate, {
-                    objects,
-                    strings
-                });
-
-                this._elements.apiDocsElement.empty();
-                this._elements.apiDocsElement.append(html);
-                this._setMessage(null);
-                this._registerUi5ObjectLinkHandlers();
-
-            }, (error) => {
-                this._setMessage(error);
+            const html = Mustache.render(objectApiTemplate, {
+                objects,
+                strings
             });
+
+            this._elements.apiDocsElement.empty();
+            this._elements.apiDocsElement.append(html);
+            this._setMessage(null);
+            this._registerUi5ObjectLinkHandlers();
         }
 
         _registerUi5ObjectLinkHandlers() {
@@ -223,6 +220,14 @@ define((require, exports) => {
             this._elements.apiDocsElement.on("click", ".brackets-ui5-expand-link", (event) => {
                 this._handleExpandCollapse($(event.target));
             });
+
+            const extendsLinkElement = this._elements.apiDocsElement.find("#brackets-ui5-extends-link");
+
+            if (extendsLinkElement) {
+                extendsLinkElement.on("click", () => {
+                    this._displayObjectApi($(event.target).text());
+                });
+            }
         }
 
         _unregisterUi5ObjectLinkHandlers() {
@@ -233,15 +238,18 @@ define((require, exports) => {
         }
 
         _handleExpandCollapse(linkElement) {
-            const targetDescription = linkElement.attr("data-target-description");
+            const targetElementId = linkElement.attr("data-target-description");
             const sign = linkElement.text();
+            const descriptionElement = $(document.getElementById(targetElementId));
 
             if (sign === "[+]") {
                 linkElement.text("[-]");
-                $(document.getElementById(targetDescription)).show();
+                descriptionElement.show();
+                descriptionElement.children().show();
             } else {
                 linkElement.text("[+]");
-                $(document.getElementById(targetDescription)).hide();
+                descriptionElement.hide();
+                descriptionElement.children().hide();
             }
         }
     }
@@ -254,7 +262,14 @@ define((require, exports) => {
         return docsPanel;
     }
 
+    function destroy() {
+        if (docsPanel) {
+            docsPanel = null;
+        }
+    }
+
     exports.create = create;
+    exports.destroy = destroy;
 
     exports.get = () => {
         return docsPanel;

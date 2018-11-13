@@ -3,7 +3,15 @@
     <h5>
         <a href="{{apiDocUrl}}" class="brackets-ui5-panel-name">{{name}}</a>&nbsp;
         <a href="#" class="brackets-ui5-expand-link" data-target-description="pod:{{name}}">[+]</a>
-        {{#isDeprecated}} <div class="brackets-ui5-red"> {{strings.DEPRECATED}}</div> {{/isDeprecated}}
+        {{#hasBaseObject}}
+        <div>
+            <span>extends: </span><a href="#" id="brackets-ui5-extends-link">{{extends}}</a>
+        </div>
+        {{/hasBaseObject}}
+        {{#isDeprecated}}
+        <div class="brackets-ui5-red"> {{strings.DEPRECATED}}</div>
+        {{/isDeprecated}}
+        <hr class="brackets-ui5-separator" />
         <div>
             <a href="#" id="brackets-ui5-panel-insert-link" data-ui5path="{{name}}">{{strings.INSERT_DEFINE}}</a> |
             <a href="#" id="brackets-ui5-panel-insert-path-link" data-ui5path="{{name}}">{{strings.INSERT}}</a> |
@@ -20,11 +28,21 @@
             </span>
             <span class="brackets-ui5-return-type">{{returnValue.type}}</span>
             <a href="#" class="brackets-ui5-expand-link" data-target-description="pod:{{name}}">[+]</a>
-            <p id="pod:{{name}}" class="brackets-ui5-api-description">{{description}}</p>
+            <span id="pod:{{name}}">
+                <hr class="brackets-ui5-separator brackets-ui5-hidden" />
+                <p class="brackets-ui5-api-description">{{description}}</p>
+                <hr class="brackets-ui5-separator brackets-ui5-hidden" />
+                <span class="brackets-ui5-api-description">
+                    {{#parameters}}
+                    <p>- {{name}} ({{type}}): {{description}}</p>
+                    {{/parameters}}
+                </span>
+            </span>
         </li>
         {{/methods}}
     </ul>
     {{/hasMethods}}
+    {{}}
     {{#hasEvents}}
     <h5>{{strings.EVENTS}}:</h5>
     <ul>
@@ -52,6 +70,7 @@
     {{#hasConstructor}}
     <h5>{{strings.CONSTRUCTOR}}:</h5>
     <ul>
+        {{#hasConstructorParams}}
         {{#constructorParams}}
         <li>
             <span class="brackets-ui5-panel-name">{{name}}</span><span class="brackets-ui5-return-type"> {{type}}</span>
@@ -59,6 +78,10 @@
             <p id="pod:{{name}}" class="brackets-ui5-api-description">{{description}}</p>
         </li>
         {{/constructorParams}}
+        {{/hasConstructorParams}}
+        {{^hasConstructorParams}}
+            <li>no parameters</li>
+        {{/hasConstructorParams}}
     </ul>
     {{/hasConstructor}}
 </div>

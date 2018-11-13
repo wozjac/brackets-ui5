@@ -84,7 +84,7 @@ define((require, exports) => {
     }
 
     function getParentsAttributes(object, parent) {
-        let parentObject, parentNamespace, lastDot;
+        let parentObject, parentNamespace, lastDot, parentAttributes, candidate, present, found;
 
         while (parent) {
             lastDot = parent.lastIndexOf(".");
@@ -92,7 +92,26 @@ define((require, exports) => {
 
             if (parentNamespace) {
                 parentObject = parent.substr(lastDot + 1);
-                object.attributes = object.attributes.concat(loadedNamespaces[parentNamespace][parentObject].attributes);
+                //parentAttributes = object.attributes.concat(loadedNamespaces[parentNamespace][parentObject].attributes);
+                parentAttributes = loadedNamespaces[parentNamespace][parentObject].attributes;
+
+                for (const index in parentAttributes) {
+                    candidate = parentAttributes[index];
+
+                    for (const index2 in object.attributes) {
+                        present = object.attributes[index2];
+
+                        if (present.name === candidate.name) {
+                            found = true;
+                        }
+                    }
+
+                    if (!found) {
+                        object.attributes.push(candidate);
+                    }
+
+                    found = false;
+                }
             }
 
             parent = loadedNamespaces[parentNamespace][parentObject].extendsElement;

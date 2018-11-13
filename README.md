@@ -3,7 +3,8 @@
 ## Info
 An extension for [Brackets](http://brackets.io) editor providing helpers (quick docs, code hints, API reference and more) for SAP© UI5 library [OpenUI5](openui5.hana.ondemand.com)/[SAPUI5](https://sapui5.hana.ondemand.com).
 
-Works with UI5 versions >= 1.52.0. As the majority of the older versions is out of maintenance, I do not plan to add support for them.
+Works with UI5 versions >= 1.52 (with the versions with online documentation available, please check here: [https://ui5.sap.com/versionoverview.html](https://ui5.sap.com/versionoverview.html) ). 
+As the majority of the older versions is out of maintenance, I do not plan to add support for them.
 
 **Please notice (if you are new to UI5)! [OpenUI5](https://openui5.org) is open source, but SAPUI5 - although SAP shares publicly SAPUI5 library runtime & SDK etc. - is not free. Please check the company [site](https://sap.com) for more details.**
 
@@ -137,14 +138,14 @@ const button = getButton() //ui5: sap.m.Button
     }
 ```
 
-2. The object type from the construction and next, from the define statement. If the define statement is not present, try to match the name with an object from the API reference. If multiple objects are matched, skip deprecated and favour sap.m objects. For example:
+2. The object type from the construction and next, from the define statement. If the define statement is not present, try to match the name with an object from the API reference. If multiple objects are matched, favour sap.m objects. For example:
 
 ```javascript
 var button = new Button()
 
 button // //Ctrl+k opens quick docs and typing . after the variable opens hints
 ```
-Because there is no define statement, the algorithm will match sap.m.Button and sap.ui.commons.Button. Because the latter is deprecated, sap.m.Button will be selected.
+Because there is no define statement, the algorithm will match sap.m.Button and sap.ui.commons.Button. Because the first comes from the "sap.m" library, sap.m.Button will be selected.
 
 ```javascript
 sap.ui.define(["sap/ui/commons/Button"], function(Button) {
@@ -219,6 +220,9 @@ oData mock data generator:
 
 ## Unit tests
 Unit tests are using Brackets embedded mechanism based on Jasmine. The entry point is unittests.js file, you can run in via menu path Debug->Run Tests. Please keep in mind, that this option is not available in the standard version; to reveal it a version [build from source](https://github.com/adobe/brackets/wiki/How-to-Hack-on-Brackets) is required.
+
+## Known issues
+- no code hints for some full-path objects lile jQuery.sap
 
 ## Further development
 - code analysis (hints, quick docs) based on built-in Tern/Acorn

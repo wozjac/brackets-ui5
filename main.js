@@ -35,8 +35,9 @@ define((require, exports, module) => {
 
         //wait for all files before initialization
         ProjectManager.getAllFiles().then(() => {
-            ui5ApiService.loadUi5Objects();
-            ui5ApiService.loadUi5ApiIndex();
+            ui5ApiService.loadUi5Objects().then(() => {
+                ui5ApiService.loadUi5LibrariesDesignApi();
+            });
             preferences.checkApiVersion();
             ui5SchemaService.initSchemas();
         });

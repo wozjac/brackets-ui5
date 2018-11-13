@@ -1,0 +1,41 @@
+{{#hasMethods}}
+    <h4>{{strings.METHODS}}:</h4>
+        <ul class="brackets-ui5-object-members">
+            {{#methods}}
+            <li>
+                <strong>{{name}}</strong>(<span class="brackets-ui5-element-list">{{#parameters}}<span>{{name}}</span>{{/parameters}})</span> : <span class="brackets-ui5-return-type">{{returnValue.type}}</span>
+                    <div class="brackets-ui5-api-description">{{description}}</div>
+            {{/methods}}
+            </li>
+        </ul>
+        {{/hasMethods}}
+            {{#hasEvents}}
+            <h4>{{strings.EVENTS}}:</h4>
+            <ul class="brackets-ui5-object-members">
+                {{#events}}
+                <li>
+                    <strong>{{name}}</strong>(<span class="brackets-ui5-element-list">{{#parameters}}<span>{{name}}</span>{{/parameters}})</span> <span class="brackets-ui5-api-description">{{description}}</span>
+                {{/events}}
+                </li>
+            </ul>
+            {{/hasEvents}}
+            {{#hasProperties}}
+            <h4>{{strings.PROPERTIES}}:</h4>
+            <ul class="brackets-ui5-object-members">
+                {{#properties}}
+                <li>
+                    <strong>{{name}}</strong><span class="brackets-ui5-return-type"> {{type}}</span><span class="brackets-ui5-api-description"> | {{description}}</span>
+                </li>
+                {{/properties}}
+            </ul>
+            {{/hasProperties}}
+            {{#hasConstructor}}
+            <h4>{{strings.CONSTRUCTOR}}:</h4>
+            <ul class="brackets-ui5-object-members">
+                {{#constructorParams}}
+                <li>
+                    <strong>{{name}}</strong><span class="brackets-ui5-return-type"> {{type}}</span><span class="brackets-ui5-api-description"> | {{description}}</span>
+                {{/constructorParams}}
+                </li>
+            </ul>
+            {{/hasConstructor}}

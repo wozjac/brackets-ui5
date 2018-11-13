@@ -74,6 +74,9 @@ define((require, exports) => {
                 return element.contents().first().text();
             });
 
+            attributeNames.sort();
+            expectedHints.sort();
+
             expect(attributeNames).toEqual(expectedHints);
         }
 
@@ -368,7 +371,7 @@ define((require, exports) => {
                     });
 
                     const hintList = expectHints(ui5HintsProvider.getXmlViewAttributesHintsProvider(), testEditor.editor);
-                    verifyAttributeHints(hintList, ["width", "height", "scrollLeft", "scrollTop", "title", "applyContentPadding", "showCloseButton", "resizable", "minWidth", "minHeight", "maxWidth", "maxHeight", "contentBorderDesign", "modal", "accessibleRole", "keepInWindow", "autoClose", "defaultButton", "initialFocus", "closed", "busy", "busyIndicatorDelay", "busyIndicatorSize", "visible", "fieldGroupIds", "validateFieldGroup"].sort());
+                    verifyAttributeHints(hintList, ["width", "height", "scrollLeft", "scrollTop", "title", "applyContentPadding", "showCloseButton", "resizable", "minWidth", "minHeight", "maxWidth", "maxHeight", "contentBorderDesign", "modal", "accessibleRole", "keepInWindow", "autoClose", "defaultButton", "initialFocus", "closed", "busy", "busyIndicatorDelay", "busyIndicatorSize", "visible", "fieldGroupIds", "validateFieldGroup"]);
                 });
 
                 it("Should insert an attribute hint", () => {

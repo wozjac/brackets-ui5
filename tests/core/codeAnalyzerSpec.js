@@ -1,4 +1,6 @@
 define((require, exports) => {
+    "use strict";
+
     const codeAnalyzer = require("src/editor/codeAnalyzer"),
         ui5ApiFinder = require("src/core/ui5ApiFinder"),
         textTool = require("src/editor/textTool"),
@@ -6,17 +8,19 @@ define((require, exports) => {
 
     exports.getTests = function () {
         const ui5CoreLabelObject = {
-            apiUrl: "https://openui5.hana.ondemand.com/#docs/api/symbols/sap.ui.core.Label.html",
-            deprecated: false,
-            name: "Label",
-            path: "sap.ui.core.Label"
+            apiDocUrl: "https://openui5.hana.ondemand.com/#docs/api/symbols/sap.ui.core.Label.html",
+            library: "sap.ui.core",
+            kind: "class",
+            basename: "Label",
+            name: "sap.ui.core.Label"
         };
 
         const ui5LabelObject = {
-            apiUrl: "https://openui5.hana.ondemand.com/#docs/api/symbols/sap.m.Label.html",
-            deprecated: false,
-            name: "Label",
-            path: "sap.m.Label"
+            apiDocUrl: "https://openui5.hana.ondemand.com/#docs/api/symbols/sap.m.Label.html",
+            kind: "class",
+            library: "sap.m",
+            basename: "Label",
+            name: "sap.m.Label"
         };
 
         describe("[wozjac.ui5] codeAnalyzer.js", () => {
@@ -24,7 +28,7 @@ define((require, exports) => {
                 testUtils.mockUi5Api();
                 testUtils.mockPreferences();
 
-                spyOn(ui5ApiFinder, "findUi5ObjectByPath").andCallFake((path) => {
+                spyOn(ui5ApiFinder, "findUi5ObjectByName").andCallFake((path) => {
                     switch (path) {
                         case "sap.ui.core.Label":
                             return ui5CoreLabelObject;
