@@ -2,7 +2,7 @@
 <mvc:View controllerName="RESOURCE.PATH.CONTROLLER_NAME"
     xmlns:html="http://www.w3.org/1999/xhtml"
     xmlns:mvc="sap.ui.core.mvc"
-    displayBlock="true"
+    displayBlock="false"
     xmlns="sap.m">
 
 </mvc:View>
