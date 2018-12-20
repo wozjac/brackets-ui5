@@ -223,14 +223,6 @@ define((require, exports) => {
             ui5Object = getObjectFromDefineStatement(token, sourceCode);
         }
 
-        if (!ui5Object && ui5Objects.length === 0) { //compare the token with ui5 object names, may return multiple objects
-            const findings = ui5ApiFinder.findUi5ObjectByBasename(token);
-
-            if (findings) {
-                ui5Objects = ui5Objects.concat(findings);
-            }
-        }
-
         if (ui5Object) {
             ui5Objects.push(ui5Object);
         }

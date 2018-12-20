@@ -44,5 +44,6 @@ define({
     "PROPERTY": "property",
     "ERROR": "Error",
     "INCORRECT_API_VERSION_STRING": `${prefix} UI5 library URL has an incorrect syntax`,
-    "ODATA_SERVICE_NOT_LOADED": "The service metadata could not be loaded. Please check the console for errors."
+    "ODATA_SERVICE_NOT_LOADED": "The service metadata could not be loaded. Please check the console for errors.",
+    "AGGREGATIONS": "Aggregations"
 });

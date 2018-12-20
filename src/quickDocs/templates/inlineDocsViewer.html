@@ -2,19 +2,21 @@
     tabIndex="0">
     <!-- tabIndex needed: otherwise click focuses CodeMirror scroller and Esc won't work -->
     {{#objects}}
-    <div class="css-prop-summary">
-        <h1>{{name}}</h1>
-        {{#hasBaseObject}}
-            <div class="brackets-ui5-docs-extends">Extends: {{extends}}</div>
-        {{/hasBaseObject}}
-        <div class="brackets-ui5-font-90">{{{description}}}</div>
+    <div class="css-prop-summary quiet-scrollbars brackets-ui5-qdocs-summary">
+        <div class="scroller">
+            <h1>{{name}}</h1>
+            {{#hasBaseObject}}
+                <div class="brackets-ui5-qdocs-extends">Extends: {{extends}}</div>
+            {{/hasBaseObject}}
+            <div class="brackets-ui5-font-90">{{{description}}}</div>
+        </div>
     </div>
     <div class="divider-holder no-focus">
         <div class="divider"></div>
     </div>
     <div class="css-prop-values quiet-scrollbars">
         <!-- tabIndex needed: otherwise can't be focused on open or via click -->
-        <div class="scroller brackets-ui5-object-members-wrapper"
+        <div class="scroller brackets-ui5-qdocs-object-members-wrapper"
             tabIndex="0">
             {{> membersTemplate}}
             {{#inheritedApi}}

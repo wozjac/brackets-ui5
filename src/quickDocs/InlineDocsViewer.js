@@ -4,8 +4,8 @@ define((require, exports, module) => {
     const InlineWidget = brackets.getModule("editor/InlineWidget").InlineWidget,
         KeyEvent = brackets.getModule("utils/KeyEvent"),
         Mustache = brackets.getModule("thirdparty/mustache/mustache"),
-        inlineEditorTemplate = require("text!./inlineDocsViewer.html"),
-        membersTemplate = require("text!./members.html"),
+        inlineEditorTemplate = require("text!./templates/inlineDocsViewer.html"),
+        membersTemplate = require("text!./templates/members.html"),
         strings = require("strings"),
         SCROLL_LINE_HEIGHT = 40;
 
@@ -152,9 +152,9 @@ define((require, exports, module) => {
 
     InlineDocsViewer.prototype.setDescriptionsVisibility = function () {
         if (this._expanded === false) {
-            $(".brackets-ui5-api-description").hide();
+            $(".brackets-ui5-qdocs-api-description").hide();
         } else {
-            $(".brackets-ui5-api-description").show();
+            $(".brackets-ui5-qdocs-api-description").show();
         }
     };
 

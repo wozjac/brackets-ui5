@@ -47,24 +47,33 @@ a.brackets-ui5-docs-expand {
     text-shadow: 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 
-.brackets-ui5-element-list span:not(:last-of-type)::after {
+.brackets-ui5-qdocs-api-description {
+    margin-bottom: 3px;
+    display: none;
+}
+
+.brackets-ui5-qdocs-element-list span:not(:last-of-type)::after {
     content: ", "
 }
 
-.brackets-ui5-object-members {
+.brackets-ui5-qdocs-return-type {
+    font-style: italic
+}
+
+.brackets-ui5-qdocs-object-members {
     list-style-type: none;
     font-size: 90%;
 }
 
-.brackets-ui5-object-members-wrapper {
+.brackets-ui5-qdocs-object-members-wrapper {
     padding-bottom: 20px;
 }
 
-.brackets-ui5-return-type {
+.brackets-ui5-docs-panel-return-type {
     font-style: italic
 }
 
-.brackets-ui5-api-description {
+.brackets-ui5-docs-panel-api-description {
     margin-bottom: 3px;
     display: none;
 }
@@ -103,6 +112,10 @@ a.brackets-ui5-docs-expand {
     position: relative;
 }
 
+.brackets-ui5-docs-panel-h4 {
+    color: white;
+}
+
 #brackets-ui5-docs-panel-list {
     height: 96%;
     overflow: auto;
@@ -125,9 +138,17 @@ a.brackets-ui5-docs-expand {
     white-space: normal;
 }
 
-.brackets-ui5-panel-name {
+.brackets-ui5-docs-panel-name {
     font-weight: bolder;
     color: #ffffff !important;
+}
+
+.brackets-ui5-docs-panel-sbold {
+    font-weight: bold;
+}
+
+.brackets-ui5-docs-panel-name-deprecated {
+    text-decoration: line-through;
 }
 
 .brackets-ui5-docs-panel-hitlist-link,
@@ -149,7 +170,7 @@ a.brackets-ui5-docs-expand {
     color: inherit;
 }
 
-.brackets-ui5-element-list span:not(:last-of-type)::after {
+.brackets-ui5-docs-panel-element-list span:not(:last-of-type)::after {
     content: ", "
 }
 
@@ -158,18 +179,14 @@ a.brackets-ui5-docs-expand {
     margin: 5px 0 5px 0;
 }
 
-.brackets-ui5-api-description {
-    display: none;
-}
-
 .brackets-ui5-docs-panel-object a:link {
     color: #bbbbbb;
 }
 
-.brackets-ui5-expand-link,
-.brackets-ui5-expand-link:hover,
-.brackets-ui5-expand-link:visited,
-.brackets-ui5-expand-link:active {
+.brackets-ui5-docs-panel-expand-link,
+.brackets-ui5-docs-panel-expand-link:hover,
+.brackets-ui5-docs-panel-expand-link:visited,
+.brackets-ui5-docs-panel-expand-link:active {
     color: #bbbbbb;
     text-decoration: none;
 }
@@ -255,6 +272,20 @@ a.brackets-ui5-docs-expand {
     display: none;
 }
 
-.brackets-ui5-docs-extends {
+.brackets-ui5-qdocs-extends {
     margin-bottom: 7px;
+}
+
+.brackets-ui5-qdocs-summary {
+    height: 300px;
+}
+
+.brackets-ui5-qdocs-name-deprecated {
+    text-decoration: line-through;
+}
+
+.brackets-ui5-qdocs-summary .scroller {
+    max-height: 320px;
+    overflow-y: auto;
+    margin: 20px 0 0 0;
 }

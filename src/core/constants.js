@@ -32,6 +32,7 @@ define((require, exports) => {
 
     const regex = {
         defineStatement: /sap\.ui\.define\s*\(\s*\[([\s\S]*)(\])\s*,\s*function[^(]*\(([^)]*)(\))/,
+        requireStatement: /sap\.ui\.require\s*\(\s*\[([\s\S]*)(\])\s*,\s*function[^(]*\(([^)]*)(\))/,
         singleFunctionStatement: /function[^(]*\(([^)]*)\)/,
         xmlNamespace: /xmlns\s*:?\s*(\w*)\s*=\s*['"]([\w.:/]+)/gi,
         ui5ObjectInCommentPattern: "/+[\\*]*[\\s]*ui5:[\\s]*([\\w\\.]+)",

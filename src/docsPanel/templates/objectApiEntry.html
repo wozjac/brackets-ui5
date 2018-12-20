@@ -1,88 +1,51 @@
 {{#objects}}
-<div class="brackets-ui5-docs-panel-object">
-    <h5>
-        <a href="{{apiDocUrl}}" class="brackets-ui5-panel-name">{{name}}</a>&nbsp;
-        <a href="#" class="brackets-ui5-expand-link" data-target-description="pod:{{name}}">[+]</a>
-        {{#hasBaseObject}}
-        <div>
-            <span>extends: </span><a href="#" id="brackets-ui5-extends-link">{{extends}}</a>
-        </div>
-        {{/hasBaseObject}}
-        {{#isDeprecated}}
-        <div class="brackets-ui5-red"> {{strings.DEPRECATED}}</div>
-        {{/isDeprecated}}
-        <hr class="brackets-ui5-separator" />
-        <div>
-            <a href="#" id="brackets-ui5-panel-insert-link" data-ui5path="{{name}}">{{strings.INSERT_DEFINE}}</a> |
-            <a href="#" id="brackets-ui5-panel-insert-path-link" data-ui5path="{{name}}">{{strings.INSERT}}</a> |
-            <a href="#" id="brackets-ui5-panel-insert-replace-link" data-ui5path="{{name}}">{{strings.INSERT}} (/)</a>
-        </div>
-    </h5>
-    <p id="pod:{{name}}" class="brackets-ui5-api-description">{{description}}</p>
-    {{#hasMethods}}
-    <h5>{{strings.METHODS}}:</h5>
-    <ul>
-        {{#methods}}
-        <li>
-            <span class="brackets-ui5-panel-name">{{name}}</span>(<span class="brackets-ui5-element-list">{{#parameters}}<span>{{name}}</span>{{/parameters}})
-            </span>
-            <span class="brackets-ui5-return-type">{{returnValue.type}}</span>
-            <a href="#" class="brackets-ui5-expand-link" data-target-description="pod:{{name}}">[+]</a>
-            <span id="pod:{{name}}">
-                <hr class="brackets-ui5-separator brackets-ui5-hidden" />
-                <p class="brackets-ui5-api-description">{{description}}</p>
-                <hr class="brackets-ui5-separator brackets-ui5-hidden" />
-                <span class="brackets-ui5-api-description">
-                    {{#parameters}}
-                    <p>- {{name}} ({{type}}): {{description}}</p>
-                    {{/parameters}}
-                </span>
-            </span>
-        </li>
-        {{/methods}}
-    </ul>
-    {{/hasMethods}}
-    {{}}
-    {{#hasEvents}}
-    <h5>{{strings.EVENTS}}:</h5>
-    <ul>
-        {{#events}}
-        <li>
-            <span class="brackets-ui5-panel-name">{{name}}</span>(<span class="brackets-ui5-element-list">{{#parameters}}<span>{{name}}</span>{{/parameters}})</span>
-            <a href="#" class="brackets-ui5-expand-link" data-target-description="pod:{{name}}">[+]</a>
-            <p id="pod:{{name}}" class="brackets-ui5-api-description">{{description}}</p>
-        </li>
-        {{/events}}
-    </ul>
-    {{/hasEvents}}
-    {{#hasProperties}}
-    <h5>{{strings.PROPERTIES}}:</h5>
-    <ul>
-        {{#properties}}
-        <li>
-            <span class="brackets-ui5-panel-name">{{name}}</span><span class="brackets-ui5-return-type"> {{type}}</span>
-            <a href="#" class="brackets-ui5-expand-link" data-target-description="pod:{{name}}">[+]</a>
-            <p id="pod:{{name}}" class="brackets-ui5-api-description">{{description}}</p>
-        </li>
-        {{/properties}}
-    </ul>
-    {{/hasProperties}}
-    {{#hasConstructor}}
-    <h5>{{strings.CONSTRUCTOR}}:</h5>
-    <ul>
-        {{#hasConstructorParams}}
-        {{#constructorParams}}
-        <li>
-            <span class="brackets-ui5-panel-name">{{name}}</span><span class="brackets-ui5-return-type"> {{type}}</span>
-            <a href="#" class="brackets-ui5-expand-link" data-target-description="pod:{{name}}">[+]</a>
-            <p id="pod:{{name}}" class="brackets-ui5-api-description">{{description}}</p>
-        </li>
-        {{/constructorParams}}
-        {{/hasConstructorParams}}
-        {{^hasConstructorParams}}
-            <li>no parameters</li>
-        {{/hasConstructorParams}}
-    </ul>
-    {{/hasConstructor}}
+    <div class="brackets-ui5-docs-panel-object">
+        <h5>
+            <a href="#"
+                id="brackets-ui5-docs-panel-object-name"
+                class="brackets-ui5-docs-panel-name"
+                data-apiDocUrl="{{apiDocUrl}}"
+                data-name="{{name}}">
+                {{name}}
+            </a>&nbsp;
+            <a href="#"
+                class="brackets-ui5-docs-panel-expand-link"
+                data-target-description="pod:{{name}}">
+                [+]
+            </a>
+            {{#hasBaseObject}}
+                <div>
+                    <span>extends:</span>
+                    <a href="#"
+                        id="brackets-ui5-docs-panel-extends-link">
+                        {{extends}}
+                    </a>
+                </div>
+            {{/hasBaseObject}}
+            {{#isDeprecated}}
+                <div class="brackets-ui5-red"> {{strings.DEPRECATED}}</div>
+            {{/isDeprecated}}
+            <div>
+                → <a href="#"
+                    id="brackets-ui5-docs-panel-insert-define-link"
+                    data-name="{{name}}">
+                    {{strings.INSERT_DEFINE}}
+                </a>
+                → <a href="#"
+                    id="brackets-ui5-docs-panel-insert-replace-link"
+                    data-name="{{name}}">
+                    {{strings.INSERT}} (/)
+                </a>
+            </div>
+        </h5>
+        <p id="pod:{{name}}"
+            class="brackets-ui5-docs-panel-api-description">
+            {{description}}
+        </p>
+        {{> membersTemplate}}
+         {{#inheritedApi}}
+        <h4 class="brackets-ui5-docs-panel-h4">Borrowed from {{name}}</h4>
+            {{> membersTemplate}}
+        {{/inheritedApi}}
 </div>
 {{/objects}}

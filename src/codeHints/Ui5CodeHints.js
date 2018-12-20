@@ -229,11 +229,6 @@ define((require, exports, module) => {
 
             members = members.filter(filterCallback);
 
-            members = members.map((element) => {
-                element.apiDocUrl = apiObject.apiDocUrl;
-                return element;
-            });
-
             if (apiObject.inheritedApi) {
                 for (const objectKey in apiObject.inheritedApi) {
                     parent = apiObject.inheritedApi[objectKey];
@@ -257,7 +252,6 @@ define((require, exports, module) => {
                     if (parentMembers) {
                         parentMembers = parentMembers.map((element) => {
                             element.borrowedFrom = objectKey;
-                            element.apiDocUrl = ui5ApiService.getUi5ObjectApiDocUrl(objectKey);
                             return element;
                         });
 
@@ -332,16 +326,7 @@ define((require, exports, module) => {
                 entryElement.addClass("brackets-js-hints-with-type-details");
                 $("<span></span>").text(apiObject.name).appendTo(entryElement).addClass("brackets-ui5-hint-name");
 
-                const documentationLink = $("<a></a>");
-
-                if (type === strings.PROPERTY) {
-                    documentationLink.attr("href", `${apiObject.apiDocUrl}/controlProperties`);
-                }
-
-                if (type === strings.METHOD) {
-                    documentationLink.attr("href", `${apiObject.apiDocUrl}/methods/${apiObject.name}`);
-                }
-
+                const documentationLink = $("<a></a>").attr("href", apiObject.apiDocUrl);
                 documentationLink.addClass("jshint-link brackets-ui5-hint-doc-link");
                 documentationLink.appendTo(entryElement);
 

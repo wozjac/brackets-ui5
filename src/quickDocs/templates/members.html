@@ -1,0 +1,102 @@
+{{#hasMethods}}
+    <h4>{{strings.METHODS}}:</h4>
+    <ul class="brackets-ui5-qdocs-object-members">
+    {{#methods}}
+        <li>
+            {{#deprecated}}
+            <span class="brackets-ui5-qdocs-name-deprecated">{{name}}</span>
+            {{/deprecated}}
+            {{^deprecated}}
+            <strong>{{name}}</strong>
+            {{/deprecated}}(<span class="brackets-ui5-qdocs-element-list">{{#parameters}}<span>{{name}}</span>{{/parameters}})</span> <span class="brackets-ui5-qdocs-return-type">{{returnValue.type}}</span>
+            <div class="brackets-ui5-qdocs-api-description">
+                {{description}}
+                {{#parameters}}
+                <ul>
+                    <li>{{name}} ({{type}}): {{description}}
+                    {{#parameterProperties}}
+                        <ul>
+                            <li>{{name}} ({{type}}): {{description}}</li>
+                        </ul>
+                    {{/parameterProperties}}
+                    </li>
+                </ul>
+                {{/parameters}}
+            </div>
+        {{/methods}}
+        </li>
+    </ul>
+{{/hasMethods}}
+{{#hasEvents}}
+    <h4>{{strings.EVENTS}}:</h4>
+    <ul class="brackets-ui5-qdocs-object-members">
+    {{#events}}
+        <li>
+            {{#deprecated}}
+            <span class="brackets-ui5-qdocs-name-deprecated">{{name}}</span>
+            {{/deprecated}}
+            {{^deprecated}}
+            <strong>{{name}}</strong>
+             {{/deprecated}}(<span class="brackets-ui5-qdocs-element-list">{{#parameters}}<span>{{name}}</span>{{/parameters}})</span> <span class="brackets-ui5-qdocs-api-description">
+                {{description}}
+                {{#parameters}}
+                <ul>
+                    <li>{{name}} ({{type}}): {{description}}
+                    {{#parameterProperties}}
+                        <ul>
+                            <li>{{name}} ({{type}}): {{description}}</li>
+                        </ul>
+                    {{/parameterProperties}}
+                    </li>
+                </ul>
+                {{/parameters}}
+            </span>
+            {{/events}}
+        </li>
+        </ul>
+{{/hasEvents}}
+{{#hasProperties}}
+    <h4>{{strings.PROPERTIES}}:</h4>
+    <ul class="brackets-ui5-qdocs-object-members">
+        {{#properties}}
+        <li>
+            {{#deprecated}}
+            <span class="brackets-ui5-qdocs-name-deprecated">{{name}}</span>
+            {{/deprecated}}
+            {{^deprecated}}
+            <strong>{{name}}</strong>
+             {{/deprecated}}<span class="brackets-ui5-qdocs-return-type"> {{type}}</span><span class="brackets-ui5-qdocs-api-description"> | {{description}}</span>
+        </li>
+        {{/properties}}
+    </ul>
+{{/hasProperties}}
+{{#hasAggregations}}
+    <h4>{{strings.AGGREGATIONS}}:</h4>
+    <ul class="brackets-ui5-qdocs-object-members">
+        {{#aggregations}}
+        <li>
+            {{#deprecated}}
+            <span class="brackets-ui5-qdocs-name-deprecated">{{name}}</span>
+            {{/deprecated}}
+            {{^deprecated}}
+            <strong>{{name}}</strong>
+            {{/deprecated}} [{{cardinality}}] <span class="brackets-ui5-qdocs-return-type"> {{type}}</span><span class="brackets-ui5-qdocs-api-description"> | {{description}}</span>
+        </li>
+        {{/aggregations}}
+    </ul>
+{{/hasAggregations}}
+{{#hasConstructor}}
+    <h4>{{strings.CONSTRUCTOR}}:</h4>
+        {{#hasConstructorParams}}
+        <ul class="brackets-ui5-qdocs-object-members">
+        {{#constructorParams}}
+        <li>
+                <strong>{{name}}</strong><span class="brackets-ui5-qdocs-return-type"> {{type}}</span><span class="brackets-ui5-qdocs-api-description"> | {{description}}</span>
+        {{/constructorParams}}
+        </li>
+        </ul>
+        {{/hasConstructorParams}}
+        {{^hasConstructorParams}}
+            <span>no parameters</span>
+        {{/hasConstructorParams}}
+{{/hasConstructor}}

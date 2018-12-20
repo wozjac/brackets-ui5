@@ -77,15 +77,17 @@ define((require, exports) => {
             };
         }
 
+        let objectApi;
         const bufferedDesignApi = searchObjectDesignApiBuffer(ui5Object.name);
 
         if (bufferedDesignApi) {
-            return bufferedDesignApi;
+            objectApi = bufferedDesignApi;
         } else {
             const libraryApi = ui5LibrariesDesignApi[ui5Object.library];
 
-            const objectApi = libraryApi.symbols.find((element) => {
-                if (element.kind === "class") {
+            objectApi = libraryApi.symbols.find((element) => {
+                if (element.kind === "class"
+                    || element.kind === "enum") {
                     return element.name === ui5Object.name;
                 } else {
                     return element.basename === ui5Object.basename;
@@ -93,25 +95,26 @@ define((require, exports) => {
             });
 
             objectApi.apiDocUrl = ui5Object.apiDocUrl;
-
-            //method called recursively, we have previous result -> add new stuff
-            if (resultApi) {
-                if (!resultApi.inheritedApi) {
-                    resultApi.inheritedApi = {};
-                }
-
-                resultApi.inheritedApi[objectName] = objectApi;
-            } else {
-                resultApi = objectApi;
-            }
-
-            if (objectApi.extends) {
-                return getUi5ObjectDesignApi(objectApi.extends, resultApi);
-            } else {
-                addToObjectDesignApiBuffer(resultApi);
-                return resultApi;
-            }
         }
+
+        //method called recursively, we have previous result -> add new stuff
+        if (resultApi) {
+            if (!resultApi.inheritedApi) {
+                resultApi.inheritedApi = {};
+            }
+
+            resultApi.inheritedApi[objectName] = objectApi;
+        } else {
+            resultApi = objectApi;
+        }
+
+        if (objectApi.extends) {
+            return getUi5ObjectDesignApi(objectApi.extends, resultApi);
+        } else {
+            addToObjectDesignApiBuffer(resultApi);
+            return resultApi;
+        }
+        //}
     }
 
     function loadUi5Objects() {
