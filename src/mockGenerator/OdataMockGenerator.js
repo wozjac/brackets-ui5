@@ -11,6 +11,7 @@ define((require, exports, module) => {
         constructor(rootUri = prefs.get(constants.prefs.MOCK_DATA_ROOT_URI), metadataUrl) {
             if (!metadataUrl) {
                 metadataUrl = prefs.get(constants.prefs.METADATA_PATH);
+
                 if (metadataUrl.indexOf("http") === -1) {
                     const projectPath = ProjectManager.getProjectRoot().fullPath;
                     metadataUrl = `${projectPath}${metadataUrl}`;
@@ -401,6 +402,14 @@ define((require, exports, module) => {
             let sUri = this.rootUri;
             sUri = sUri && /([^?#]*)([?#].*)?/.exec(sUri)[1]; // remove URL parameters or anchors
             return sUri;
+        }
+
+        _getDateTime(sString) {
+            if (!sString) {
+                return;
+            }
+
+            return "datetime'" + new Date(Number(sString.replace("/Date(", "").replace(")/", ""))).toJSON().substring(0, 19) + "'";
         }
     }
 

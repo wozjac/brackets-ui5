@@ -1,0 +1,148 @@
+{{#hasMethods}}
+    <h5>{{strings.METHODS}}:</h5>
+    <ul>
+        {{#methods}}
+            <li>
+                <a href="#"
+                    class="brackets-ui5-docs-panel-name
+                           {{#deprecated}}
+                            brackets-ui5-docs-panel-name-deprecated
+                           {{/deprecated}}"
+                    data-apiDocUrl="{{apiDocUrl}}"
+                    data-name="{{name}}">
+                    {{name}}</a>(<span class="brackets-ui5-docs-panel-element-list">{{#parameters}}<span>{{name}}</span>{{/parameters}})
+                </span> <span class="brackets-ui5-docs-panel-return-type">{{returnValue.type}}</span>
+                <a href="#"
+                    class="brackets-ui5-docs-panel-expand-link"
+                    data-target-description="pod:{{name}}">[+]</a>
+                <span id="pod:{{name}}">
+                    <p class="brackets-ui5-docs-panel-api-description">
+                        {{description}}
+                    </p>
+                    <span class="brackets-ui5-docs-panel-api-description">
+                        {{#parameters}}
+                            <p>- <span class="brackets-ui5-docs-panel-sbold">{{name}} ({{type}})</span>: {{description}}</p>
+                            {{#parameterProperties}}
+                                <ul>
+                                    <li>{{name}} ({{type}}): {{description}}</li>
+                                </ul>
+                            {{/parameterProperties}}
+                        {{/parameters}}
+                    </span>
+                </span>
+            </li>
+        {{/methods}}
+    </ul>
+{{/hasMethods}}
+{{#hasAggregations}}
+    <h5>{{strings.AGGREGATIONS}}:</h5>
+    <ul>
+        {{#aggregations}}
+            <li>
+                <a href="#"
+                    class="brackets-ui5-docs-panel-name
+                           {{#deprecated}}
+                            brackets-ui5-docs-panel-name-deprecated
+                           {{/deprecated}}"
+                    data-apiDocUrl="{{apiDocUrl}}"
+                    data-name="{{name}}">
+                    {{name}}
+                </a> [{{cardinality}}] <span class="brackets-ui5-docs-panel-return-type"> {{type}}</span>
+                <a href="#"
+                    class="brackets-ui5-docs-panel-expand-link"
+                        data-target-description="pod:{{name}}">[+]</a>
+                <p id="pod:{{name}}"
+                     class="brackets-ui5-docs-panel-api-description">
+                    {{description}}
+                </p>
+            </li>
+        {{/aggregations}}
+    </ul>
+{{/hasAggregations}}
+{{#hasEvents}}
+    <h5>{{strings.EVENTS}}:</h5>
+    <ul>
+        {{#events}}
+            <li>
+                <a href="#"
+                    class="brackets-ui5-docs-panel-name
+                           {{#deprecated}}
+                            brackets-ui5-docs-panel-name-deprecated
+                           {{/deprecated}}"
+                    data-apiDocUrl="{{apiDocUrl}}"
+                    data-name="{{name}}">
+                    {{name}}
+                </a>(<span class="brackets-ui5-element-list">{{#parameters}}<span>{{name}}</span>{{/parameters}})</span>
+                <a href="#"
+                    class="brackets-ui5-docs-panel-expand-link"
+                    data-target-description="pod:{{name}}">[+]</a>
+                <div id="pod:{{name}}"
+                    class="brackets-ui5-docs-panel-api-description">
+                    {{description}}
+                    {{#parameters}}
+                        <ul>
+                        {{#parameterProperties}}
+                            <li>{{name}} ({{type}}): {{description}}</li>
+                        {{/parameterProperties}}
+                        </ul>
+                    {{/parameters}}
+                </div>
+            </li>
+        {{/events}}
+    </ul>
+{{/hasEvents}}
+{{#hasProperties}}
+    <h5>{{strings.PROPERTIES}}:</h5>
+    <ul>
+        {{#properties}}
+            <li>
+                <a href="#"
+                    class="brackets-ui5-docs-panel-name
+                           {{#deprecated}}
+                            brackets-ui5-docs-panel-name-deprecated
+                           {{/deprecated}}"
+                    data-apiDocUrl="{{apiDocUrl}}"
+                    data-name="{{name}}">
+                    {{name}}
+                </a><span class="brackets-ui5-docs-panel-return-type"> {{type}}</span>
+                <a href="#"
+                    class="brackets-ui5-docs-panel-expand-link"
+                    data-target-description="pod:{{name}}">[+]
+                </a>
+                <p id="pod:{{name}}"
+                    class="brackets-ui5-docs-panel-api-description">
+                    {{description}}
+                </p>
+            </li>
+        {{/properties}}
+    </ul>
+{{/hasProperties}}
+{{#hasConstructor}}
+    <h5>{{strings.CONSTRUCTOR}}:
+        <a href="#"
+            class="brackets-ui5-docs-panel-expand-link"
+            data-target-description="pod_constructor:{{name}}">[+]
+        </a>
+    </h5>
+    <p id="pod_constructor:{{name}}"
+        class="brackets-ui5-docs-panel-api-description">
+        {{constructor.description}}
+    </p>
+    <ul>
+        {{#hasConstructorParams}}
+            {{#constructorParams}}
+                <li>
+                    <span class="brackets-ui5-docs-panel-name">{{name}}</span><span class="brackets-ui5-docs-panel-return-type"> {{type}}</span>
+                    <a href="#"
+                        class="brackets-ui5-docs-panel-expand-link"
+                        data-target-description="pod:{{name}}">[+]</a>
+                    <p id="pod:{{name}}"
+                        class="brackets-ui5-docs-panel-api-description">{{description}}</p>
+                </li>
+            {{/constructorParams}}
+        {{/hasConstructorParams}}
+        {{^hasConstructorParams}}
+            <li>no parameters</li>
+        {{/hasConstructorParams}}
+    </ul>
+{{/hasConstructor}}

@@ -58,18 +58,22 @@ define((require, exports) => {
     }
 
     function insertInDefine(ui5objectPath, editor = EditorManager.getCurrentFullEditor()) {
-        const regexp = constants.regex.defineStatement;
+        let regexp = constants.regex.defineStatement,
+            text = getSourceCode(editor.document),
+            match = regexp.exec(text);
 
-        let text = getSourceCode(editor.document),
-            defineMatch = regexp.exec(text);
+        if (match === null) {
+            regexp = constants.regex.requireStatement;
+            match = regexp.exec(text);
+        }
 
-        if (defineMatch) {
-            textTool.addSubmatches(defineMatch, text, regexp);
+        if (match) {
+            textTool.addSubmatches(match, text, regexp);
 
-            const params = defineMatch[3].text.trim();
+            const params = match[3].text.trim();
 
             /* define array content */
-            const arrayClosingBracketIndex = defineMatch[2].pos;
+            const arrayClosingBracketIndex = match[2].pos;
             let string = text.substr(0, arrayClosingBracketIndex + 1),
                 lines = string.split("\n");
 
@@ -80,7 +84,7 @@ define((require, exports) => {
 
             let insertText = textTool.getQuote() + ui5objectPath.replace(/\./g, "/") + textTool.getQuote();
 
-            if (defineMatch[1].text.trim().length > 0) {
+            if (match[1].text.trim().length > 0) {
                 if (insertObjectPosition.ch === 0) {
                     editor.document.replaceRange(",", {
                         line: insertObjectPosition.line - 1,
@@ -97,9 +101,9 @@ define((require, exports) => {
 
             /* function parameter */
             text = editor.document.getText(false);
-            defineMatch = regexp.exec(text);
-            textTool.addSubmatches(defineMatch, text, regexp);
-            const functionClosingBracketIndex = defineMatch[4].pos;
+            match = regexp.exec(text);
+            textTool.addSubmatches(match, text, regexp);
+            const functionClosingBracketIndex = match[4].pos;
             string = text.substr(0, functionClosingBracketIndex + 1);
             lines = string.split("\n");
 

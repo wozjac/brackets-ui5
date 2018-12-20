@@ -4,6 +4,7 @@ define((require, exports) => {
     const Mustache = brackets.getModule("thirdparty/mustache/mustache"),
         CommandManager = brackets.getModule("command/CommandManager"),
         Resizer = brackets.getModule("utils/Resizer"),
+        NativeApp = brackets.getModule("utils/NativeApp"),
         ui5ApiFinder = require("src/core/ui5ApiFinder"),
         ui5ApiService = require("src/core/ui5ApiService"),
         ui5ApiFormatter = require("src/core/ui5ApiFormatter"),
@@ -13,7 +14,8 @@ define((require, exports) => {
         constants = require("src/core/constants"),
         docsPanelTemplate = require("text!src/docsPanel/templates/panel.html"),
         hitlistEntryTemplate = require("text!src/docsPanel/templates/hitlistEntry.html"),
-        objectApiTemplate = require("text!src/docsPanel/templates/objectApiEntry.html");
+        objectApiTemplate = require("text!src/docsPanel/templates/objectApiEntry.html"),
+        membersTemplate = require("text!src/docsPanel/templates/members.html");
 
     let docsPanel;
 
@@ -116,6 +118,8 @@ define((require, exports) => {
                     this._setMessage(strings.NOT_FOUND);
                 }
 
+                $("#brackets-ui5-docs-panel-list").scrollTop(0);
+
             }, 500);
         }
 
@@ -189,13 +193,13 @@ define((require, exports) => {
             this._elements.apiDocsElement.append(`<p style="margin-left: 5px">${strings.LOADING}</p>`);
 
             const objects = [];
-
-            const designApi = ui5ApiService.getUi5ObjectDesignApi(ui5ObjectPath);
-            objects.push(ui5ApiFormatter.getFormattedObjectApi(designApi, true));
+            objects.push(this._getDesignApi(ui5ObjectPath));
 
             const html = Mustache.render(objectApiTemplate, {
                 objects,
                 strings
+            }, {
+                membersTemplate
             });
 
             this._elements.apiDocsElement.empty();
@@ -204,42 +208,56 @@ define((require, exports) => {
             this._registerUi5ObjectLinkHandlers();
         }
 
+        _getDesignApi(ui5ObjectPath) {
+            let designApi = ui5ApiService.getUi5ObjectDesignApi(ui5ObjectPath);
+            designApi = ui5ApiFormatter.getFormattedObjectApi(designApi, true, true);
+
+            return designApi;
+        }
+
         _registerUi5ObjectLinkHandlers() {
-            this._elements.apiDocsElement.find("#brackets-ui5-panel-insert-link").on("click", (event) => {
-                codeEditor.insertInDefine($(event.target).attr("data-ui5path"));
+            const objectNameLink = this._elements.apiDocsElement.find(".brackets-ui5-docs-panel-name");
+            objectNameLink.on("click", (event) => {
+                codeEditor.insertAtPosition($(event.target).attr("data-name"));
             });
 
-            this._elements.apiDocsElement.find("#brackets-ui5-panel-insert-path-link").on("click", (event) => {
-                codeEditor.insertAtPosition($(event.target).attr("data-ui5path"));
+            objectNameLink.on("contextmenu", (event) => {
+                NativeApp.openURLInDefaultBrowser($(event.target).attr("data-apiDocUrl"));
             });
 
-            this._elements.apiDocsElement.find("#brackets-ui5-panel-insert-replace-link").on("click", (event) => {
-                codeEditor.insertWithSlash($(event.target).attr("data-ui5path"));
+            this._elements.apiDocsElement.find("#brackets-ui5-docs-panel-insert-define-link").on("click", (event) => {
+                codeEditor.insertInDefine($(event.target).attr("data-name"));
             });
 
-            this._elements.apiDocsElement.on("click", ".brackets-ui5-expand-link", (event) => {
+            this._elements.apiDocsElement.find("#brackets-ui5-docs-panel-insert-replace-link").on("click", (event) => {
+                codeEditor.insertWithSlash($(event.target).attr("data-name"));
+            });
+
+            this._elements.apiDocsElement.on("click", ".brackets-ui5-docs-panel-expand-link", (event) => {
                 this._handleExpandCollapse($(event.target));
             });
 
-            const extendsLinkElement = this._elements.apiDocsElement.find("#brackets-ui5-extends-link");
+            const extendsLinkElement = this._elements.apiDocsElement.find("#brackets-ui5-docs-panel-extends-link");
 
             if (extendsLinkElement) {
                 extendsLinkElement.on("click", () => {
-                    this._displayObjectApi($(event.target).text());
+                    this._displayObjectApi($(event.target).text().trim());
                 });
             }
         }
 
         _unregisterUi5ObjectLinkHandlers() {
-            this._elements.apiDocsElement.off("click", ".brackets-ui5-expand-link");
-            this._elements.apiDocsElement.off("click", "#brackets-ui5-panel-insert-link");
+            this._elements.apiDocsElement.off("click", ".brackets-ui5-docs-panel-name");
+            this._elements.apiDocsElement.off("click", ".brackets-ui5-docs-panel-expand-link");
+            this._elements.apiDocsElement.off("click", "#brackets-ui5-docs-panel-extends-link");
+            this._elements.apiDocsElement.off("click", "#brackets-ui5-docs-panel-insert-define-link");
             this._elements.apiDocsElement.off("click", "#brackets-ui5-panel-insert-path-link");
-            this._elements.apiDocsElement.off("click", "#brackets-ui5-panel-insert-replace-link");
+            this._elements.apiDocsElement.off("click", "#brackets-ui5-docs-panel-insert-replace-link");
         }
 
         _handleExpandCollapse(linkElement) {
             const targetElementId = linkElement.attr("data-target-description");
-            const sign = linkElement.text();
+            const sign = linkElement.text().trim();
             const descriptionElement = $(document.getElementById(targetElementId));
 
             if (sign === "[+]") {

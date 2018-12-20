@@ -289,6 +289,35 @@ define((require, exports) => {
                 utils.destroyMockEditor(mockEditor.doc);
             });
 
+            it("Should insert the UI5 object into existing require statement", () => {
+                const code = `sap.ui.require([
+                "sap/m/Label"],
+                function(
+                    Label,
+                    Text
+                ) {
+                "use strict";
+
+                init: function() { }
+                })`;
+
+                const codeExpected = `sap.ui.require([
+                "sap/m/Label","sap/m/Button"],
+                function(
+                    Label,
+                    Text
+                ,Button) {
+                "use strict";
+
+                init: function() { }
+                })`;
+
+                const mockEditor = utils.createMockEditor(code, "javascript");
+                codeEditor.insertInDefine("sap.m.Button", mockEditor.editor);
+                expect(mockEditor.doc.getText()).toBe(codeExpected);
+                utils.destroyMockEditor(mockEditor.doc);
+            });
+
             it("Should exit without any error and changes if could not insert UI5 object #1", () => {
                 const code = "sap.ui.define([, function() { } })";
                 const codeExpected = "sap.ui.define([, function() { } })";

@@ -8,7 +8,7 @@ define((require, exports) => {
     exports.getTests = function () {
         let testEditor;
 
-        function expectQuickDocsWidgetForTree(position) {
+        function expectQuickDocsWidgetForEventProvider(position) {
             const providerPromise = ui5QuickDocsProvider.getInlineProvider(testEditor.editor, position);
             expect(providerPromise).not.toBeNull();
 
@@ -31,10 +31,10 @@ define((require, exports) => {
                 expect(memberHeaders.eq(0).text()).toBe("Methods:");
                 expect(memberHeaders.eq(1).text()).toBe("Constructor:");
 
-                const members = widget.$htmlContent.find(".brackets-ui5-object-members");
-                expect(members.length).toBe(4);
-                expect(members.eq(0).find("li").length).toBe(7);
-                expect(members.eq(1).find("li").length).toBe(0);
+                const members = widget.$htmlContent.find(".brackets-ui5-qdocs-object-members");
+                expect(members.length).toBe(2);
+                expect(members.eq(0).find("li").length).toBe(7); //methods
+                expect(members.eq(1).find("li").length).toBe(5); //inherited methods
             });
         }
 
@@ -80,7 +80,7 @@ define((require, exports) => {
                 };
 
                 testEditor.editor.setCursorPos(position);
-                expectQuickDocsWidgetForTree(position);
+                expectQuickDocsWidgetForEventProvider(position);
             });
 
             it("Should return quick docs for an ui5 object variable in the construction statement", () => {
@@ -90,7 +90,7 @@ define((require, exports) => {
                 };
 
                 testEditor.editor.setCursorPos(position);
-                expectQuickDocsWidgetForTree(position);
+                expectQuickDocsWidgetForEventProvider(position);
             });
 
             it("Should return quick docs for a variable in the construction statement", () => {
@@ -100,7 +100,7 @@ define((require, exports) => {
                 };
 
                 testEditor.editor.setCursorPos(position);
-                expectQuickDocsWidgetForTree(position);
+                expectQuickDocsWidgetForEventProvider(position);
             });
 
             it("Should return quick docs for a variable #1", () => {
@@ -110,7 +110,7 @@ define((require, exports) => {
                 };
 
                 testEditor.editor.setCursorPos(position);
-                expectQuickDocsWidgetForTree(position);
+                expectQuickDocsWidgetForEventProvider(position);
             });
 
             it("Should return quick docs for a variable #2", () => {
@@ -120,7 +120,7 @@ define((require, exports) => {
                 };
 
                 testEditor.editor.setCursorPos(position);
-                expectQuickDocsWidgetForTree(position);
+                expectQuickDocsWidgetForEventProvider(position);
             });
 
             it("Should return quick docs for a variable #3", () => {
@@ -130,7 +130,7 @@ define((require, exports) => {
                 };
 
                 testEditor.editor.setCursorPos(position);
-                expectQuickDocsWidgetForTree(position);
+                expectQuickDocsWidgetForEventProvider(position);
             });
         });
     };
