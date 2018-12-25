@@ -99,7 +99,7 @@ Object.extend("", {
 ### oData mock data generator
 The oData mock data generator is based on the [MockServer](https://openui5.hana.ondemand.com/#/api/sap.ui.core.util.MockServer/methods/sap.ui.core.util.MockServer.config) and can be used for generation of JSON files with random data based on the oData service definition. By default, the generator will look for a service metadata XML file in the project's root path *localService/metadata.xml* and create mock data files in the *localService/mockData* folder. The path can be changed with the preference *"bracketsUi5.metadataPath": "my/path/service.xml"*. It can also be a URL to metadata, for example, https://services.odata.org/V3/OData/OData.svc/$metadata. The path for mock data files is set via *"bracketsUi5.mockDataDir": "myDir"* 
 
-For the [Northwind test service](http://services.odata.org/V3/OData/OData.svc/$metadata):
+For the [Northwind test service](https://services.odata.org/V3/OData/OData.svc/$metadata):
 
 ![mock files](https://www.mediafire.com/convkey/651a/j2hw3d6tcyhf25v6g.jpg)
 
