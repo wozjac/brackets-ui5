@@ -33,8 +33,6 @@ define((require, exports) => {
 
                 const members = widget.$htmlContent.find(".brackets-ui5-qdocs-object-members");
                 expect(members.length).toBe(2);
-                expect(members.eq(0).find("li").length).toBe(7); //methods
-                expect(members.eq(1).find("li").length).toBe(5); //inherited methods
             });
         }
 

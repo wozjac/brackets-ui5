@@ -58,13 +58,13 @@ define((require, exports) => {
 
                 const hintsObject = provider.getHints();
                 expect(hintsObject).toBeTruthy();
-                expect(hintsObject.hints.length).toBe(9);
+                expect(hintsObject.hints.length).toBe(11);
             });
 
             it("Should have filtered hints after a partial member string", () => {
                 testEditor.editor.setCursorPos({
                     line: 14,
-                    ch: 19
+                    ch: 20
                 });
 
                 const provider = ui5HintsProvider.getUi5CodeHintsProvider();
@@ -73,13 +73,13 @@ define((require, exports) => {
                 const hintsObject = provider.getHints();
                 expect(hintsObject).toBeTruthy();
                 expect(hintsObject.hints.length).toBe(1);
-                expectHintsEntries(hintsObject.hints, ["extend"]);
+                expectHintsEntries(hintsObject.hints, ["destroy"]);
             });
 
             it("Should hint for created as a member", () => {
                 testEditor.editor.setCursorPos({
                     line: 20,
-                    ch: 25
+                    ch: 26
                 });
 
                 const provider = ui5HintsProvider.getUi5CodeHintsProvider();
@@ -88,7 +88,7 @@ define((require, exports) => {
                 const hintsObject = provider.getHints();
                 expect(hintsObject).toBeTruthy();
                 expect(hintsObject.hints.length).toBe(1);
-                expectHintsEntries(hintsObject.hints, ["extend"]);
+                expectHintsEntries(hintsObject.hints, ["destroy"]);
             });
 
             describe("Should have valid hints for objects in a serie", () => {
@@ -113,7 +113,7 @@ define((require, exports) => {
 
                     hintsObject = provider.getHints();
                     expect(hintsObject).toBeTruthy();
-                    expect(hintsObject.hints.length).toBe(9);
+                    expect(hintsObject.hints.length).toBe(11);
                     expect(provider._resolveWithApiObjectSearch).toHaveBeenCalled();
                 });
 
@@ -147,7 +147,7 @@ define((require, exports) => {
 
                     hintsObject = provider.getHints();
                     expect(hintsObject).toBeTruthy();
-                    expect(hintsObject.hints.length).toBe(9);
+                    expect(hintsObject.hints.length).toBe(11);
                     expect(provider._resolveWithApiObjectSearch).toHaveBeenCalled();
                 });
 
@@ -217,7 +217,7 @@ define((require, exports) => {
                     hintsObject = provider.getHints();
                     expect(hintsObject).toBeTruthy();
                     expect(hintsObject.hints.length).toBe(1);
-                    expectHintsEntries(hintsObject.hints, ["extend"]);
+                    expectHintsEntries(hintsObject.hints, ["destroy"]);
                     expect(provider._resolveWithApiObjectSearch).toHaveBeenCalled();
                 });
 
@@ -267,7 +267,7 @@ define((require, exports) => {
 
                     hintsObject = provider.getHints();
                     expect(hintsObject).toBeTruthy();
-                    expect(hintsObject.hints.length).toBe(9);
+                    expect(hintsObject.hints.length).toBe(11);
                     expect(provider._resolveWithApiObjectSearch).toHaveBeenCalled();
                 });
             });
@@ -283,16 +283,16 @@ define((require, exports) => {
 
                 const hintsObject = provider.getHints();
                 expect(hintsObject).toBeTruthy();
-                expect(hintsObject.hints.length).toBe(9);
-                const selectedHint = selectHint("extend", hintsObject.hints);
+                expect(hintsObject.hints.length).toBe(11);
+                const selectedHint = selectHint("destroy", hintsObject.hints);
                 provider.insertHint(selectedHint);
-                expect(testEditor.doc.getLine(13).trim()).toBe("tree.extend(sClassName,oClassInfo,FNMetaImpl)");
+                expect(testEditor.doc.getLine(13).trim()).toBe("tree.destroy()");
             });
 
             it("Should insert the hint after a partial name of a method", () => {
                 testEditor.editor.setCursorPos({
                     line: 14,
-                    ch: 19
+                    ch: 20
                 });
 
                 const provider = ui5HintsProvider.getUi5CodeHintsProvider();
@@ -301,15 +301,15 @@ define((require, exports) => {
                 const hintsObject = provider.getHints();
                 expect(hintsObject).toBeTruthy();
                 expect(hintsObject.hints.length).toBe(1);
-                const selectedHint = selectHint("extend", hintsObject.hints);
+                const selectedHint = selectHint("destroy", hintsObject.hints);
                 provider.insertHint(selectedHint);
-                expect(testEditor.doc.getLine(14).trim()).toBe("tree.extend(sClassName,oClassInfo,FNMetaImpl)");
+                expect(testEditor.doc.getLine(14).trim()).toBe("tree.destroy()");
             });
 
             it("Should insert the hint after a dot without parameters", () => {
                 testEditor.editor.setCursorPos({
                     line: 17,
-                    ch: 19
+                    ch: 20
                 });
 
                 const provider = ui5HintsProvider.getUi5CodeHintsProvider();
@@ -318,9 +318,9 @@ define((require, exports) => {
                 const hintsObject = provider.getHints();
                 expect(hintsObject).toBeTruthy();
                 expect(hintsObject.hints.length).toBe(1);
-                const selectedHint = selectHint("extend", hintsObject.hints);
+                const selectedHint = selectHint("destroy", hintsObject.hints);
                 provider.insertHint(selectedHint);
-                expect(testEditor.doc.getLine(17).trim()).toBe("tree.extend(param1)");
+                expect(testEditor.doc.getLine(17).trim()).toBe("tree.destroy(param1)");
             });
         });
     };

@@ -12,13 +12,13 @@ sap.ui.define([
             const item = new SapObject();
             tree
             tree.
-            tree.ex
+            tree.des
             item.
             item.g
-            tree.ex(param1)
+            tree.des(param1)
 
             this.param = new EventProvider();
-            this.param.ex
+            this.param.des
         }
     });
 });
