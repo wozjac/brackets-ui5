@@ -20,7 +20,6 @@ define((require, exports, module) => {
 
         _extractComplexTypes() {
             const result = {};
-            let attributes = [];
             let complexTypes = this._jsonSchema["xsd:schema"]["xsd:complexType"];
 
             if (!complexTypes) {
@@ -34,17 +33,36 @@ define((require, exports, module) => {
             }
 
             for (const complex of complexTypes) {
+                let attributes = [];
+
                 let content = complex["xsd:complexContent"];
 
                 if (!content) {
                     content = complex["xsd:simpleContent"];
                 }
 
-                if (!content) {
-                    continue;
+                if (content) {
+                    attributes = content["xsd:extension"]["xsd:attribute"];
                 }
 
-                attributes = content["xsd:extension"]["xsd:attribute"];
+                //some object attributes might be provided as string
+                const directAttributes = complex["xsd:attribute"];
+
+                if (directAttributes !== undefined) {
+                    attributes.push(directAttributes);
+                }
+
+                const sequences = complex["xsd:sequence"];
+
+                if (sequences !== undefined && sequences["xsd:element"]) {
+                    const stringSequences = sequences["xsd:element"];
+
+                    for (const object of stringSequences) {
+                        if (JSON.stringify(object).indexOf("n0:Fragment") > -1) {
+                            attributes.push(object);
+                        }
+                    }
+                }
 
                 if (attributes) {
                     if (attributes instanceof Array) {
