@@ -1,5 +1,9 @@
 # brackets-ui5 changelog
 
+## 1.1.1-beta
+##### Bugfixes
+- fix preparing XML attributes (added missing ones like id, tooltip)
+
 ## 1.1.0-beta
 ##### Changes:
 - add support for inherited properties in the API panel, code hints and Quick Docs
