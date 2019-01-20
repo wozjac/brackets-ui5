@@ -3,7 +3,9 @@
 ## Info
 An extension for [Brackets](http://brackets.io) editor providing helpers (quick docs, code hints, API reference and more) for SAP© UI5 library [OpenUI5](openui5.hana.ondemand.com)/[SAPUI5](https://sapui5.hana.ondemand.com).
 
-Works with UI5 versions >= 1.52 (all versions with online documentation available, please check here: [https://ui5.sap.com/versionoverview.html](https://ui5.sap.com/versionoverview.html) ). 
+Works with UI5 versions >= 1.52 with online documentation available, please check here: [https://openui5.hana.ondemand.com/versionoverview.html](https://openui5.hana.ondemand.com/versionoverview.html), 
+scroll down to the section "Available OpenUI5 Versions". For SAP UI5 please use [https://sapui5.hana.ondemand.com/versionoverview.html](https://sapui5.hana.ondemand.com/versionoverview.html).  
+
 As the majority of the older versions is out of maintenance, I do not plan to add support for them.
 
 **Please notice (if you are new to UI5)! [OpenUI5](https://openui5.org) is open source, but SAPUI5 - although SAP shares publicly SAPUI5 library runtime & SDK etc. - is not free. Please check the company [site](https://sap.com) for more details.**
@@ -11,7 +13,7 @@ As the majority of the older versions is out of maintenance, I do not plan to ad
 ## Features summary
 - UI5 API reference panel
 - tag & attribute hints in XML views
-- code hints for UI5 objects (partially supported)
+- code hints for UI5 objects (basic support)
 - configurable code snippets
 - mock data generation for oData services
 - quick docs for UI5 API
@@ -43,6 +45,8 @@ Switching to SAPUI5:
     "bracketsUi5.apiUrl": "https://sapui5.hana.ondemand.com"
 }
 ```
+**NOTE**: for SAPUI5 sometimes schema files are not available online using the URL without version, so it's better to use
+the URL with version provided. 
 
 If something is not working please check the console (F12). Extension's messages are prefixed with [wozjac.ui5].
 
@@ -125,7 +129,8 @@ Code hints in JS files are displaying properties & methods of a UI5 object.
 ![code hints](https://www.mediafire.com/convkey/e633/ums5nbag40af4il6g.jpg)
 
 ### UI5 object resolving
-UI5 object recognition is currently based on regular expressions, so the basic cases presented below (determined in that order) should work and recognize the UI5 object in the code - but I can not guarantee that for all formatting cases it will work. I'm planning to use Brackets built-in Tern/Acorn modules for this task.
+UI5 object recognition is currently based on regular expressions, so the basic cases are handled (and expect strange
+behaviour sometimes ;). This feature is currently being developed using more appriopriate tools for such task. 
 
 The recognition works for variables and will try to find the associated UI5 object type from:
 1. A special comment *//ui5: object*. It will search the current line or the variable declaration. Because in the current version the extension does not recognize types returned by functions, this comment can be useful if some variable - returned by a function - is used heavily in the code. For example:
