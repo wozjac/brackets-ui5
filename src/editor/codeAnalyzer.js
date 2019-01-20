@@ -47,10 +47,15 @@ define((require, exports) => {
     }
 
     function getDefineStatementObjects(sourceCode = codeEditor.getSourceCode()) {
-        const regex = constants.regex.defineStatement;
         /* Remove (rather simple) comments... */
         sourceCode = sourceCode.replace(constants.regex.comments, "");
-        const defineMatch = regex.exec(sourceCode);
+        let regex = constants.regex.defineStatement;
+        let defineMatch = regex.exec(sourceCode);
+
+        if (defineMatch === null) {
+            regex = constants.regex.defineES6Statement;
+            defineMatch = regex.exec(sourceCode);
+        }
 
         if (defineMatch) {
             const functionMatch = defineMatch[0].match(constants.regex.singleFunctionStatement)[1];

@@ -63,7 +63,17 @@ define((require, exports) => {
             match = regexp.exec(text);
 
         if (match === null) {
+            regexp = constants.regex.defineES6Statement;
+            match = regexp.exec(text);
+        }
+
+        if (match === null) {
             regexp = constants.regex.requireStatement;
+            match = regexp.exec(text);
+        }
+
+        if (match === null) {
+            regexp = constants.regex.requireES6Statement;
             match = regexp.exec(text);
         }
 
