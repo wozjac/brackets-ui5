@@ -12,7 +12,7 @@ define({
     "API_LOADED_INFO": `${prefix} UI5 API index loaded successfully from`,
     "LIBRARY_LOADED_INFO": `${prefix} Library loaded `,
     "URL_GET_ERROR": `${prefix} Could not reach`,
-    "URL_XML_GET_ERROR": `${prefix} Could not fetch XML schema`,
+    "URL_XML_GET_ERROR": `${prefix} Could not fetch XML schema (not always error - some libs don't have .xsd)`,
     "XML_SCHEMA_READY": `${prefix} XML schema prepared:`,
     "UI5_OBJECTS_LOAD_ERROR": `${prefix} UI5 API documentation could not be loaded (probabaly connection error has occured). Please reload Brackets.`,
     "METADATA_ERROR": `${prefix} Invalid metadata XML! Reason:`,

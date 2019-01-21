@@ -6,39 +6,10 @@ define((require, exports) => {
         strings = require("strings"),
         constants = require("src/core/constants");
 
-    const openUi5Namespaces = [
-        "sap.f",
-        "sap.m",
-        "sap.tnt",
-        "sap.ui.commons",
-        "sap.ui.core",
-        "sap.ui.fl",
-        "sap.ui.layout",
-        "sap.ui.suite",
-        "sap.ui.table",
-        "sap.ui.unified",
-        "sap.ui.ux3",
-        "sap.uxap"
-    ];
+    const libNamespaces = [],
+        xsdNotFound = [],
+        loadedNamespaces = {};
 
-    let sapUi5Namespaces = [
-        "sap.ca.ui",
-        "sap.landvisz",
-        "sap.makit",
-        "sap.me",
-        "sap.suite.ui.microchart",
-        "sap.ui.comp",
-        "sap.ui.richtexteditor",
-        "sap.ui.suite",
-        "sap.uiext.inbox",
-        "sap.viz",
-        "sap.zen.crosstab",
-        "sap.zen.dsh"
-    ];
-
-    sapUi5Namespaces = sapUi5Namespaces.concat(openUi5Namespaces);
-
-    const loadedNamespaces = {};
     let subNamespacedObjects = {};
 
     function fetchSchema(namespace) {
@@ -47,7 +18,7 @@ define((require, exports) => {
     }
 
     function prepareSchema(namespace) {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             fetchSchema(namespace).done((schemaXml) => {
                 const ui5XmlProcessor = new Ui5XmlProcessor(schemaXml);
                 const objects = ui5XmlProcessor.getObjects();
@@ -55,9 +26,11 @@ define((require, exports) => {
                 subNamespacedObjects = Object.assign(ui5XmlProcessor.getSubNamespacedObjects(), subNamespacedObjects);
                 console.log(`${strings.XML_SCHEMA_READY} ${namespace}`);
                 resolve();
-            }).fail((error) => {
-                console.log(`${strings.URL_XML_GET_ERROR}: ${error}`);
-                reject(error);
+            }).fail(() => {
+                //console.log(`${strings.URL_XML_GET_ERROR}: ${error}`);
+                //reject(error);
+                xsdNotFound.push(namespace);
+                resolve();
             });
         });
     }
@@ -130,24 +103,35 @@ define((require, exports) => {
         }
     }
 
+    function fetchLibraries() {
+        const url = `${preferences.get(constants.prefs.API_URL)}/discovery/all_libs`;
+        return $.ajax(url);
+    }
+
     function initSchemas() {
-        let schemas;
-
-        if (preferences.get(constants.prefs.API_URL).toLowerCase().indexOf("sapui5") !== -1) {
-            schemas = sapUi5Namespaces;
-        } else {
-            schemas = openUi5Namespaces;
-        }
-
         const promises = [];
 
-        for (const schema of schemas) {
-            promises.push(prepareSchema(schema));
-        }
+        fetchLibraries().done((librariesJson) => {
+            if (typeof librariesJson === "string") {
+                librariesJson = JSON.parse(librariesJson);
+            }
 
-        Promise.all(promises).then(() => {
-            fillInheritedAttributes();
-            adjustNamespaces();
+            librariesJson.all_libs.forEach((lib) => {
+                libNamespaces.push(lib.entry.replace(/\//g, "."));
+            });
+
+            for (const schema of libNamespaces) {
+                promises.push(prepareSchema(schema));
+            }
+
+            Promise.all(promises).then(() => {
+                fillInheritedAttributes();
+                adjustNamespaces();
+
+                if (xsdNotFound.length > 0) {
+                    console.log(`${strings.URL_XML_GET_ERROR}: ${xsdNotFound}`);
+                }
+            });
         });
     }
 
