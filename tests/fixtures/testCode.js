@@ -19,6 +19,26 @@ sap.ui.define([
 
             this.param = new EventProvider();
             this.param.des
+        },
+
+        doSomething: function () {
+            var item = getProvider(); //ui5: sap.m.Button
+
+            item.
+        },
+
+        other: function (item) {
+            var item = new EventProvider();
+
+            item.
+        },
+
+        extra: function () {
+            sap.ui.
+        },
+
+        another: function () {
+            var item = new Object();
         }
     });
 });

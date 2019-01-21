@@ -322,6 +322,16 @@ define((require, exports) => {
                 provider.insertHint(selectedHint);
                 expect(testEditor.doc.getLine(17).trim()).toBe("tree.destroy(param1)");
             });
+
+            it("Should return no hints for item in the second function", () => {
+                testEditor.editor.setCursorPos({
+                    line: 25,
+                    ch: 17
+                });
+
+                const provider = ui5HintsProvider.getUi5CodeHintsProvider();
+                expect(provider.hasHints(testEditor.editor, null)).toBe(false);
+            });
         });
     };
 });

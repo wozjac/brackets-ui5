@@ -1,7 +1,8 @@
 define((require, exports) => {
     "use strict";
 
-    const ui5ApiFinder = require("src/core/ui5ApiFinder"),
+    const DocumentManager = brackets.getModule("document/DocumentManager"),
+        ui5ApiFinder = require("src/core/ui5ApiFinder"),
         codeEditor = require("src/editor/codeEditor"),
         constants = require("src/core/constants"),
         textTool = require("src/editor/textTool");
@@ -10,6 +11,62 @@ define((require, exports) => {
         if (arrayString) {
             arrayString = arrayString.replace(/['"\s]*/g, "");
             return arrayString.split(",");
+        } else {
+            return null;
+        }
+    }
+
+    function getVariableScope(token, position, document = DocumentManager.getCurrentDocument()) {
+        let regex = constants.regex.functionStatement,
+            functionsMatches = [],
+            match;
+        const standardFunctionsMatches = [],
+            es6FunctionsMatches = [],
+            sourceCode = codeEditor.getSourceCode(document);
+
+        do {
+            match = regex.exec(sourceCode);
+            if (match) {
+                standardFunctionsMatches.push(match);
+            }
+
+        } while (match !== null);
+
+        if (standardFunctionsMatches.length > 0) {
+            textTool.addSubmatches(standardFunctionsMatches, sourceCode, regex);
+            functionsMatches = functionsMatches.concat(standardFunctionsMatches);
+        }
+
+        regex = constants.regex.functionES6Statement;
+        match = null;
+
+        do {
+            match = regex.exec(sourceCode);
+            if (match) {
+                es6FunctionsMatches.push(match);
+            }
+        } while (match !== null);
+
+        if (es6FunctionsMatches.length > 0) {
+            textTool.addSubmatches(es6FunctionsMatches, sourceCode, regex);
+            functionsMatches = functionsMatches.concat(es6FunctionsMatches);
+        }
+
+        if (functionsMatches.length > 0) {
+            const tokenIndex = textTool.getIndexFromPosition(sourceCode, position);
+            const closest = getClosestMatch(tokenIndex, functionsMatches);
+
+            const startPosition = {
+                line: textTool.lineNumberByIndex(closest.pos, sourceCode),
+                ch: 0
+            };
+
+            const endPosition = {
+                line: position.line + 1,
+                ch: 0
+            };
+
+            return codeEditor.getSourceCode(document, startPosition, endPosition);
         } else {
             return null;
         }
@@ -77,14 +134,15 @@ define((require, exports) => {
         }
     }
 
-    function getObjectFromComment(token, position, sourceCode = codeEditor.getSourceCode()) {
-        const tokenDeclarationRegex = new RegExp(`(var|let|const)\\s+(${token})`, "g");
-        const commentObjectPattern = constants.regex.ui5ObjectInCommentPattern;
-        const tokenIndex = textTool.getIndexFromPosition(sourceCode, position);
+    function getObjectFromComment(token, position, document, variableCodeScope) {
+        const tokenDeclarationRegex = new RegExp(`(var|let|const)\\s+(${token})`, "g"),
+            commentObjectPattern = constants.regex.ui5ObjectInCommentPattern,
+            fullSourceCode = codeEditor.getSourceCode(document);
+
         let ui5Path, ui5Object;
 
         //check the current line
-        const lines = sourceCode.split("\n");
+        const lines = fullSourceCode.split("\n");
         let line = lines[position.line];
         let commentMatch = line.match(commentObjectPattern);
 
@@ -92,28 +150,11 @@ define((require, exports) => {
             ui5Path = commentMatch[1];
         } else {
             //check the token declaration - for variables
-            //const declarationMatch = sourceCode.match(tokenDeclarationRegex);
-            const declarationMatches = [];
-            let match;
-            do {
-                match = tokenDeclarationRegex.exec(sourceCode);
-                if (match) {
-                    declarationMatches.push(match);
-                }
-            } while (match);
+            const declarationMatch = tokenDeclarationRegex.exec(variableCodeScope);
 
-            if (declarationMatches.length > 0) {
-                textTool.addSubmatches(declarationMatches, sourceCode, tokenDeclarationRegex);
-
-                let closestMatch;
-                if (declarationMatches.length > 1) {
-                    closestMatch = getClosestMatch(tokenIndex, declarationMatches);
-                } else if (declarationMatches.length === 1) {
-                    closestMatch = declarationMatches[0][2];
-                }
-
-                const lineNumber = textTool.lineNumberByIndex(closestMatch.pos, sourceCode);
-                line = lines[lineNumber];
+            if (declarationMatch) {
+                const lineNumber = textTool.lineNumberByIndex(declarationMatch.index, variableCodeScope);
+                line = variableCodeScope.split("\n")[lineNumber];
                 commentMatch = line.match(commentObjectPattern);
 
                 if (commentMatch) {
@@ -129,10 +170,17 @@ define((require, exports) => {
         return ui5Object;
     }
 
-    function isFullPath(token) {
+    function isFullUi5Path(token) {
         //if we have dots or / we can assume it's full object name
-        if (token.indexOf(".") !== -1 || token.indexOf("/") !== -1) {
-            return true;
+        const hasSlashes = token.indexOf("/") !== -1;
+        if (token.indexOf(".") !== -1 || hasSlashes) {
+            if (hasSlashes) {
+                token = token.replace(/\//g, ".");
+            }
+
+            if (ui5ApiFinder.findUi5ObjectByName(token)) {
+                return true;
+            }
         }
 
         return false;
@@ -153,51 +201,28 @@ define((require, exports) => {
         return ui5Object;
     }
 
-    function getObjectByConstructor(token, position, sourceCode = codeEditor.getSourceCode()) {
+    function getObjectByConstructor(token, position, document, variableCodeScope) {
         const constructorPattern = `${token}[\\s]*=\\s*new\\s*([0-9a-zA-Z_$\\.]*)`,
             constructorRegex = new RegExp(constructorPattern, "g"),
-            matches = [];
-
-        let match;
-        do {
-            match = constructorRegex.exec(sourceCode);
-            if (match) {
-                matches.push(match);
-            }
-        } while (match);
+            fullSourceCode = codeEditor.getSourceCode(document);
 
         let ui5Objects = [];
 
-        if (matches.length > 0) {
-            const tokenIndex = textTool.getIndexFromPosition(sourceCode, position);
+        const match = constructorRegex.exec(variableCodeScope);
 
-            //get the closest match
-            let foundMatch,
-                currentDiff = 100000;
+        if (match) {
+            const constructorToken = match[1];
+            if (isFullUi5Path(constructorToken)) {
+                ui5Objects.push(ui5ApiFinder.findUi5ObjectByName(constructorToken));
+            } else {
+                //try to find the full path in define
+                const defineObject = getObjectFromDefineStatement(constructorToken, fullSourceCode);
 
-            for (match of matches) {
-                const diff = Math.abs(tokenIndex - match.index);
-
-                if ((diff < currentDiff)) {
-                    currentDiff = diff;
-                    foundMatch = match;
-                }
-            }
-
-            if (foundMatch) {
-                const constructorToken = foundMatch[1];
-                if (isFullPath(constructorToken)) {
-                    ui5Objects.push(ui5ApiFinder.findUi5ObjectByName(constructorToken));
+                if (defineObject) {
+                    ui5Objects.push(defineObject);
                 } else {
-                    //try to find the full path in define
-                    const defineObject = getObjectFromDefineStatement(constructorToken, sourceCode);
-
-                    if (defineObject) {
-                        ui5Objects.push(defineObject);
-                    } else {
-                        //otherwise try to find using only the name
-                        ui5Objects = ui5Objects.concat(ui5ApiFinder.findUi5ObjectByBasename(constructorToken));
-                    }
+                    //otherwise try to find using only the name
+                    ui5Objects = ui5Objects.concat(ui5ApiFinder.findUi5ObjectByBasename(constructorToken));
                 }
             }
         }
@@ -205,32 +230,20 @@ define((require, exports) => {
         return ui5Objects;
     }
 
-    function resolveUi5Token(token, position, sourceCode = codeEditor.getSourceCode(), returnOneObject = false) {
-        let ui5Objects = [],
-            ui5Object;
+    function resolveUi5Token(token, position, document = DocumentManager.getCurrentDocument(), returnOneObject = false) {
+        let ui5Objects = [];
+
+        const variableScopeCode = getVariableScope(token, position, document);
 
         //find the ui5 object declaration in the comment
-        ui5Object = getObjectFromComment(token, position, sourceCode);
-
-        if (!ui5Object) {
-            if (isFullPath(token)) {
-                ui5Object = token;
-            }
-        }
-
-        if (!ui5Object) {
-            //try to resolve variable type from "new ..." statement, may return multiple objects
-            ui5Objects = getObjectByConstructor(token, position, sourceCode);
-        }
-
-        //find the token in the define statement
-        if (!ui5Object && ui5Objects.length === 0) {
-            ui5Object = getObjectFromDefineStatement(token, sourceCode);
-        }
+        const ui5Object = getObjectFromComment(token, position, document, variableScopeCode);
 
         if (ui5Object) {
             ui5Objects.push(ui5Object);
+            return ui5Objects;
         }
+
+        ui5Objects = getObjectByConstructor(token, position, document, variableScopeCode);
 
         //get only 1 object if we have multiple - this is the case for an identifier,
         //(for example "Label") which could not been besolved to the full path, for example sap.m.Label */
@@ -275,8 +288,9 @@ define((require, exports) => {
     exports.getObjectFromComment = getObjectFromComment;
     exports.getObjectByConstructor = getObjectByConstructor;
     exports.getObjectFromDefineStatement = getObjectFromDefineStatement;
+    exports.getVariableScope = getVariableScope;
     exports.extractDefineObjects = extractDefineObjects;
     exports.resolveUi5Token = resolveUi5Token;
-    exports.isFullPath = isFullPath;
+    exports.isFullUi5Path = isFullUi5Path;
     exports.extractXmlNamespaces = extractXmlNamespaces;
 });

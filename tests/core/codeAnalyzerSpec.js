@@ -1,10 +1,12 @@
 define((require, exports) => {
     "use strict";
 
-    const codeAnalyzer = require("src/editor/codeAnalyzer"),
+    const DocumentManager = brackets.getModule("document/DocumentManager"),
+        codeAnalyzer = require("src/editor/codeAnalyzer"),
         ui5ApiFinder = require("src/core/ui5ApiFinder"),
         textTool = require("src/editor/textTool"),
-        testUtils = require("tests/testUtils");
+        testUtils = require("tests/testUtils"),
+        editorUtils = require("tests/editorUtils");
 
     exports.getTests = function () {
         const ui5CoreLabelObject = {
@@ -32,7 +34,7 @@ define((require, exports) => {
                     switch (path) {
                         case "sap.ui.core.Label":
                             return ui5CoreLabelObject;
-                        case "sap.m.Label":
+                        case "sap.m.Tree":
                             return ui5LabelObject;
                     }
                 });
@@ -49,12 +51,12 @@ define((require, exports) => {
             });
 
             it("Should resolve the token as an object with a full path", () => {
-                expect(codeAnalyzer.isFullPath("sap.m.Label")).toBe(true);
-                expect(codeAnalyzer.isFullPath("sap/m/Label")).toBe(true);
+                expect(codeAnalyzer.isFullUi5Path("sap.m.Tree")).toBe(true);
+                expect(codeAnalyzer.isFullUi5Path("sap/m/Tree")).toBe(true);
             });
 
             it("Should not resolve the token as an object with a full path", () => {
-                expect(codeAnalyzer.isFullPath("Label")).toBe(false);
+                expect(codeAnalyzer.isFullUi5Path("Label")).toBe(false);
             });
 
             it("Should return define statement objects", () => {
@@ -144,10 +146,16 @@ define((require, exports) => {
                     + "lab\n"
                     + "}";
 
-                expect(codeAnalyzer.getObjectFromComment("lab", {
-                    line: 3,
-                    ch: 0
-                }, code)).toBe(ui5CoreLabelObject);
+                const token = "lab",
+                    position = {
+                        line: 3,
+                        ch: 0
+                    };
+
+                const mockEditor = editorUtils.createMockEditor(code, "javascript");
+                const scopeCode = codeAnalyzer.getVariableScope(token, position, mockEditor.doc);
+                expect(codeAnalyzer.getObjectFromComment(token, position, mockEditor.doc, scopeCode)).toBe(ui5CoreLabelObject);
+                editorUtils.destroyMockEditor(mockEditor.doc);
             });
 
             it("Should return ui5 path from the comment #2", () => {
@@ -155,12 +163,17 @@ define((require, exports) => {
                 let i = new Label();
                 let lab = new sap.m.Label();  //ui5: sap.ui.core.Label
                 lab
-            }`;
+                }`;
 
-                expect(codeAnalyzer.getObjectFromComment("lab", {
-                    line: 3,
-                    ch: 0
-                }, code)).toBe(ui5CoreLabelObject);
+                const token = "lab",
+                    position = {
+                        line: 3,
+                        ch: 0
+                    };
+
+                const mockEditor = editorUtils.createMockEditor(code, "javascript");
+                const scopeCode = codeAnalyzer.getVariableScope(token, position, mockEditor.doc);
+                expect(codeAnalyzer.getObjectFromComment(token, position, mockEditor.doc, scopeCode)).toBe(ui5CoreLabelObject);
             });
 
             it("Should return ui5 path from the comment #3", () => {
@@ -173,12 +186,17 @@ define((require, exports) => {
                     let lab = new Label();  //ui5: sap.ui.core.Label
                     lab
                 }
-            }`;
+                }`;
 
-                expect(codeAnalyzer.getObjectFromComment("lab", {
-                    line: 7,
-                    ch: 0
-                }, code)).toBe(ui5CoreLabelObject);
+                const token = "lab",
+                    position = {
+                        line: 7,
+                        ch: 0
+                    };
+
+                const mockEditor = editorUtils.createMockEditor(code, "javascript");
+                const scopeCode = codeAnalyzer.getVariableScope(token, position, mockEditor.doc);
+                expect(codeAnalyzer.getObjectFromComment(token, position, mockEditor.doc, scopeCode)).toBe(ui5CoreLabelObject);
             });
 
             it("Should return ui5 path from the comment #4", () => {
@@ -191,12 +209,17 @@ define((require, exports) => {
                     var lab = new Label();  //ui5: sap.ui.core.Label
                     lab
                 }
-            )}`;
+                )}`;
 
-                expect(codeAnalyzer.getObjectFromComment("lab", {
-                    line: 7,
-                    ch: 0
-                }, code)).toBe(ui5CoreLabelObject);
+                const token = "lab",
+                    position = {
+                        line: 7,
+                        ch: 0
+                    };
+
+                const mockEditor = editorUtils.createMockEditor(code, "javascript");
+                const scopeCode = codeAnalyzer.getVariableScope(token, position, mockEditor.doc);
+                expect(codeAnalyzer.getObjectFromComment(token, position, mockEditor.doc, scopeCode)).toBe(ui5CoreLabelObject);
             });
 
             it("Should return ui5 path from the comment #5", () => {
@@ -210,12 +233,17 @@ define((require, exports) => {
                     let lab = new Label();
                     lab
                 }
-            )}`;
+                )}`;
 
-                expect(codeAnalyzer.getObjectFromComment("lab", {
-                    line: 2,
-                    ch: 0
-                }, code)).toBe(ui5CoreLabelObject);
+                const token = "lab",
+                    position = {
+                        line: 2,
+                        ch: 0
+                    };
+
+                const mockEditor = editorUtils.createMockEditor(code, "javascript");
+                const scopeCode = codeAnalyzer.getVariableScope(token, position, mockEditor.doc);
+                expect(codeAnalyzer.getObjectFromComment(token, position, mockEditor.doc, scopeCode)).toBe(ui5CoreLabelObject);
             });
 
             it("Should return the closest match object #1", () => {
