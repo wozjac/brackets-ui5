@@ -36,6 +36,8 @@ define((require, exports) => {
         requireStatement: /sap\.ui\.require\s*\(\s*\[([\s\S]*)(\])\s*,\s*function[^(]*\(([^)]*)(\))/,
         requireES6Statement: /sap\.ui\.require\s*\(\s*\[([\s\S]*)(\])\s*,\s*[^(]*\(([^)]*)(\))\s*(=>)?/,
         singleFunctionStatement: /function[^(]*\(([^)]*)\)/,
+        functionStatement: /function[^(]*\([^)]*\)\s*({)/gi,
+        functionES6Statement: /=>\s*({)/gi,
         xmlNamespace: /xmlns\s*:?\s*(\w*)\s*=\s*['"]([\w.:/]+)/gi,
         ui5ObjectInCommentPattern: "/+[\\*]*[\\s]*ui5:[\\s]*([\\w\\.]+)",
         comments: /(\/\*.*\*\/)|(\/\/.*)/g,

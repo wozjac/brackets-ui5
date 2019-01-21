@@ -8,8 +8,12 @@ define((require, exports) => {
         constants = require("src/core/constants"),
         textTool = require("src/editor/textTool");
 
-    function getSourceCode(document = DocumentManager.getCurrentDocument()) {
-        return document.getText(false);
+    function getSourceCode(document = DocumentManager.getCurrentDocument(), start, end) {
+        if (!start) {
+            return document.getText(false);
+        } else {
+            return document.getRange(start, end);
+        }
     }
 
     function getSourceCodeAtLine(lineNumber, document = DocumentManager.getCurrentDocument()) {

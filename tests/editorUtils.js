@@ -119,7 +119,14 @@ define((require, exports, module) => {
         $("#hidden-editors").remove();
     }
 
+    function mockCurrentDocument(code) {
+        spyOn(DocumentManager, "getCurrentDocument").andCallFake(() => {
+            return createMockDocument(code, "javascript");
+        });
+    }
+
     exports.createMockDocument = createMockDocument;
     exports.createMockEditor = createMockEditor;
     exports.destroyMockEditor = destroyMockEditor;
+    exports.mockCurrentDocument = mockCurrentDocument;
 });
