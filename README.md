@@ -13,12 +13,12 @@ As the majority of the older versions is out of maintenance, I do not plan to ad
 ## Features summary
 - UI5 API reference panel
 - tag & attribute hints in XML views
-- code hints for UI5 objects (basic support)
+- code hints for UI5 objects (variable type recognition under development)
 - configurable code snippets
 - mock data generation for oData services
-- quick docs for UI5 API
+- quick docs for UI5 API (variable type recognition under development)
 
-For quick docs and code hints not all cases are handled - please check the documentation below for details.
+For quick docs and code hints only basic cases are handled - please check the documentation below for details.
 
 ## Requirements
 Brackets version >= 1.11
@@ -130,7 +130,10 @@ Code hints in JS files are displaying properties & methods of a UI5 object.
 
 ### UI5 object resolving
 UI5 object recognition is currently based on regular expressions, so the basic cases are handled (and expect strange
-behaviour sometimes ;). This feature is currently being developed using more appriopriate tools for such task. 
+behaviour sometimes ;). 
+
+This feature is currently under development using more appriopriate tools for such tasks, but I decided
+to keep this simple and not reliable version as it can be helpful.
 
 The recognition works for variables and will try to find the associated UI5 object type from:
 1. A special comment *//ui5: object*. It will search the current line or the variable declaration. Because in the current version the extension does not recognize types returned by functions, this comment can be useful if some variable - returned by a function - is used heavily in the code. For example:
@@ -165,7 +168,7 @@ sap.ui.define(["sap/ui/commons/Button"], function(Button) {
 });
 ```
 
-3. Matching the token with the objects in the define statement.
+3.Matching the token with the objects in the define statement.
 
 ```javascript
 sap.ui.define(["sap/m/Button"], function(Button) {
@@ -174,7 +177,7 @@ sap.ui.define(["sap/m/Button"], function(Button) {
 ```
 The button will be just directly matched with the object from the define statement.
 
-The above algorithm is rather simple and will not recognize types returned from methods or via assignments:
+The above algorithm is rather simple and will not recognize types returned from methods or via assignments.
 
 ```javascript
 sap.ui.define(["sap/m/Button"], function(Button) {
