@@ -43,7 +43,11 @@ define({
     "METHOD": "method",
     "PROPERTY": "property",
     "ERROR": "Error",
+    "PREFIX": prefix,
     "INCORRECT_API_VERSION_STRING": `${prefix} UI5 library URL has an incorrect syntax`,
     "ODATA_SERVICE_NOT_LOADED": "The service metadata could not be loaded. Please check the console for errors.",
-    "AGGREGATIONS": "Aggregations"
+    "AGGREGATIONS": "Aggregations",
+    "MANIFEST_FILE_NOT_FOUND": `${prefix} No manifest.json has been found`,
+    "MODEL_DEFINITION_NOT_FOUND": "model definition has not been found in manifest.json",
+    "MODEL_READ_ERROR": `${prefix} Model read error`
 });
