@@ -101,7 +101,7 @@ Works in XML views if manifest.json is present and contains a valid model entry 
 ...
 ```
 
-![i18n hints](https://www.mediafire.com/convkey/5355/x7u9cs5i51kk3sg6g.jpg)
+![i18n hints](https://www.mediafire.com/convkey/82d5/tonl3c4pmf8ur8o6g.jpg)
 
 ### Configurable code snippets
 The extension provides 8 configurable code snippets, available via the *UI5 tools* menu or using Ctrl-Alt-1..8 shortcut. They are inserted at the current cursor position. By default, there are a component, XML view, index.html etc. but this can be adjusted - *Open snippets folder* will open the folder with snippets files, which can be edited (do not change the filenames!). The first line is reserved for the title in form of *// my title*. The "my title" will be then used in the menu as *Insert: my title*.
