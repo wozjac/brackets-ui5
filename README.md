@@ -13,7 +13,7 @@ As the majority of the older versions is out of maintenance, I do not plan to ad
 ## Features summary
 - UI5 API reference panel
 - tag & attribute hints in XML views,
-- i18n value help in XML views,
+- i18n value help & quick edit in XML views,
 - code hints for UI5 objects (variable type recognition under development)
 - configurable code snippets
 - mock data generation for oData services
@@ -85,7 +85,7 @@ The format is:
 Namespaces are supported.  
 ![xml hints](https://www.mediafire.com/convkey/7c85/vs1muc5m4zmzdc46g.jpg)
 
-### i18n value help
+### i18n value help & quick edit
 Works in XML views if manifest.json is present and contains a valid model entry (both *uri* and *bundleName* settings are supported. For example,
 
 ```
@@ -102,6 +102,9 @@ Works in XML views if manifest.json is present and contains a valid model entry 
 ```
 
 ![i18n hints](https://www.mediafire.com/convkey/82d5/tonl3c4pmf8ur8o6g.jpg)
+
+Pressing ctrl+e opens inline editor for the i18n entry; if don't exist, it will be created and appended at the end of the file.
+![i18n quick edit](https://www.mediafire.com/convkey/630a/h8ek9xbsk8f2h2u6g.jpg)
 
 ### Configurable code snippets
 The extension provides 8 configurable code snippets, available via the *UI5 tools* menu or using Ctrl-Alt-1..8 shortcut. They are inserted at the current cursor position. By default, there are a component, XML view, index.html etc. but this can be adjusted - *Open snippets folder* will open the folder with snippets files, which can be edited (do not change the filenames!). The first line is reserved for the title in form of *// my title*. The "my title" will be then used in the menu as *Insert: my title*.

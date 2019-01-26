@@ -2,7 +2,7 @@
 
 ## 1.2.1-beta
 ##### New features
-- i18n model hints in XML views
+- i18n model hints & quick edit in XML views
 
 ##### Changes
 - switch to /discovery/all_libs URL for getting the .xsd libs

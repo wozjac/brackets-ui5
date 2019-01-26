@@ -24,16 +24,96 @@ define((require, exports) => {
         }
 
         const result = new $.Deferred();
+        let i18nDocument;
 
-        _getEntryRange(i18nInfo).then((rangeInfo) => {
-            const inlineEditor = new MultiRangeInlineEditor([rangeInfo]);
-            inlineEditor.load(hostEditor);
-            result.resolve(inlineEditor);
-        }, () => {
+        ui5Files.getModelInfo(i18nInfo.modelName).then((modelInfo) => {
+            return DocumentManager.getDocumentForPath(modelInfo.path);
+        }).then((document) => {
+            i18nDocument = document;
+            return _getEntryRange(i18nInfo, i18nDocument);
+        }).then((rangeInfo) => {
+            let inlineEditor;
+
+            if (rangeInfo) {
+                inlineEditor = new MultiRangeInlineEditor([rangeInfo]);
+                inlineEditor.load(hostEditor);
+                result.resolve(inlineEditor);
+            } else {
+                //no entry found, create one
+                const newEntry = _createNewEntry(i18nInfo, i18nDocument);
+
+                inlineEditor = new MultiRangeInlineEditor([{
+                    document: i18nDocument,
+                    name: "newEntry",
+                    lineStart: newEntry.range.from.line,
+                    lineEnd: newEntry.range.to.line
+                }]);
+
+                inlineEditor.load(hostEditor);
+
+                //inlineEditor.addAndSelectRange(
+                //    newEntry.newEntryText,
+                //    i18nDocument,
+                //    newEntry.range.from.line,
+                //    newEntry.range.to.line);
+
+                inlineEditor.editor.setCursorPos(newEntry.pos.line, newEntry.pos.ch);
+                result.resolve(inlineEditor);
+            }
+
+        }).catch((error) => {
             result.reject();
+            console.log(error);
         });
 
         return result.promise();
+    }
+
+    function _createNewEntry(i18nInfo, i18nDocument) {
+        const lines = StringUtils.getLines(i18nDocument.getText()),
+            lastDocLine = lines.length - 1,
+            lastDocChar = lines[lines.length - 1].length,
+            newEntryText = `\n${i18nInfo.key}=`;
+
+        i18nDocument.replaceRange(newEntryText, {
+            line: lastDocLine,
+            ch: lastDocChar
+        });
+
+        return {
+            newEntryText: `${i18nInfo.key}=`,
+            range: {
+                from: {
+                    line: lastDocLine + 1,
+                    ch: 0
+                },
+                to: {
+                    line: lastDocLine + 1,
+                    ch: 0
+                },
+            },
+            pos: {
+                line: lastDocLine + 1,
+                ch: newEntryText.length + 1
+            }
+        };
+    }
+
+    function _getEntryRange(i18nInfo, i18nDocument) {
+        return new Promise((resolve) => {
+            const rangeInfo = _getEntryStartEnd(i18nInfo.key, i18nDocument);
+
+            if (!rangeInfo) {
+                resolve(null);
+            }
+
+            resolve({
+                document: i18nDocument,
+                name: i18nInfo.key,
+                lineStart: rangeInfo.startLine,
+                lineEnd: rangeInfo.endLine
+            });
+        });
     }
 
     function _getI18nInfoFromAttribute(hostEditor, position) {
@@ -51,44 +131,6 @@ define((require, exports) => {
             key: parts[1]
         };
     }
-
-    function _getEntryRange(i18nInfo) {
-        return new Promise((resolve, reject) => {
-            ui5Files.getModelInfo(i18nInfo.modelName).then((modelInfo) => {
-                DocumentManager.getDocumentForPath(modelInfo.path).then((i18nDocument) => {
-                    const rangeInfo = _getEntryStartEnd(i18nInfo.key, i18nDocument);
-
-                    if (!rangeInfo) {
-                        reject();
-                    } else {
-                        resolve({
-                            document: i18nDocument,
-                            name: i18nInfo.key,
-                            lineStart: rangeInfo.startLine,
-                            lineEnd: rangeInfo.endLine
-                        });
-                    }
-                }, () => {
-                    reject();
-                });
-            }, () => {
-                reject();
-            });
-        });
-    }
-
-    //function _addNewEntry() {
-    //    const newEntry = _addNewEntry(i18nInfo.key, i18nDocument);
-    //    inlineEditor.addAndSelectRange(selectorName, styleDoc, newRuleInfo.range.from.line, newRuleInfo.range.to.line);
-    //    inlineEditor.editor.setCursorPos(newRuleInfo.pos.line, newRuleInfo.pos.ch);
-    //
-    //
-    //    rangeInfo = {};
-    //
-    //
-    //    rangeInfo.startLine = newEntry.range.startLine;
-    //    rangeInfo.endLine = newEntry.range.endLine;
-    //}
 
     function _getEntryStartEnd(key, document) {
         const text = document.getText(),
