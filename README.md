@@ -3,20 +3,23 @@
 ## Info
 An extension for [Brackets](http://brackets.io) editor providing helpers (quick docs, code hints, API reference and more) for SAP© UI5 library [OpenUI5](openui5.hana.ondemand.com)/[SAPUI5](https://sapui5.hana.ondemand.com).
 
-Works with UI5 versions >= 1.52 (all versions with online documentation available, please check here: [https://ui5.sap.com/versionoverview.html](https://ui5.sap.com/versionoverview.html) ). 
+Works with UI5 versions >= 1.52 with online documentation available, please check here: [https://openui5.hana.ondemand.com/versionoverview.html](https://openui5.hana.ondemand.com/versionoverview.html), 
+scroll down to the section "Available OpenUI5 Versions". For SAP UI5 please use [https://sapui5.hana.ondemand.com/versionoverview.html](https://sapui5.hana.ondemand.com/versionoverview.html).  
+
 As the majority of the older versions is out of maintenance, I do not plan to add support for them.
 
 **Please notice (if you are new to UI5)! [OpenUI5](https://openui5.org) is open source, but SAPUI5 - although SAP shares publicly SAPUI5 library runtime & SDK etc. - is not free. Please check the company [site](https://sap.com) for more details.**
 
 ## Features summary
 - UI5 API reference panel
-- tag & attribute hints in XML views
-- code hints for UI5 objects (partially supported)
+- tag & attribute hints in XML views,
+- i18n value help & quick edit in XML views,
+- code hints for UI5 objects (variable type recognition under development)
 - configurable code snippets
 - mock data generation for oData services
-- quick docs for UI5 API
+- quick docs for UI5 API (variable type recognition under development)
 
-For quick docs and code hints not all cases are handled - please check the documentation below for details.
+For quick docs and code hints only basic cases are handled - please check the documentation below for details.
 
 ## Requirements
 Brackets version >= 1.11
@@ -43,6 +46,8 @@ Switching to SAPUI5:
     "bracketsUi5.apiUrl": "https://sapui5.hana.ondemand.com"
 }
 ```
+**NOTE**: for SAPUI5 sometimes schema files are not available online using the URL without version, so it's better to use
+the URL with version provided. 
 
 If something is not working please check the console (F12). Extension's messages are prefixed with [wozjac.ui5].
 
@@ -79,6 +84,27 @@ The format is:
 ### XML view tags & attributes hints
 Namespaces are supported.  
 ![xml hints](https://www.mediafire.com/convkey/7c85/vs1muc5m4zmzdc46g.jpg)
+
+### i18n value help & quick edit
+Works in XML views if manifest.json is present and contains a valid model entry (both *uri* and *bundleName* settings are supported. For example,
+
+```
+...
+    "models": {
+            "i18n": {
+                "type": "sap.ui.model.resource.ResourceModel",
+                "settings": {
+                    "bundleName": "com.some.i18n"
+                },
+                "preload": "async"
+            },
+...
+```
+
+![i18n hints](https://www.mediafire.com/convkey/82d5/tonl3c4pmf8ur8o6g.jpg)
+
+Pressing ctrl+e opens inline editor for the i18n entry; if don't exist, it will be created and appended at the end of the file.
+![i18n quick edit](https://www.mediafire.com/convkey/630a/h8ek9xbsk8f2h2u6g.jpg)
 
 ### Configurable code snippets
 The extension provides 8 configurable code snippets, available via the *UI5 tools* menu or using Ctrl-Alt-1..8 shortcut. They are inserted at the current cursor position. By default, there are a component, XML view, index.html etc. but this can be adjusted - *Open snippets folder* will open the folder with snippets files, which can be edited (do not change the filenames!). The first line is reserved for the title in form of *// my title*. The "my title" will be then used in the menu as *Insert: my title*.
@@ -125,7 +151,11 @@ Code hints in JS files are displaying properties & methods of a UI5 object.
 ![code hints](https://www.mediafire.com/convkey/e633/ums5nbag40af4il6g.jpg)
 
 ### UI5 object resolving
-UI5 object recognition is currently based on regular expressions, so the basic cases presented below (determined in that order) should work and recognize the UI5 object in the code - but I can not guarantee that for all formatting cases it will work. I'm planning to use Brackets built-in Tern/Acorn modules for this task.
+UI5 object recognition is currently based on regular expressions, so the basic cases are handled (and expect strange
+behaviour sometimes ;). 
+
+This feature is currently under development using more appriopriate tools for such tasks, but I decided
+to keep this simple and not reliable version as it can be helpful.
 
 The recognition works for variables and will try to find the associated UI5 object type from:
 1. A special comment *//ui5: object*. It will search the current line or the variable declaration. Because in the current version the extension does not recognize types returned by functions, this comment can be useful if some variable - returned by a function - is used heavily in the code. For example:
@@ -160,7 +190,7 @@ sap.ui.define(["sap/ui/commons/Button"], function(Button) {
 });
 ```
 
-3. Matching the token with the objects in the define statement.
+3.Matching the token with the objects in the define statement.
 
 ```javascript
 sap.ui.define(["sap/m/Button"], function(Button) {
@@ -169,7 +199,7 @@ sap.ui.define(["sap/m/Button"], function(Button) {
 ```
 The button will be just directly matched with the object from the define statement.
 
-The above algorithm is rather simple and will not recognize types returned from methods or via assignments:
+The above algorithm is rather simple and will not recognize types returned from methods or via assignments.
 
 ```javascript
 sap.ui.define(["sap/m/Button"], function(Button) {

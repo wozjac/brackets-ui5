@@ -12,7 +12,7 @@ define({
     "API_LOADED_INFO": `${prefix} UI5 API index loaded successfully from`,
     "LIBRARY_LOADED_INFO": `${prefix} Library loaded `,
     "URL_GET_ERROR": `${prefix} Could not reach`,
-    "URL_XML_GET_ERROR": `${prefix} Could not fetch XML schema`,
+    "URL_XML_GET_ERROR": `${prefix} Could not fetch XML schema (not always error - some libs don't have .xsd)`,
     "XML_SCHEMA_READY": `${prefix} XML schema prepared:`,
     "UI5_OBJECTS_LOAD_ERROR": `${prefix} UI5 API documentation could not be loaded (probabaly connection error has occured). Please reload Brackets.`,
     "METADATA_ERROR": `${prefix} Invalid metadata XML! Reason:`,
@@ -43,7 +43,11 @@ define({
     "METHOD": "method",
     "PROPERTY": "property",
     "ERROR": "Error",
+    "PREFIX": prefix,
     "INCORRECT_API_VERSION_STRING": `${prefix} UI5 library URL has an incorrect syntax`,
     "ODATA_SERVICE_NOT_LOADED": "The service metadata could not be loaded. Please check the console for errors.",
-    "AGGREGATIONS": "Aggregations"
+    "AGGREGATIONS": "Aggregations",
+    "MANIFEST_FILE_NOT_FOUND": `${prefix} No manifest.json has been found`,
+    "MODEL_DEFINITION_NOT_FOUND": "model definition has not been found in manifest.json",
+    "MODEL_READ_ERROR": `${prefix} Model read error`
 });
