@@ -1,5 +1,9 @@
 # brackets-ui5 changelog
 
+## 1.2.1-beta
+##### Bugfixes
+- fix reading path for i18n file if "uri" option used in the model defition
+
 ## 1.2.0-beta
 ##### New features
 - i18n model hints & quick edit in XML views

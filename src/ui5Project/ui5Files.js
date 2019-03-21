@@ -104,10 +104,8 @@ define((require, exports) => {
     }
 
     function _getI18nFilePath(modelEntry, manifestFile) {
-        const projectPath = ProjectManager.getProjectRoot().fullPath;
-
         if (modelEntry.uri) {
-            return `${projectPath}${modelEntry.uri}`;
+            return `${manifestFile.path}/${modelEntry.uri}`;
         } else if (modelEntry.settings.bundleName) {
             //get manifest path
             const mainPath = manifestFile.content["sap.app"].id;
