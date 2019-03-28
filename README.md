@@ -1,5 +1,18 @@
 # Brackets UI5
 
+1. [Intro](#info)
+2. [Features summary](#features-summary)
+3. [Requirements](#requirements)
+4. [Installation](#installation)
+5. [Features details](#features)
+6. [Preferences](#preferences)
+7. [Unit tests](#unit-tests)
+8. [Known issues](#known-issues)
+9. [Further development](#further-development)
+10. [License](#license)
+11. [Contributing](#contributing)
+12. [Author](#author)
+
 ## Info
 An extension for [Brackets](http://brackets.io) editor providing helpers (quick docs, code hints, API reference and more) for SAP© UI5 library [OpenUI5](openui5.hana.ondemand.com)/[SAPUI5](https://sapui5.hana.ondemand.com).
 
@@ -46,8 +59,12 @@ Switching to SAPUI5:
     "bracketsUi5.apiUrl": "https://sapui5.hana.ondemand.com"
 }
 ```
-**NOTE**: for SAPUI5 sometimes schema files are not available online using the URL without version, so it's better to use
-the URL with version provided. 
+**NOTE: when using the default URL or bracketsUi5.apiUrl option without a version**: 
+- for SAPUI5 sometimes schema files are not available
+- the newest version could not have all API docs published  
+
+**A preferred way is to always use a preference file with the *bracketsUi5.apiUrl* poiting to a specific version.**
+
 
 If something is not working please check the console (F12). Extension's messages are prefixed with [wozjac.ui5].
 
