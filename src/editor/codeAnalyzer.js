@@ -4,6 +4,7 @@ define((require, exports) => {
     const ui5ApiFinder = require("src/core/ui5ApiFinder"),
         codeEditor = require("src/editor/codeEditor"),
         constants = require("src/core/constants"),
+        parser = require("src/3rdparty/@babel/parser/lib/index"),
         textTool = require("src/editor/textTool");
 
     function extractDefineObjects(arrayString) {
