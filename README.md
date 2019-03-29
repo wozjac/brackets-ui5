@@ -79,6 +79,8 @@ It can be opened via the *UI5 tools* menu, Ctrl + 2 or the side icon ![api icon]
 
 Functionality:
 - search can be done with or without namespace
+- members search is supported after space, for example typing "m.page add" will show the hitlist with matching objects and then, after selecting desired object, only members matching "add" word will be showed; anything typed after the space will filter the displayed API - as long as the base object search string (the one before space) has not changed
+![filtered search](https://www.mediafire.com/convkey/dabe/futwsi6t6832zf56g.jpg)
 - clicking the [+]/[-] sign will expand or collapse the description 
 - if the item is clickable (object name, methods, properties etc.): **left click** will insert the name at the current cursor position, **right click** will open element's online documentation in the default browser 
 - items with line-through decoration are deprecated
