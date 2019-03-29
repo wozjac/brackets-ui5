@@ -87,7 +87,7 @@ define((require, exports) => {
                     properties = [];
                 }
 
-                if (ui5ObjectApi.constructor) {
+                if (ui5ObjectApi.hasOwnProperty("constructor")) {
                     api.hasConstructor = true;
                     api.constructor = JSON.parse(JSON.stringify(ui5ObjectApi.constructor));
                     api.constructor.description = codeEditor.formatJsDoc(api.constructor.description, cleanHtml);
@@ -199,5 +199,65 @@ define((require, exports) => {
         });
     }
 
+    function filterApiMembers(ui5ObjectApi, memberSearchString) {
+        const objectApi = JSON.parse(JSON.stringify(ui5ObjectApi));
+
+        function filterMembers(key1, key2) {
+            let filterable;
+
+            if (key2) {
+                filterable = objectApi[key1][key2];
+            } else {
+                filterable = objectApi[key1];
+            }
+
+            if (filterable) {
+                return filterable.filter((member) => {
+                    if (member.visibility !== "public") {
+                        return false;
+                    }
+
+                    return new RegExp(memberSearchString, "i").test(member.name);
+                });
+            }
+        }
+
+        const filterableKeys = ["methods", "events", "properties", "aggregations"];
+
+        for (const key of filterableKeys) {
+            if (objectApi.kind === "class"
+                && (key === "properties" || key === "aggregations")) {
+
+                objectApi["ui5-metadata"][key] = filterMembers("ui5-metadata", key);
+
+                if (!objectApi["ui5-metadata"][key]
+                    || (objectApi["ui5-metadata"][key]
+                        && objectApi["ui5-metadata"][key].length === 0)) {
+
+                    delete objectApi["ui5-metadata"][key];
+                }
+            } else {
+                objectApi[key] = filterMembers(key);
+
+                if (!objectApi[key]
+                    || (objectApi[key] && objectApi[key].length === 0)) {
+
+                    delete objectApi[key];
+                }
+            }
+        }
+
+        delete objectApi.constructor;
+
+        if (objectApi.inheritedApi) {
+            for (const name in objectApi.inheritedApi) {
+                objectApi.inheritedApi[name] = filterApiMembers(objectApi.inheritedApi[name], memberSearchString);
+            }
+        }
+
+        return objectApi;
+    }
+
     exports.getFormattedObjectApi = getFormattedObjectApi;
+    exports.filterApiMembers = filterApiMembers;
 });

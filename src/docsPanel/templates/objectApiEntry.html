@@ -44,8 +44,10 @@
         </p>
         {{> membersTemplate}}
          {{#inheritedApi}}
-        <h4 class="brackets-ui5-docs-panel-h4">Borrowed from {{name}}</h4>
+        <div class="brackets-ui5-docs-panel-borrowed">
+            <h4 class="brackets-ui5-docs-panel-h4">Borrowed from {{name}}</h4>
             {{> membersTemplate}}
+        </div>
         {{/inheritedApi}}
 </div>
 {{/objects}}
