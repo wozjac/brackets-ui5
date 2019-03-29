@@ -102,12 +102,16 @@ define((require, exports) => {
         _processSearch(searchInput) {
             this._searchTimeout = setTimeout(() => {
                 const parts = searchInput.split(" ");
+                this._previousSearchedObjectName = this._searchedObjectName;
+                this._searchedObjectName = parts[0];
+
                 let memberSearchString;
 
                 if (parts.length === 2 && parts[1]) {
                     memberSearchString = parts[1];
-                    this._previousSearchedObjectName = this._searchedObjectName;
-                    this._searchedObjectName = parts[0];
+                } else if (this._previousSearchedObjectName !== this._searchedObjectName) {
+                    this._elements.apiDocsElement.empty();
+                    this._visibleObjectName = null;
                 }
 
                 const ui5Objects = ui5ApiFinder.findUi5ApiObjects({
@@ -131,15 +135,7 @@ define((require, exports) => {
                 }
 
                 if (this._visibleObjectName && memberSearchString) {
-                    if (this._searchedObjectName !== this._previousSearchedObjectName) {
-                        //clear currently displayed API if object has changed and we search
-                        //with member
-                        this._elements.apiDocsElement.empty();
-                        this._visibleObjectName = null;
-                    } else {
-                        this._displayObjectApi(this._visibleObjectName, memberSearchString);
-                    }
-
+                    this._displayObjectApi(this._visibleObjectName, memberSearchString);
                 } else if (this._visibleObjectName) {
                     this._displayObjectApi(this._visibleObjectName);
                 }
@@ -204,6 +200,7 @@ define((require, exports) => {
                     name: ui5Object.name
                 }, (event) => {
                     this._displayObjectApi(event.data.name, memberSearchString);
+                    this._visibleObjectName = event.data.name;
                 });
 
                 htmlElement.appendTo(this._elements.hitlistElement);
