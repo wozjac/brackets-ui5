@@ -27,6 +27,9 @@ define((require, exports) => {
             this._previousSearchedObjectName = "";
             this._toolbarButton = toolbarButton.create();
             this._visibleObjectName = null;
+            this._memberSearchString = null;
+            this._memberGroupFilter = null;
+
             this.searchedObjectLimit = 25;
 
             this._elements = {
@@ -105,13 +108,37 @@ define((require, exports) => {
                 this._previousSearchedObjectName = this._searchedObjectName;
                 this._searchedObjectName = parts[0];
 
-                let memberSearchString;
-
                 if (parts.length === 2 && parts[1]) {
-                    memberSearchString = parts[1];
-                } else if (this._previousSearchedObjectName !== this._searchedObjectName) {
-                    this._elements.apiDocsElement.empty();
-                    this._visibleObjectName = null;
+                    this._memberSearchString = parts[1];
+                    const match = this._memberSearchString.match(/(\?[mpeac])(.*)/i);
+
+                    if (match) {
+                        this._memberGroupFilter = match[1].replace("?", "").toLowerCase();
+                        const memberSearchPart = match[2].trim();
+
+                        if (memberSearchPart
+                            && this._memberGroupFilter !== constants.memberGroupFilter.construct) {
+
+                            this._memberSearchString = memberSearchPart;
+                        } else {
+                            this._memberSearchString = null;
+                        }
+                    } else {
+                        this._memberGroupFilter = null;
+                    }
+                } else {
+                    if (this._previousSearchedObjectName !== this._searchedObjectName) {
+                        this._elements.apiDocsElement.empty();
+                        this._visibleObjectName = null;
+                    }
+
+                    this._memberSearchString = null;
+                    this._memberGroupFilter = null;
+                }
+
+                //skip single ? sign
+                if (this._memberSearchString === "?") {
+                    this._memberSearchString = null;
                 }
 
                 const ui5Objects = ui5ApiFinder.findUi5ApiObjects({
@@ -124,18 +151,18 @@ define((require, exports) => {
                         this._setMessage(`${strings.FOUND} ${ui5Objects.length} objects. ${strings.NARROW_SEARCH}`);
                     } else if (ui5Objects.length > 1 && ui5Objects.length <= this.searchedObjectLimit) {
                         this._setMessage(null);
-                        this._showHitList(ui5Objects, memberSearchString);
+                        this._showHitList(ui5Objects);
                     } else {
                         this._elements.hitlistElement.hide();
                         this._setMessage(null);
-                        this._displayObjectApi(ui5Objects[0].name, memberSearchString);
+                        this._displayObjectApi(ui5Objects[0].name);
                     }
                 } else {
                     this._setMessage(strings.NOT_FOUND);
                 }
 
-                if (this._visibleObjectName && memberSearchString) {
-                    this._displayObjectApi(this._visibleObjectName, memberSearchString);
+                if (this._visibleObjectName && this._memberSearchString) {
+                    this._displayObjectApi(this._visibleObjectName);
                 } else if (this._visibleObjectName) {
                     this._displayObjectApi(this._visibleObjectName);
                 }
@@ -186,7 +213,7 @@ define((require, exports) => {
             }
         }
 
-        _showHitList(ui5Objects, memberSearchString) {
+        _showHitList(ui5Objects) {
             this._elements.hitlistElement.empty();
             this._elements.hitlistElement.append(`<span class="brackets-ui5-docs-panel-hitlist-title">${strings.HITLIST_TITLE}</span>`);
 
@@ -199,7 +226,7 @@ define((require, exports) => {
                 htmlElement.on("click", {
                     name: ui5Object.name
                 }, (event) => {
-                    this._displayObjectApi(event.data.name, memberSearchString);
+                    this._displayObjectApi(event.data.name);
                     this._visibleObjectName = event.data.name;
                 });
 
@@ -210,13 +237,13 @@ define((require, exports) => {
             this._elements.hitlistElement.show();
         }
 
-        _displayObjectApi(ui5ObjectPath, memberSearchString) {
+        _displayObjectApi(ui5ObjectPath) {
             this._unregisterUi5ObjectLinkHandlers();
             this._elements.apiDocsElement.empty();
             this._elements.apiDocsElement.append(`<p style="margin-left: 5px">${strings.LOADING}</p>`);
 
             const objects = [];
-            objects.push(this._getDesignApi(ui5ObjectPath, memberSearchString));
+            objects.push(this._getDesignApi(ui5ObjectPath));
 
             const html = Mustache.render(objectApiTemplate, {
                 objects,
@@ -233,11 +260,11 @@ define((require, exports) => {
             this._visibleObjectName = ui5ObjectPath;
         }
 
-        _getDesignApi(ui5ObjectPath, memberSearchString) {
+        _getDesignApi(ui5ObjectPath) {
             let designApi = ui5ApiService.getUi5ObjectDesignApi(ui5ObjectPath);
 
-            if (memberSearchString) {
-                designApi = ui5ApiFormatter.filterApiMembers(designApi, memberSearchString);
+            if (this._memberSearchString || this._memberGroupFilter) {
+                designApi = ui5ApiFormatter.filterApiMembers(designApi, this._memberSearchString, this._memberGroupFilter);
             }
 
             designApi = ui5ApiFormatter.getFormattedObjectApi(designApi, true, true);

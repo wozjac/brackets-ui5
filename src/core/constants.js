@@ -43,7 +43,16 @@ define((require, exports) => {
         htmlTags: /<[^>]+>/ig
     };
 
+    const memberGroupFilter = {
+        methods: "m",
+        properties: "p",
+        events: "e",
+        aggregations: "a",
+        construct: "c"
+    };
+
     exports.prefs = preferences;
     exports.commands = commands;
     exports.regex = regex;
+    exports.memberGroupFilter = memberGroupFilter;
 });

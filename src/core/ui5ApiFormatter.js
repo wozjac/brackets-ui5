@@ -1,7 +1,8 @@
 define((require, exports) => {
     "use strict";
 
-    const codeEditor = require("src/editor/codeEditor");
+    const codeEditor = require("src/editor/codeEditor"),
+        constants = require("src/core/constants");
 
     function getFormattedObjectApi(ui5ObjectApi, cleanHtml = false, inheritedAsArray = false) {
         const api = {
@@ -199,7 +200,7 @@ define((require, exports) => {
         });
     }
 
-    function filterApiMembers(ui5ObjectApi, memberSearchString) {
+    function filterApiMembers(ui5ObjectApi, memberSearchString, memberGroupFilter) {
         const objectApi = JSON.parse(JSON.stringify(ui5ObjectApi));
 
         function filterMembers(key1, key2) {
@@ -224,38 +225,100 @@ define((require, exports) => {
 
         const filterableKeys = ["methods", "events", "properties", "aggregations"];
 
-        for (const key of filterableKeys) {
-            if (objectApi.kind === "class"
-                && (key === "properties" || key === "aggregations")) {
+        if (memberSearchString) {
+            for (const key of filterableKeys) {
+                if (objectApi.kind === "class"
+                    && (key === "properties" || key === "aggregations")) {
 
-                objectApi["ui5-metadata"][key] = filterMembers("ui5-metadata", key);
+                    objectApi["ui5-metadata"][key] = filterMembers("ui5-metadata", key);
 
-                if (!objectApi["ui5-metadata"][key]
-                    || (objectApi["ui5-metadata"][key]
-                        && objectApi["ui5-metadata"][key].length === 0)) {
+                    if (!objectApi["ui5-metadata"][key]
+                        || (objectApi["ui5-metadata"][key]
+                            && objectApi["ui5-metadata"][key].length === 0)) {
 
-                    delete objectApi["ui5-metadata"][key];
-                }
-            } else {
-                objectApi[key] = filterMembers(key);
+                        delete objectApi["ui5-metadata"][key];
+                    }
+                } else {
+                    objectApi[key] = filterMembers(key);
 
-                if (!objectApi[key]
-                    || (objectApi[key] && objectApi[key].length === 0)) {
+                    if (!objectApi[key]
+                        || (objectApi[key] && objectApi[key].length === 0)) {
 
-                    delete objectApi[key];
+                        delete objectApi[key];
+                    }
                 }
             }
+
+            delete objectApi.constructor;
         }
 
-        delete objectApi.constructor;
+        if (memberGroupFilter) {
+            const deleteMarkers = {
+                properties: true,
+                methods: true,
+                events: true,
+                aggregations: true,
+                construct: true
+            };
+
+            switch (memberGroupFilter) {
+                case constants.memberGroupFilter.aggregations:
+                    deleteMarkers.aggregations = false;
+                    break;
+                case constants.memberGroupFilter.methods:
+                    deleteMarkers.methods = false;
+                    break;
+                case constants.memberGroupFilter.properties:
+                    deleteMarkers.properties = false;
+                    break;
+                case constants.memberGroupFilter.events:
+                    deleteMarkers.events = false;
+                    break;
+                case constants.memberGroupFilter.construct:
+                    deleteMarkers.construct = false;
+                    break;
+            }
+
+            _deleteMembers(objectApi, deleteMarkers);
+        }
 
         if (objectApi.inheritedApi) {
             for (const name in objectApi.inheritedApi) {
-                objectApi.inheritedApi[name] = filterApiMembers(objectApi.inheritedApi[name], memberSearchString);
+                objectApi.inheritedApi[name] = filterApiMembers(objectApi.inheritedApi[name], memberSearchString, memberGroupFilter);
             }
         }
 
         return objectApi;
+    }
+
+    function _deleteMembers(objectApi, deleteMarkers) {
+        if (deleteMarkers.properties === true) {
+            if (objectApi.kind === "class") {
+                delete objectApi["ui5-metadata"].properties;
+            } else {
+                delete objectApi.properties;
+            }
+        }
+
+        if (deleteMarkers.aggregations === true) {
+            if (objectApi.kind === "class") {
+                delete objectApi["ui5-metadata"].aggregations;
+            } else {
+                delete objectApi.aggregations;
+            }
+        }
+
+        if (deleteMarkers.events === true) {
+            delete objectApi.events;
+        }
+
+        if (deleteMarkers.methods === true) {
+            delete objectApi.methods;
+        }
+
+        if (deleteMarkers.construct === true) {
+            delete objectApi.constructor;
+        }
     }
 
     exports.getFormattedObjectApi = getFormattedObjectApi;
