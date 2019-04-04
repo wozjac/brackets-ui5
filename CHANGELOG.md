@@ -1,5 +1,17 @@
 # brackets-ui5 changelog
 
+## 1.2.1-beta
+##### Bugfixes
+- fix reading path for i18n file if "uri" option used in the model defition
+
+## 1.2.0-beta
+##### New features
+- i18n model hints & quick edit in XML views
+
+##### Changes
+- switch to /discovery/all_libs URL for getting the .xsd libs
+- documentation update
+
 ## 1.1.1-beta
 ##### Bugfixes
 - fix preparing XML attributes (added missing ones like id, tooltip)

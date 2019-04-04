@@ -12,13 +12,14 @@ As the majority of the older versions is out of maintenance, I do not plan to ad
 
 ## Features summary
 - UI5 API reference panel
-- tag & attribute hints in XML views
-- code hints for UI5 objects (basic support)
+- tag & attribute hints in XML views,
+- i18n value help & quick edit in XML views,
+- code hints for UI5 objects (variable type recognition under development)
 - configurable code snippets
 - mock data generation for oData services
-- quick docs for UI5 API
+- quick docs for UI5 API (variable type recognition under development)
 
-For quick docs and code hints not all cases are handled - please check the documentation below for details.
+For quick docs and code hints only basic cases are handled - please check the documentation below for details.
 
 ## Requirements
 Brackets version >= 1.11
@@ -84,6 +85,27 @@ The format is:
 Namespaces are supported.  
 ![xml hints](https://www.mediafire.com/convkey/7c85/vs1muc5m4zmzdc46g.jpg)
 
+### i18n value help & quick edit
+Works in XML views if manifest.json is present and contains a valid model entry (both *uri* and *bundleName* settings are supported. For example,
+
+```
+...
+    "models": {
+            "i18n": {
+                "type": "sap.ui.model.resource.ResourceModel",
+                "settings": {
+                    "bundleName": "com.some.i18n"
+                },
+                "preload": "async"
+            },
+...
+```
+
+![i18n hints](https://www.mediafire.com/convkey/82d5/tonl3c4pmf8ur8o6g.jpg)
+
+Pressing ctrl+e opens inline editor for the i18n entry; if don't exist, it will be created and appended at the end of the file.
+![i18n quick edit](https://www.mediafire.com/convkey/630a/h8ek9xbsk8f2h2u6g.jpg)
+
 ### Configurable code snippets
 The extension provides 8 configurable code snippets, available via the *UI5 tools* menu or using Ctrl-Alt-1..8 shortcut. They are inserted at the current cursor position. By default, there are a component, XML view, index.html etc. but this can be adjusted - *Open snippets folder* will open the folder with snippets files, which can be edited (do not change the filenames!). The first line is reserved for the title in form of *// my title*. The "my title" will be then used in the menu as *Insert: my title*.
 
@@ -130,7 +152,10 @@ Code hints in JS files are displaying properties & methods of a UI5 object.
 
 ### UI5 object resolving
 UI5 object recognition is currently based on regular expressions, so the basic cases are handled (and expect strange
-behaviour sometimes ;). This feature is currently being developed using more appriopriate tools for such task. 
+behaviour sometimes ;). 
+
+This feature is currently under development using more appriopriate tools for such tasks, but I decided
+to keep this simple and not reliable version as it can be helpful.
 
 The recognition works for variables and will try to find the associated UI5 object type from:
 1. A special comment *//ui5: object*. It will search the current line or the variable declaration. Because in the current version the extension does not recognize types returned by functions, this comment can be useful if some variable - returned by a function - is used heavily in the code. For example:
@@ -165,7 +190,7 @@ sap.ui.define(["sap/ui/commons/Button"], function(Button) {
 });
 ```
 
-3. Matching the token with the objects in the define statement.
+3.Matching the token with the objects in the define statement.
 
 ```javascript
 sap.ui.define(["sap/m/Button"], function(Button) {
@@ -174,7 +199,7 @@ sap.ui.define(["sap/m/Button"], function(Button) {
 ```
 The button will be just directly matched with the object from the define statement.
 
-The above algorithm is rather simple and will not recognize types returned from methods or via assignments:
+The above algorithm is rather simple and will not recognize types returned from methods or via assignments.
 
 ```javascript
 sap.ui.define(["sap/m/Button"], function(Button) {

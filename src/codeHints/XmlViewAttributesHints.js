@@ -2,8 +2,11 @@ define((require, exports, module) => {
     "use strict";
 
     const XmlUtils = brackets.getModule("language/XMLUtils"),
+        CodeHintManager = brackets.getModule("editor/CodeHintManager"),
         ui5SchemaService = require("src/core/ui5SchemaService"),
         codeAnalyzer = require("src/editor/codeAnalyzer"),
+        I18nReader = require("src/ui5Project/I18nReader"),
+        ui5Files = require("src/ui5Project/ui5Files"),
         hintsUtils = require("src/codeHints/hintsUtils");
 
     class AttributeHints {
@@ -25,17 +28,27 @@ define((require, exports, module) => {
                         this.exclusion = this.tagInfo.attrName;
                         return true;
                     }
+                } else if (this.tagInfo.tokenType === XmlUtils.TOKEN_VALUE
+                    && this.tagInfo.token.string.indexOf(">") !== -1) {
+
+                    return true;
                 }
 
                 return false;
             } else {
-                if (implicitChar === " " || implicitChar === "'"
-                    || implicitChar === "\"" || implicitChar === "=") {
+                if (implicitChar === " "
+                    || implicitChar === "'"
+                    || implicitChar === "\""
+                    || implicitChar === "=") {
 
                     if (this.tagInfo.tokenType === XmlUtils.TOKEN_ATTR) {
                         this.exclusion = this.tagInfo.attrName;
                     }
 
+                    return true;
+                }
+
+                if (implicitChar === ">") {
                     return true;
                 }
 
@@ -58,7 +71,7 @@ define((require, exports, module) => {
                         namespacePrefix = "root";
                     }
 
-                    result = this._getResults(query, tag, namespacePrefix);
+                    result = this._getAttributes(query, tag, namespacePrefix);
 
                     return {
                         hints: result,
@@ -69,11 +82,33 @@ define((require, exports, module) => {
                 }
             }
 
+            if (this.tagInfo.tokenType === XmlUtils.TOKEN_VALUE) {
+                //model binding attribute help
+                const deferredHints = $.Deferred(), //eslint-disable-line
+                    query = this.tagInfo.token.string.slice(0, this.tagInfo.offset),
+                    parts = query.split(">"),
+                    modelName = parts[0].replace(/['"{}]/g, ""),
+                    searchString = parts[1];
+
+                this._getModelHints(modelName, searchString).then((hints) => {
+                    if (hints) {
+                        deferredHints.resolveWith(null, [hints]);
+                    } else {
+                        deferredHints.resolveWith(null, []);
+                    }
+                }, () => {
+                    deferredHints.resolveWith(null, []);
+                });
+
+                return deferredHints;
+            }
+
             return null;
         }
 
         insertHint(completion) {
             let textToInsert = completion.contents().first().text();
+            const cursor = this.editor.getCursorPos();
 
             const start = {
                     line: -1,
@@ -87,8 +122,6 @@ define((require, exports, module) => {
             let charCount = 0,
                 insertedName = false;
 
-            const cursor = this.editor.getCursorPos();
-
             if (this.tagInfo.tokenType === XmlUtils.TOKEN_ATTR) {
                 charCount = this.tagInfo.offset;
 
@@ -96,15 +129,26 @@ define((require, exports, module) => {
                     textToInsert += "=\"\"";
                     insertedName = true;
                 }
+
+                if (this.tagInfo.token.string.trim().length === 0) {
+                    start.ch = cursor.ch;
+                } else {
+                    start.ch = cursor.ch - this.tagInfo.offset;
+                }
+            }
+
+            if (this.tagInfo.tokenType === XmlUtils.TOKEN_VALUE) {
+                if (this.tagInfo.token.string.indexOf(">") !== -1) {
+                    const token = this.tagInfo.token.string.replace(/['"]/g, "");
+                    const parts = token.split(">");
+                    start.ch = this.tagInfo.token.start + parts[0].length + 2;
+                    charCount = parts[1].replace(/}/g, "").length;
+                } else {
+                    start.ch = cursor.ch;
+                }
             }
 
             end.line = start.line = cursor.line;
-            if (this.tagInfo.token.string.trim().length === 0) {
-                start.ch = cursor.ch;
-            } else {
-                start.ch = cursor.ch - this.tagInfo.offset;
-            }
-
             end.ch = start.ch + charCount;
 
             if (start.ch !== end.ch) {
@@ -120,7 +164,7 @@ define((require, exports, module) => {
             return false;
         }
 
-        _getResults(attributeQuery, tag, namespacePrefix) {
+        _getAttributes(attributeQuery, tag, namespacePrefix) {
             let result;
             let namespace;
 
@@ -214,6 +258,79 @@ define((require, exports, module) => {
             }
 
             return result;
+        }
+
+        _getModelHints(modelName, searchString) {
+            //i18n model?
+            function search(reader) {
+                let values;
+
+                if (!searchString || searchString === "") {
+                    values = reader.getValues();
+                } else {
+                    values = reader.getValuesStartingWith(searchString);
+                }
+
+                return values;
+            }
+
+            return new Promise((resolve) => {
+                ui5Files.getModelInfo(modelName).then((modelInfo) => {
+                    if (modelInfo.type === "i18n") {
+                        let reader, values;
+
+                        if (CodeHintManager.isOpen()) {
+                            //use cached reader
+                            values = search(this._cachedReader);
+                            resolve(this._prepareI18nValueHints(values));
+                        } else {
+                            reader = new I18nReader(modelInfo.path);
+                            this._cachedReader = reader;
+
+                            reader.open().then(() => {
+                                values = search(reader);
+                                resolve(this._prepareI18nValueHints(values));
+                            });
+                        }
+                    }
+                }, (error) => {
+                    console.warn(error);
+                    resolve(this._prepareI18nValueHints([]));
+                });
+            });
+        }
+
+        _prepareI18nValueHints(values) {
+            const items = [];
+
+            values.forEach((entry) => {
+
+                //skip empty keys
+                const keys = Object.keys(entry);
+
+                if (!keys || keys[0] === "") {
+                    return;
+                }
+
+                let item = {};
+                item.name = keys[0];
+                item.description = entry[item.name];
+
+                //flatten description if multiple key exists
+                if (typeof item.description === "object") {
+                    item.description = item.description[0];
+                }
+
+                item = hintsUtils.buildHintListEntry(item);
+                items.push(item);
+            });
+
+            return {
+                hints: items,
+                match: null,
+                selectInitial: true,
+                handleWideResults: false
+            };
         }
     }
 

@@ -13,7 +13,9 @@ define((require) => {
 
         odataMockGeneratorSpec = require("tests/features/odataMockGeneratorSpec"),
         docsPanelSpec = require("tests/features/docsPanelSpec"),
-        snippetsSpec = require("tests/features/snippetsSpec");
+        snippetsSpec = require("tests/features/snippetsSpec"),
+
+        i18nReaderSpec = require("tests/features/i18nReaderSpec");
 
     describe("[wozjac.ui5] Brackets UI5: core", () => {
         ui5ApiSpec.getTests();
@@ -33,5 +35,9 @@ define((require) => {
         snippetsSpec.getTests();
         odataMockGeneratorSpec.getTests();
         docsPanelSpec.getTests();
+    });
+
+    describe("[wozjac.ui5] Brackets UI5: UI5 project", () => {
+        i18nReaderSpec.getTests();
     });
 });
