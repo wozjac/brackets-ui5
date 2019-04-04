@@ -108,17 +108,17 @@ define((require, exports) => {
                 this._previousSearchedObjectName = this._searchedObjectName;
                 this._searchedObjectName = parts[0];
 
-                //let memberSearchString, memberGroupFilter;
-
                 if (parts.length === 2 && parts[1]) {
                     this._memberSearchString = parts[1];
-                    const match = this._memberSearchString.match(/\?[mpea](.*)/i);
+                    const match = this._memberSearchString.match(/(\?[mpeac])(.*)/i);
 
                     if (match) {
-                        this._memberGroupFilter = match[0].replace("?", "");
-                        const memberSearchPart = match[1].trim();
+                        this._memberGroupFilter = match[1].replace("?", "").toLowerCase();
+                        const memberSearchPart = match[2].trim();
 
-                        if (memberSearchPart) {
+                        if (memberSearchPart
+                            && this._memberGroupFilter !== constants.memberGroupFilter.construct) {
+
                             this._memberSearchString = memberSearchPart;
                         } else {
                             this._memberSearchString = null;
@@ -134,6 +134,11 @@ define((require, exports) => {
 
                     this._memberSearchString = null;
                     this._memberGroupFilter = null;
+                }
+
+                //skip single ? sign
+                if (this._memberSearchString === "?") {
+                    this._memberSearchString = null;
                 }
 
                 const ui5Objects = ui5ApiFinder.findUi5ApiObjects({
@@ -258,8 +263,8 @@ define((require, exports) => {
         _getDesignApi(ui5ObjectPath) {
             let designApi = ui5ApiService.getUi5ObjectDesignApi(ui5ObjectPath);
 
-            if (this._memberSearchString) {
-                designApi = ui5ApiFormatter.filterApiMembers(designApi, this._memberSearchString);
+            if (this._memberSearchString || this._memberGroupFilter) {
+                designApi = ui5ApiFormatter.filterApiMembers(designApi, this._memberSearchString, this._memberGroupFilter);
             }
 
             designApi = ui5ApiFormatter.getFormattedObjectApi(designApi, true, true);
