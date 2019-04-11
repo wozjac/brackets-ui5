@@ -108,10 +108,8 @@ define((require, exports) => {
 
                 expect(defineEnd.arrayEndLocation.end.line).toEqual(1);
                 expect(defineEnd.arrayEndLocation.end.column).toEqual(42);
-                expect(defineEnd.arrayEnd).toEqual(42);
                 expect(defineEnd.functionEndLocation.end.line).toEqual(1);
                 expect(defineEnd.functionEndLocation.end.column).toEqual(65);
-                expect(defineEnd.functionEnd).toEqual(65);
             });
 
             it("Should return a closing bracket position for define statement in code with invalid syntax #1", () => {
@@ -126,10 +124,8 @@ define((require, exports) => {
                 const defineEnd = astTool.getDefineStatementEndPositions(astTool.parse(code));
                 expect(defineEnd.arrayEndLocation.end.line).toEqual(1);
                 expect(defineEnd.arrayEndLocation.end.column).toEqual(42);
-                expect(defineEnd.arrayEnd).toEqual(42);
                 expect(defineEnd.functionEndLocation.end.line).toEqual(1);
                 expect(defineEnd.functionEndLocation.end.column).toEqual(65);
-                expect(defineEnd.functionEnd).toEqual(65);
             });
 
             it("Should return a closing bracket position for define statement in correct code #2", () => {
@@ -148,10 +144,8 @@ define((require, exports) => {
 
                 expect(defineEnd.arrayEndLocation.end.line).toEqual(3);
                 expect(defineEnd.arrayEndLocation.end.column).toEqual(32);
-                expect(defineEnd.arrayEnd).toEqual(84);
                 expect(defineEnd.functionEndLocation.end.line).toEqual(4);
                 expect(defineEnd.functionEndLocation.end.column).toEqual(39);
-                expect(defineEnd.functionEnd).toEqual(124);
             });
 
             it("Should return a closing bracket position for require statement in correct code #1", () => {
@@ -170,10 +164,8 @@ define((require, exports) => {
 
                 expect(requireEnd.arrayEndLocation.end.line).toEqual(3);
                 expect(requireEnd.arrayEndLocation.end.column).toEqual(32);
-                expect(requireEnd.arrayEnd).toEqual(84);
                 expect(requireEnd.functionEndLocation.end.line).toEqual(4);
                 expect(requireEnd.functionEndLocation.end.column).toEqual(39);
-                expect(requireEnd.functionEnd).toEqual(124);
             });
         });
     };

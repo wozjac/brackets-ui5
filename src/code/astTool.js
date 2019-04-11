@@ -147,8 +147,6 @@ define((require, exports) => {
                     if (lastPath && lastIdentifier) {
                         result = {
                             arrayEndLocation: lastPath.loc,
-                            arrayEnd: lastPath.end,
-                            functionEnd: lastIdentifier.end,
                             functionEndLocation: lastIdentifier.loc,
                             emptyArray,
                             emptyFunction
