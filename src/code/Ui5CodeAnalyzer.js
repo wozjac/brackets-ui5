@@ -108,7 +108,12 @@ define((require, exports, module) => {
 
         _getUi5VariableType(node) {
             const variableType = astTool.getVariableType(node, this._ast);
-            return jsTool.getUi5ObjectFromDefineStatement(variableType, this._sourceCode);
+
+            if (jsTool.isFullUi5Path(variableType)) {
+                return ui5ApiFinder.findUi5ObjectByName(variableType);
+            } else {
+                return jsTool.getUi5ObjectFromDefineStatement(variableType, this._sourceCode);
+            }
         }
     }
 

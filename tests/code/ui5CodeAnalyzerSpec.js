@@ -3,7 +3,6 @@ define((require, exports) => {
 
     const CodeAnalyzer = require("src/code/Ui5CodeAnalyzer"),
         ui5ApiFinder = require("src/core/ui5ApiFinder"),
-        textTool = require("src/editor/textTool"),
         testUtils = require("tests/testUtils"),
         editorUtils = require("tests/editorUtils");
 
@@ -33,7 +32,7 @@ define((require, exports) => {
                     switch (path) {
                         case "sap.ui.core.Label":
                             return ui5CoreLabelObject;
-                        case "sap.m.Tree":
+                        case "sap.m.Label":
                             return ui5LabelObject;
                     }
                 });
@@ -83,12 +82,12 @@ define((require, exports) => {
 
                 function() {
                     let i = new Label();
-                    let lab = new Label();  //ui5: sap.ui.core.Label
-                    lab
+                    let labk = new Label();  //ui5: sap.ui.core.Label
+                    labk
                 }
                 }`;
 
-                const token = "lab",
+                const token = "labk",
                     position = {
                         line: 7,
                         ch: 0
@@ -106,12 +105,12 @@ define((require, exports) => {
 
                 function() {
                     let i = new Label();
-                    var lab = new Label();  //ui5: sap.ui.core.Label
-                    lab
+                    var labk = new Label();  //ui5: sap.ui.core.Label
+                    labk
                 }
                 )}`;
 
-                const token = "lab",
+                const token = "labk",
                     position = {
                         line: 7,
                         ch: 0
@@ -187,7 +186,7 @@ define((require, exports) => {
                 expect(codeAnalyzer.resolveUi5Token("lab", {
                     line: 8,
                     ch: 0
-                })[0]).toEqual(ui5CoreLabelObject);
+                })[0]).toEqual(ui5LabelObject);
             });
 
             it("Should return ui5 path from the object constructor #3", () => {
@@ -223,15 +222,18 @@ define((require, exports) => {
 
                 function() {
                     let i = new Label();
-                    const lab = new Label(); //ui5: sap.ui.core.Label
-                    lab
+                    const labk = new Label(); //ui5: sap.ui.core.Label
+                    labk
                 }
-            )}`;
+                )}`;
 
-                expect(codeAnalyzer.resolveUi5Token("lab", {
+                const mockEditor = editorUtils.createMockEditor(code, "javascript");
+                const codeAnalyzer = new CodeAnalyzer(mockEditor.doc.getText());
+
+                expect(codeAnalyzer.resolveUi5Token("labk", {
                     line: 11,
                     ch: 0
-                }, code)).toEqual([ui5CoreLabelObject]);
+                })[0]).toEqual(ui5CoreLabelObject);
             });
 
             it("Should resolve the ui5 token #2", () => {
@@ -245,37 +247,18 @@ define((require, exports) => {
 
                 function() {
                     let i = new Label();
-                    const lab = new sap.m.Label(); /* ui5:sap.ui.core.Label */
-                    lab
+                    const labk = new sap.m.Label(); /* ui5:sap.ui.core.Label */
+                    labk
                 }
-            )}`;
+                )}`;
 
-                expect(codeAnalyzer.resolveUi5Token("lab", {
+                const mockEditor = editorUtils.createMockEditor(code, "javascript");
+                const codeAnalyzer = new CodeAnalyzer(mockEditor.doc.getText());
+
+                expect(codeAnalyzer.resolveUi5Token("labk", {
                     line: 11,
                     ch: 0
-                }, code)).toEqual([ui5CoreLabelObject]);
-            });
-
-            it("Should resolve the ui5 token #3", () => {
-                const code = `sap.ui.define([
-                "sap/m/Label", "sap/m/Button"
-                ],
-                function(Label, Button) {
-                    var lab = new sap.m.Label();
-                    lab
-                }
-
-                function() {
-                    let i = new Label();
-                    const lab = new sap.m.Label(); /* ui: sap.ui.core.Label */
-                    lab
-                }
-            )}`;
-
-                expect(codeAnalyzer.resolveUi5Token("lab", {
-                    line: 11,
-                    ch: 0
-                }, code)).toEqual([ui5LabelObject]);
+                })[0]).toEqual(ui5CoreLabelObject);
             });
 
             it("Should resolve the ui5 token #4", () => {
@@ -289,15 +272,18 @@ define((require, exports) => {
 
                 function() {
                     let i = new Label();
-                    const lab = new Label(); /* comment */
-                    lab
+                    const labk = new Label(); /* comment */
+                    labk
                 }
-            )}`;
+                )}`;
 
-                expect(codeAnalyzer.resolveUi5Token("lab", {
+                const mockEditor = editorUtils.createMockEditor(code, "javascript");
+                const codeAnalyzer = new CodeAnalyzer(mockEditor.doc.getText());
+
+                expect(codeAnalyzer.resolveUi5Token("labk", {
                     line: 11,
                     ch: 0
-                }, code)).toEqual([ui5LabelObject]);
+                })[0]).toEqual(ui5LabelObject);
             });
 
             it("Should resolve the ui5 token #5", () => {
@@ -311,15 +297,18 @@ define((require, exports) => {
 
                 function() {
                     let i = new Label();
-                    const lab = new Label();
-                    lab
+                    const labk = new Label();
+                    labk
                 }
-            )}`;
+                )}`;
+
+                const mockEditor = editorUtils.createMockEditor(code, "javascript");
+                const codeAnalyzer = new CodeAnalyzer(mockEditor.doc.getText());
 
                 expect(codeAnalyzer.resolveUi5Token("Label", {
                     line: 5,
                     ch: 0
-                }, code)).toEqual([ui5LabelObject]);
+                })[0]).toEqual(ui5LabelObject);
             });
 
             it("Should resolve the ui5 token #6", () => {
@@ -332,18 +321,21 @@ define((require, exports) => {
 
                 function() {
                     let i = new Label();
-                    const lab = new sap.ui.core.Label();
-                    lab
+                    const labk = new sap.ui.core.Label();
+                    labk
                 }
-            )}`;
+                )}`;
 
-                expect(codeAnalyzer.resolveUi5Token("lab", {
+                const mockEditor = editorUtils.createMockEditor(code, "javascript");
+                const codeAnalyzer = new CodeAnalyzer(mockEditor.doc.getText());
+
+                expect(codeAnalyzer.resolveUi5Token("labk", {
                     line: 10,
                     ch: 0
-                }, code)).toEqual([ui5CoreLabelObject]);
+                })[0]).toEqual(ui5CoreLabelObject);
             });
 
-            it("Should resolve the ui5 token #6", () => {
+            it("Should resolve the ui5 token #7", () => {
                 const code = `sap.ui.define([
                 "sap/m/Label", "sap/m/Button"
                 ],
@@ -353,43 +345,18 @@ define((require, exports) => {
 
                 function() {
                     let i = new Label();
-                    const lab = new sap.ui.core.Label();
-                    lab
+                    const labk = new sap.ui.core.Label();
+                    labk
                 }
-            )}`;
+                )}`;
+
+                const mockEditor = editorUtils.createMockEditor(code, "javascript");
+                const codeAnalyzer = new CodeAnalyzer(mockEditor.doc.getText());
 
                 expect(codeAnalyzer.resolveUi5Token("Label", {
                     line: 3,
                     ch: 0
-                }, code)).toEqual([ui5LabelObject]);
-            });
-
-            it("Should resolve the ui5 token #6", () => {
-                const code = `sap.ui.define
-                (
-                [
-                'sap/m/Label',
-                'sap/m/Button'
-                ],
-                function
-                    (
-                        Label,
-                Button) {
-                    var lab = new Label();
-                    lab
-                }
-
-                function() {
-                    let i = new Label();
-                    const lab = new sap.ui.core.Label();
-                    lab
-                }
-            )}`;
-
-                expect(codeAnalyzer.resolveUi5Token("lab", {
-                    line: 11,
-                    ch: 0
-                }, code)).toEqual([ui5LabelObject]);
+                })[0]).toEqual(ui5LabelObject);
             });
         });
     };
