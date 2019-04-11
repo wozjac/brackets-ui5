@@ -1,7 +1,7 @@
 define((require, exports) => {
     "use strict";
 
-    const Ui5XmlProcessor = require("src/core/Ui5XmlProcessor"),
+    const Ui5XmlProcessor = require("src/code/Ui5XmlProcessor"),
         preferences = require("src/main/preferences"),
         strings = require("strings"),
         constants = require("src/core/constants");

@@ -2,7 +2,7 @@ define((require, exports) => {
     "use strict";
 
     const InlineDocsViewer = require("./inlineDocsViewer"),
-        codeAnalyzer = require("src/editor/codeAnalyzer"),
+        Ui5CodeAnalyzer = require("src/code/Ui5CodeAnalyzer"),
         codeEditor = require("src/editor/codeEditor"),
         ui5ApiFormatter = require("src/core/ui5ApiFormatter"),
         ui5ApiService = require("src/core/ui5ApiService");
@@ -26,7 +26,8 @@ define((require, exports) => {
         }
 
         const result = new $.Deferred();
-        const ui5Objects = codeAnalyzer.resolveUi5Token(token.string, position, hostEditor.document.getText(), true);
+        const codeAnalyzer = new Ui5CodeAnalyzer(hostEditor.document.getText());
+        const ui5Objects = codeAnalyzer.resolveUi5Token(token.string, position, true);
 
         if (ui5Objects.length === 0) {
             return null;

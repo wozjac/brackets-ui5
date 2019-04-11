@@ -7,10 +7,11 @@ define((require, exports, module) => {
         ScopeManager = brackets.getModule("JSUtils/ScopeManager"),
         EditorManager = brackets.getModule("editor/EditorManager"),
         ui5ApiService = require("src/core/ui5ApiService"),
+        codeEditor = require("src/editor/codeEditor"),
         strings = require("strings"),
         hintUtils = require("src/codeHints/hintsUtils"),
         ui5ApiFormatter = require("src/core/ui5ApiFormatter"),
-        codeAnalyzer = require("src/editor/codeAnalyzer");
+        Ui5CodeAnalyzer = require("src/code/Ui5CodeAnalyzer");
 
     Session.prototype._getContextToken = function (cursor, depth) {
         const token = this.getToken(cursor);
@@ -65,8 +66,7 @@ define((require, exports, module) => {
 
             if (!session) {
                 Ui5CodeHints.initializeSession(editor);
-                EditorManager.on(HintUtils.eventName("activeEditorChange"),
-                    Ui5CodeHints.handleActiveEditorChange);
+                EditorManager.on(HintUtils.eventName("activeEditorChange"), Ui5CodeHints.handleActiveEditorChange);
             }
 
             if (!HintUtils.hintableKey(implicitChar, true)) {
@@ -98,9 +98,11 @@ define((require, exports, module) => {
                     };
 
                     try {
+                        const codeAnalyzer = new Ui5CodeAnalyzer(codeEditor.getSourceCode());
+
                         this.proposedUi5Object = codeAnalyzer.resolveUi5Token(
-                            this.objectIdentifier, position,
-                            this.editor.document.getText(), true)[0];
+                            this.objectIdentifier, position, true
+                        )[0];
 
                         if (this.proposedUi5Object === this.cachedUi5Object
                             && this.queryToken.string === this.cachedQuery) {

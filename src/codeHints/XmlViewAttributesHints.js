@@ -4,7 +4,7 @@ define((require, exports, module) => {
     const XmlUtils = brackets.getModule("language/XMLUtils"),
         CodeHintManager = brackets.getModule("editor/CodeHintManager"),
         ui5SchemaService = require("src/core/ui5SchemaService"),
-        codeAnalyzer = require("src/editor/codeAnalyzer"),
+        xmlExtract = require("src/code/xmlExtract"),
         I18nReader = require("src/ui5Project/I18nReader"),
         ui5Files = require("src/ui5Project/ui5Files"),
         hintsUtils = require("src/codeHints/hintsUtils");
@@ -168,7 +168,7 @@ define((require, exports, module) => {
             let result;
             let namespace;
 
-            const namespaces = codeAnalyzer.extractXmlNamespaces(this.editor.document.getText());
+            const namespaces = xmlExtract.extractXmlNamespaces(this.editor.document.getText());
 
             if (Object.keys(namespaces).length === 0) { //no namespaces in the document, search all
                 result = this._searchAllAttributes(attributeQuery, tag);

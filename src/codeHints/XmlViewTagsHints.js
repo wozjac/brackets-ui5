@@ -5,7 +5,7 @@ define((require, exports, module) => {
         CodeHintManager = brackets.getModule("editor/CodeHintManager"),
         hintUtils = require("src/codeHints/hintsUtils"),
         ui5SchemaService = require("src/core/ui5SchemaService"),
-        codeAnalyzer = require("src/editor/codeAnalyzer");
+        xmlExtract = require("src/code/xmlExtract");
 
     class TagHints {
         constructor() {
@@ -176,7 +176,7 @@ define((require, exports, module) => {
         _getResults(tagQuery, namespacePrefix) {
             let result, namespace;
 
-            const namespaces = codeAnalyzer.extractXmlNamespaces(this.editor.document.getText());
+            const namespaces = xmlExtract.extractXmlNamespaces(this.editor.document.getText());
 
             if (Object.keys(namespaces).length === 0) { //no namespaces in the source, full search
                 result = this._search(tagQuery);
