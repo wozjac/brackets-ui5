@@ -1,8 +1,7 @@
 define((require, exports) => {
     "use strict";
 
-    const DocumentManager = brackets.getModule("document/DocumentManager"),
-        codeAnalyzer = require("src/editor/codeAnalyzer"),
+    const CodeAnalyzer = require("src/code/Ui5CodeAnalyzer"),
         ui5ApiFinder = require("src/core/ui5ApiFinder"),
         textTool = require("src/editor/textTool"),
         testUtils = require("tests/testUtils"),
@@ -40,105 +39,6 @@ define((require, exports) => {
                 });
             });
 
-            it("Should not extract falsy array", () => {
-                expect(codeAnalyzer.extractDefineObjects(undefined)).toBe(null);
-                expect(codeAnalyzer.extractDefineObjects("")).toBe(null);
-            });
-
-            it("Should extract define statement array", () => {
-                const result = codeAnalyzer.extractDefineObjects("test1/Object1, test2/Object2");
-                expect(result).toEqual(["test1/Object1", "test2/Object2"]);
-            });
-
-            it("Should resolve the token as an object with a full path", () => {
-                expect(codeAnalyzer.isFullUi5Path("sap.m.Tree")).toBe(true);
-                expect(codeAnalyzer.isFullUi5Path("sap/m/Tree")).toBe(true);
-            });
-
-            it("Should not resolve the token as an object with a full path", () => {
-                expect(codeAnalyzer.isFullUi5Path("Label")).toBe(false);
-            });
-
-            it("Should return define statement objects", () => {
-                const code1 = `sap.ui.define(["sap/m/Label", "sap/m/Text"], function(Label, Text) {
-                "use strict";
-
-                init: function() {
-                    label.setText("test");
-                }
-            })`;
-
-                expect(codeAnalyzer.getDefineStatementObjects(code1)).toEqual({
-                    Label: "sap/m/Label",
-                    Text: "sap/m/Text"
-                });
-
-                const messyCode1 = `sap.ui.define([
-                "sap/m/Label",
-                         "sap/m/Text"],
-                            function(Label,
-                        Text) {
-                "use strict";
-
-                init: function() {
-                    label.setText("test");
-                }
-            })`;
-
-                expect(codeAnalyzer.getDefineStatementObjects(messyCode1)).toEqual({
-                    Label: "sap/m/Label",
-                    Text: "sap/m/Text"
-                });
-
-                const messyCode2 = `sap.ui.define([ /* comment */
-                "sap/m/Label", "sap/m/Text"
-
-
-                    ], //comment
-                            function(
-                                Label,
-                        Text
-                    )
-                {
-                "use strict";
-
-                init: function() {
-                    label.setText("test");
-                }
-            })`;
-
-                expect(codeAnalyzer.getDefineStatementObjects(messyCode2)).toEqual({
-                    Label: "sap/m/Label",
-                    Text: "sap/m/Text"
-                });
-
-                const messyCode3 = `sap.ui.define(
-                [
-                    /* comment */
-                "sap/m/Label"
-                ,
-                "sap/m/Text"
-                    ]
-                , //comment
-                            function
-                    (
-                                Label,
-                        Text
-                    )
-                {
-                "use strict";
-
-                init: function() {
-                    label.setText("test");
-                }
-            })`;
-
-                expect(codeAnalyzer.getDefineStatementObjects(messyCode3)).toEqual({
-                    Label: "sap/m/Label",
-                    Text: "sap/m/Text"
-                });
-            });
-
             it("Should return ui5 path from the comment #1", () => {
                 const code = "function() {\n"
                     + "let i = new Label();\n"
@@ -153,8 +53,8 @@ define((require, exports) => {
                     };
 
                 const mockEditor = editorUtils.createMockEditor(code, "javascript");
-                const scopeCode = codeAnalyzer.getVariableScope(token, position, mockEditor.doc);
-                expect(codeAnalyzer.getObjectFromComment(token, position, mockEditor.doc, scopeCode)).toBe(ui5CoreLabelObject);
+                const codeAnalyzer = new CodeAnalyzer(mockEditor.doc.getText());
+                expect(codeAnalyzer.resolveUi5Token(token, position)[0]).toBe(ui5CoreLabelObject);
                 editorUtils.destroyMockEditor(mockEditor.doc);
             });
 
@@ -172,8 +72,8 @@ define((require, exports) => {
                     };
 
                 const mockEditor = editorUtils.createMockEditor(code, "javascript");
-                const scopeCode = codeAnalyzer.getVariableScope(token, position, mockEditor.doc);
-                expect(codeAnalyzer.getObjectFromComment(token, position, mockEditor.doc, scopeCode)).toBe(ui5CoreLabelObject);
+                const codeAnalyzer = new CodeAnalyzer(mockEditor.doc.getText());
+                expect(codeAnalyzer.resolveUi5Token(token, position)[0]).toBe(ui5CoreLabelObject);
             });
 
             it("Should return ui5 path from the comment #3", () => {
@@ -195,8 +95,8 @@ define((require, exports) => {
                     };
 
                 const mockEditor = editorUtils.createMockEditor(code, "javascript");
-                const scopeCode = codeAnalyzer.getVariableScope(token, position, mockEditor.doc);
-                expect(codeAnalyzer.getObjectFromComment(token, position, mockEditor.doc, scopeCode)).toBe(ui5CoreLabelObject);
+                const codeAnalyzer = new CodeAnalyzer(mockEditor.doc.getText());
+                expect(codeAnalyzer.resolveUi5Token(token, position)[0]).toBe(ui5CoreLabelObject);
             });
 
             it("Should return ui5 path from the comment #4", () => {
@@ -218,8 +118,8 @@ define((require, exports) => {
                     };
 
                 const mockEditor = editorUtils.createMockEditor(code, "javascript");
-                const scopeCode = codeAnalyzer.getVariableScope(token, position, mockEditor.doc);
-                expect(codeAnalyzer.getObjectFromComment(token, position, mockEditor.doc, scopeCode)).toBe(ui5CoreLabelObject);
+                const codeAnalyzer = new CodeAnalyzer(mockEditor.doc.getText());
+                expect(codeAnalyzer.resolveUi5Token(token, position)[0]).toBe(ui5CoreLabelObject);
             });
 
             it("Should return ui5 path from the comment #5", () => {
@@ -230,8 +130,8 @@ define((require, exports) => {
 
                 function() {
                     let i = new Label();
-                    let lab = new Label();
-                    lab
+                    let label = new Label();
+                    label
                 }
                 )}`;
 
@@ -242,64 +142,8 @@ define((require, exports) => {
                     };
 
                 const mockEditor = editorUtils.createMockEditor(code, "javascript");
-                const scopeCode = codeAnalyzer.getVariableScope(token, position, mockEditor.doc);
-                expect(codeAnalyzer.getObjectFromComment(token, position, mockEditor.doc, scopeCode)).toBe(ui5CoreLabelObject);
-            });
-
-            it("Should return the closest match object #1", () => {
-                const code = `sap.ui.define(["sap/m/Label"], function(Label) {
-                    let lab = new sap.m.Label(); //ui5: sap.ui.core.Label
-                    lab
-                }
-
-                function() {
-                    let i = new Label();
-                    let lab = new Label();
-                    lab
-                }
-            )}`;
-
-                let match;
-                const regex = /let lab/g,
-                    matches = [];
-
-                do {
-                    match = regex.exec(code);
-                    if (match) {
-                        matches.push(match);
-                    }
-                } while (match);
-
-                textTool.addSubmatches(matches, code, regex);
-                expect(codeAnalyzer.getClosestMatch(260, matches)).toBe(matches[1][0]);
-            });
-
-            it("Should return the closest match object #2", () => {
-                const code = `sap.ui.define(["sap/m/Label"], function(Label) {
-                    let lab = new sap.m.Label(); //ui5: sap.ui.core.Label
-                    lab
-                }
-
-                function() {
-                    let i = new Label();
-                    let lab = new Label();
-                    lab
-                }
-            )}`;
-
-                let match;
-                const regex = /let lab/g,
-                    matches = [];
-
-                do {
-                    match = regex.exec(code);
-                    if (match) {
-                        matches.push(match);
-                    }
-                } while (match);
-
-                textTool.addSubmatches(matches, code, regex);
-                expect(codeAnalyzer.getClosestMatch(70, matches)).toBe(matches[0][0]);
+                const codeAnalyzer = new CodeAnalyzer(mockEditor.doc.getText());
+                expect(codeAnalyzer.resolveUi5Token(token, position)[0]).toBe(ui5CoreLabelObject);
             });
 
             it("Should return ui5 path from the object constructor #1", () => {
@@ -309,16 +153,19 @@ define((require, exports) => {
                 }
 
                 function() {
-                    let i = new Label();
-                    let lab = new sap.ui.core.Label();
-                    lab
-                }
-            )}`;
+                        let i = new Label();
+                        let labk = new sap.ui.core.Label();
+                        lab
+                    }
+                )}`;
 
-                expect(codeAnalyzer.getObjectByConstructor("lab", {
+                const mockEditor = editorUtils.createMockEditor(code, "javascript");
+                const codeAnalyzer = new CodeAnalyzer(mockEditor.doc.getText());
+
+                expect(codeAnalyzer.resolveUi5Token("lab", {
                     line: 8,
                     ch: 0
-                }, code)).toEqual([ui5CoreLabelObject]);
+                })[0]).toEqual(ui5CoreLabelObject);
             });
 
             it("Should return ui5 path from the object constructor #2", () => {
@@ -329,15 +176,18 @@ define((require, exports) => {
 
                 function() {
                     let i = new Label();
-                    const lab = new Label();
+                    const labk = new Label();
                     lab
                 }
-            )}`;
+                )}`;
 
-                expect(codeAnalyzer.getObjectByConstructor("lab", {
+                const mockEditor = editorUtils.createMockEditor(code, "javascript");
+                const codeAnalyzer = new CodeAnalyzer(mockEditor.doc.getText());
+
+                expect(codeAnalyzer.resolveUi5Token("lab", {
                     line: 8,
                     ch: 0
-                }, code)).toEqual([ui5CoreLabelObject]);
+                })[0]).toEqual(ui5CoreLabelObject);
             });
 
             it("Should return ui5 path from the object constructor #3", () => {
@@ -348,75 +198,18 @@ define((require, exports) => {
 
                 function() {
                     let i = new Label();
-                    let lab = new sap.m.Label();
+                    let labk = new sap.m.Label();
                     lab
                 }
-            )}`;
+                )}`;
 
-                expect(codeAnalyzer.getObjectByConstructor("lab", {
+                const mockEditor = editorUtils.createMockEditor(code, "javascript");
+                const codeAnalyzer = new CodeAnalyzer(mockEditor.doc.getText());
+
+                expect(codeAnalyzer.resolveUi5Token("lab", {
                     line: 2,
                     ch: 0
-                }, code)).toEqual([ui5CoreLabelObject]);
-            });
-
-            it("Should return ui5 path from the object from the define statement #1", () => {
-                const code = `sap.ui.define(["sap/ui/core/Label"], function(Label) {
-                    Label
-                }
-            )}`;
-
-                expect(codeAnalyzer.getObjectFromDefineStatement("Label", code)).toEqual(ui5CoreLabelObject);
-            });
-
-            it("Should return ui5 path from the object from the define statement #2", () => {
-                const code = `sap.ui.define(["sap/ui/core/Label", "sap/m/Label"], function(Label, MLabel) {
-                    Label
-                }
-            )}`;
-
-                expect(codeAnalyzer.getObjectFromDefineStatement("Label", code)).toEqual(ui5CoreLabelObject);
-            });
-
-            it("Should return ui5 path from the object from the define statement #3", () => {
-                const code = `sap.ui.define(["sap/m/Button", sap/ui/core/Label", "sap/m/Label"], function(Button, Label, MLabel)    {
-                    Label
-                }
-            )}`;
-
-                expect(codeAnalyzer.getObjectFromDefineStatement("Label", code)).toEqual(ui5CoreLabelObject);
-            });
-
-            it("Should return ui5 path from the object from the define statement #4", () => {
-                const code = `sap.ui.define(["sap/m/Button", sap/ui/core/Label", "sap/m/Label", function(Button, Label, MLabel)    {
-                    Label
-                }
-            )}`;
-
-                expect(codeAnalyzer.getObjectFromDefineStatement("Label", code)).toBeUndefined();
-            });
-
-            it("Should return ui5 path from the object from the define statement #5", () => {
-                const code = `sap.ui.define(["sap/m/Button", sap/ui/core/Label"], "sap/m/Label", function(Button, Label, MLabel    {
-                    Label
-                }
-            )}`;
-
-                expect(codeAnalyzer.getObjectFromDefineStatement("Label", code)).toBeUndefined();
-            });
-
-            it("Should return ui5 path from the object from the define statement #6", () => {
-                const code = `sap.ui.define(["sap/m/Button", sap/ui/core/Label", "sap/m/Label"], function(Button, Label, MLabel    {
-                    Label
-                }
-            )}`;
-
-                expect(codeAnalyzer.getObjectFromDefineStatement("Label", code)).toEqual(ui5CoreLabelObject);
-            });
-
-            it("Should return ui5 path from the object from the define statement #7", () => {
-                const code = "sap.ui.define(['sap/m/Button', sap/ui/core/Label', 'sap/m/Label'], function(Button, Label, MLabel)";
-
-                expect(codeAnalyzer.getObjectFromDefineStatement("Label", code)).toEqual(ui5CoreLabelObject);
+                })[0]).toEqual(ui5CoreLabelObject);
             });
 
             it("Should resolve the ui5 token #1", () => {
@@ -597,22 +390,6 @@ define((require, exports) => {
                     line: 11,
                     ch: 0
                 }, code)).toEqual([ui5LabelObject]);
-            });
-
-            it("Should extract XML namespaces", () => {
-                const xml = `<mvc:View controllerName="RESOURCE.PATH.CONTROLLER_NAME"
-                                xmlns:html="http://www.w3.org/1999/xhtml"
-                                xmlns:mvc="sap.ui.core.mvc"
-                                displayBlock="true
-                                xmlns="sap.m" xmlns:c="sap.ui.commons">
-                            </mvc:View>`;
-
-                expect(codeAnalyzer.extractXmlNamespaces(xml)).toEqual({
-                    "root": "sap.m",
-                    "mvc": "sap.ui.core.mvc",
-                    "html": "http://www.w3.org/1999/xhtml",
-                    "c": "sap.ui.commons"
-                });
             });
         });
     };
