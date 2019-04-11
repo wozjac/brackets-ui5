@@ -6,6 +6,7 @@ define((require, exports) => {
         TokenUtils = brackets.getModule("utils/TokenUtils"),
         preferences = require("src/main/preferences"),
         constants = require("src/core/constants"),
+        astTool = require("src/code/astTool"),
         textTool = require("src/editor/textTool");
 
     function getSourceCode(document = DocumentManager.getCurrentDocument(), start, end) {
@@ -62,83 +63,39 @@ define((require, exports) => {
     }
 
     function insertInDefine(ui5objectPath, editor = EditorManager.getCurrentFullEditor()) {
-        let regexp = constants.regex.defineStatement,
-            text = getSourceCode(editor.document),
-            match = regexp.exec(text);
+        const sourceCode = getSourceCode(editor.document);
+        const ast = astTool.parse(sourceCode);
+        const endPostions = astTool.getDefineStatementEndPositions(ast, sourceCode);
 
-        if (match === null) {
-            regexp = constants.regex.defineES6Statement;
-            match = regexp.exec(text);
-        }
-
-        if (match === null) {
-            regexp = constants.regex.requireStatement;
-            match = regexp.exec(text);
-        }
-
-        if (match === null) {
-            regexp = constants.regex.requireES6Statement;
-            match = regexp.exec(text);
-        }
-
-        if (match) {
-            textTool.addSubmatches(match, text, regexp);
-
-            const params = match[3].text.trim();
-
-            /* define array content */
-            const arrayClosingBracketIndex = match[2].pos;
-            let string = text.substr(0, arrayClosingBracketIndex + 1),
-                lines = string.split("\n");
-
+        if (endPostions) {
             let insertObjectPosition = {
-                line: lines.length - 1,
-                ch: lines[lines.length - 1].indexOf("]")
-            };
-
-            let insertText = textTool.getQuote() + ui5objectPath.replace(/\./g, "/") + textTool.getQuote();
-
-            if (match[1].text.trim().length > 0) {
-                if (insertObjectPosition.ch === 0) {
-                    editor.document.replaceRange(",", {
-                        line: insertObjectPosition.line - 1,
-                        ch: lines[insertObjectPosition.line - 1].length
-                    });
-                } else {
-                    insertText = `,${insertText}`;
-                }
-            }
-
-            editor.document.replaceRange(insertText, insertObjectPosition);
-
-            insertObjectPosition = null;
-
-            /* function parameter */
-            text = editor.document.getText(false);
-            match = regexp.exec(text);
-            textTool.addSubmatches(match, text, regexp);
-            const functionClosingBracketIndex = match[4].pos;
-            string = text.substr(0, functionClosingBracketIndex + 1);
-            lines = string.split("\n");
-
-            insertObjectPosition = {
-                line: lines.length - 1,
-                ch: lines[lines.length - 1].indexOf(")")
+                line: endPostions.functionEndLocation.end.line - 1,
+                ch: endPostions.functionEndLocation.end.column
             };
 
             const objectName = ui5objectPath.substr(ui5objectPath.lastIndexOf(".") + 1);
-            insertText = objectName;
+            let insertText = objectName;
 
-            //const params = defineMatch[3].text.trim().match(/\(([^()).]*)\)/);
-            if (params && params.trim().length > 0) {
-                if (insertObjectPosition.ch === 0) {
-                    editor.document.replaceRange(",", {
-                        line: insertObjectPosition.line - 1,
-                        ch: lines[insertObjectPosition.line - 1].length
-                    });
-                } else {
-                    insertText = `,${insertText}`;
-                }
+            if (endPostions.emptyFunction) {
+                insertText = `${insertText}`;
+            } else {
+                insertText = `,${insertText}`;
+            }
+
+            editor.document.replaceRange(insertText, insertObjectPosition);
+            insertObjectPosition = null;
+
+            insertObjectPosition = {
+                line: endPostions.arrayEndLocation.end.line - 1,
+                ch: endPostions.arrayEndLocation.end.column
+            };
+
+            insertText = textTool.getQuote() + ui5objectPath.replace(/\./g, "/") + textTool.getQuote();
+
+            if (endPostions.emptyArray) {
+                insertText = `${insertText}`;
+            } else {
+                insertText = `,${insertText}`;
             }
 
             editor.document.replaceRange(insertText, insertObjectPosition);
