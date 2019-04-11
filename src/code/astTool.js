@@ -34,8 +34,36 @@ define((require, exports) => {
         let type;
 
         try {
-            if (node.init.callee.type === "Identifier") {
-                type = node.init.callee.name;
+            switch (node.init.callee.type) {
+                case "Identifier":
+                    type = node.init.callee.name;
+                    break;
+                case "MemberExpression":
+                    {
+                        let currentNode, path = "";
+                        currentNode = node.init.callee;
+
+                        while (currentNode) {
+                            try {
+                                if (path === "") {
+                                    path = currentNode.property.name;
+                                } else {
+                                    path = `${currentNode.property.name}.${path}`;
+                                }
+
+                                currentNode = currentNode.object;
+                            } catch (error) {
+                                if (currentNode.type === "Identifier") {
+                                    path = `${currentNode.name}.${path}`;
+                                }
+
+                                currentNode = null;
+                            }
+                        }
+
+                        type = path;
+                        break;
+                    }
             }
         } catch (error) {
             type = null;
