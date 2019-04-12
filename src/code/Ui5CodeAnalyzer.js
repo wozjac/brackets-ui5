@@ -18,6 +18,8 @@ define((require, exports, module) => {
                 onComment: comments
             });
 
+            astTool.getCodeInfo(this._ast);
+
             this._comments = comments;
         }
 
@@ -100,7 +102,7 @@ define((require, exports, module) => {
 
             if (!ui5Object) {
                 //direct match with define object?
-                ui5Object = jsTool.getUi5ObjectFromDefineStatement(token, this._sourceCode);
+                ui5Object = jsTool.getUi5ObjectFromDefineStatement(token, this._ast);
             }
 
             return ui5Object ? [ui5Object] : [];
@@ -112,7 +114,7 @@ define((require, exports, module) => {
             if (jsTool.isFullUi5Path(variableType)) {
                 return ui5ApiFinder.findUi5ObjectByName(variableType);
             } else {
-                return jsTool.getUi5ObjectFromDefineStatement(variableType, this._sourceCode);
+                return jsTool.getUi5ObjectFromDefineStatement(variableType, this._ast);
             }
         }
     }

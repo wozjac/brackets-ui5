@@ -98,7 +98,7 @@ define((require, exports, module) => {
                     };
 
                     try {
-                        const codeAnalyzer = new Ui5CodeAnalyzer(codeEditor.getSourceCode());
+                        const codeAnalyzer = new Ui5CodeAnalyzer(editor.document.getText());
 
                         this.proposedUi5Object = codeAnalyzer.resolveUi5Token(
                             this.objectIdentifier, position, true

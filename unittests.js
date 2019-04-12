@@ -9,9 +9,9 @@ define((require) => {
         ui5CodeAnalyzerSpec = require("tests/code/ui5CodeAnalyzerSpec"),
         xmlExtractSpec = require("tests/code/xmlExtractSpec"),
 
-        //xmlViewHintsSpec = require("tests/providers/xmlViewHintsSpec"),
-        //ui5CodeHintsSpec = require("tests/providers/ui5CodeHintsSpec"),
-        //quickDocsSpec = require("tests/providers/quickDocsSpec"),
+        xmlViewHintsSpec = require("tests/providers/xmlViewHintsSpec"),
+        ui5CodeHintsSpec = require("tests/providers/ui5CodeHintsSpec"),
+        quickDocsSpec = require("tests/providers/quickDocsSpec"),
 
         odataMockGeneratorSpec = require("tests/features/odataMockGeneratorSpec"),
         docsPanelSpec = require("tests/features/docsPanelSpec"),
@@ -29,9 +29,9 @@ define((require) => {
     });
 
     describe("[wozjac.ui5] Brackets UI5: providers", () => {
-        //ui5CodeHintsSpec.getTests();
-        //xmlViewHintsSpec.getTests();
-        //quickDocsSpec.getTests();
+        ui5CodeHintsSpec.getTests();
+        xmlViewHintsSpec.getTests();
+        quickDocsSpec.getTests();
     });
 
     describe("[wozjac.ui5] Brackets UI5: features", () => {
@@ -46,8 +46,8 @@ define((require) => {
 
     describe("[wozjac.ui5] Brackets UI5: code tools", () => {
         jsToolSpec.getTests();
-        //ui5CodeAnalyzerSpec.getTests();
-        //xmlExtractSpec.getTests();
+        ui5CodeAnalyzerSpec.getTests();
+        xmlExtractSpec.getTests();
         astToolSpec.getTests();
     });
 });

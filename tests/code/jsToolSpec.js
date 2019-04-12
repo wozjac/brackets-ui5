@@ -2,6 +2,7 @@ define((require, exports) => {
     "use strict";
 
     const jsTool = require("src/code/jsTool"),
+        astTool = require("src/code/astTool"),
         ui5ApiFinder = require("src/core/ui5ApiFinder"),
         testUtils = require("tests/testUtils");
 
@@ -62,7 +63,7 @@ define((require, exports) => {
                 }
                 )}`;
 
-                expect(jsTool.getUi5ObjectFromDefineStatement("Label", code)).toEqual(ui5CoreLabelObject);
+                expect(jsTool.getUi5ObjectFromDefineStatement("Label", astTool.parse(code))).toEqual(ui5CoreLabelObject);
             });
 
             it("Should return ui5 path from the object from the define statement #2", () => {
@@ -71,7 +72,7 @@ define((require, exports) => {
                 }
                 )}`;
 
-                expect(jsTool.getUi5ObjectFromDefineStatement("Label", code)).toEqual(ui5CoreLabelObject);
+                expect(jsTool.getUi5ObjectFromDefineStatement("Label", astTool.parse(code))).toEqual(ui5CoreLabelObject);
             });
 
             it("Should return ui5 path from the object from the define statement #3", () => {
@@ -80,7 +81,7 @@ define((require, exports) => {
                 }
                 )}`;
 
-                expect(jsTool.getUi5ObjectFromDefineStatement("Label", code)).toEqual(ui5CoreLabelObject);
+                expect(jsTool.getUi5ObjectFromDefineStatement("Label", astTool.parse(code))).toEqual(ui5CoreLabelObject);
             });
 
             it("Should return ui5 path from the object from the define statement #4", () => {
@@ -89,7 +90,7 @@ define((require, exports) => {
                 }
                 )}`;
 
-                expect(jsTool.getUi5ObjectFromDefineStatement("Label", code)).toBeUndefined();
+                expect(jsTool.getUi5ObjectFromDefineStatement("Label", astTool.parse(code))).toBeUndefined();
             });
 
             it("Should return ui5 path from the object from the define statement #5", () => {
@@ -98,7 +99,7 @@ define((require, exports) => {
                 }
                 )}`;
 
-                expect(jsTool.getUi5ObjectFromDefineStatement("Label", code)).toBeUndefined();
+                expect(jsTool.getUi5ObjectFromDefineStatement("Label", astTool.parse(code))).toBeUndefined();
             });
 
             it("Should return ui5 path from the object from the define statement #6", () => {
@@ -107,13 +108,13 @@ define((require, exports) => {
                 }
                 )}`;
 
-                expect(jsTool.getUi5ObjectFromDefineStatement("Label", code)).toBeUndefined();
+                expect(jsTool.getUi5ObjectFromDefineStatement("Label", astTool.parse(code))).toBeUndefined();
             });
 
             it("Should return ui5 path from the object from the define statement #7", () => {
                 const code = "sap.ui.define(['sap/m/Button', 'sap/ui/core/Label', 'sap/m/Label'], function(Button, Label, MLabel)";
 
-                expect(jsTool.getUi5ObjectFromDefineStatement("Label", code)).toEqual(ui5CoreLabelObject);
+                expect(jsTool.getUi5ObjectFromDefineStatement("Label", astTool.parse(code))).toEqual(ui5CoreLabelObject);
             });
 
             it("Should return ui5 path from the object from the define statement #8", () => {
@@ -122,7 +123,7 @@ define((require, exports) => {
                 }
                 )}`;
 
-                expect(jsTool.getUi5ObjectFromDefineStatement("Label", code)).toBeUndefined();
+                expect(jsTool.getUi5ObjectFromDefineStatement("Label", astTool.parse(code))).toBeUndefined();
             });
 
             it("Should return ui5 path from the object from the define statement #9", () => {
@@ -131,7 +132,7 @@ define((require, exports) => {
                 }
                 )}`;
 
-                expect(jsTool.getUi5ObjectFromDefineStatement("MLabel", code)).toBeUndefined();
+                expect(jsTool.getUi5ObjectFromDefineStatement("MLabel", astTool.parse(code))).toBeUndefined();
             });
 
             it("Should return ui5 path from the object from the define statement #10", () => {
@@ -140,7 +141,7 @@ define((require, exports) => {
                 }
                 )}`;
 
-                expect(jsTool.getUi5ObjectFromDefineStatement("Label", code)).toEqual(ui5CoreLabelObject);
+                expect(jsTool.getUi5ObjectFromDefineStatement("Label", astTool.parse(code))).toEqual(ui5CoreLabelObject);
             });
         });
     };

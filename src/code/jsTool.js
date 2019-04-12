@@ -13,12 +13,12 @@ define((require, exports) => {
         }
     }
 
-    function getUi5ObjectFromDefineStatement(token, sourceCode) {
+    function getUi5ObjectFromDefineStatement(token, ast) {
         let ui5Object;
 
-        const ast = astTool.parse(sourceCode, {
-            removeComments: true
-        });
+        //const ast = astTool.parse(sourceCode, {
+        //    removeComments: true
+        //});
 
         const defineObjects = astTool.getDefineStatementObjects(ast);
 

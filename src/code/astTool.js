@@ -30,6 +30,23 @@ define((require, exports) => {
         return parsed;
     }
 
+    //function getNodeInfo(ast, start, end) {
+    //    console.log(ast);
+    //    const found = AcornWalk.findNodeAt(ast, start, end);
+    //
+    //    AcornWalk.fullAncestor(ast, (node, ancestors) => {
+    //        if (node.name === "aa1") {
+    //            console.group(node);
+    //            ancestors.forEach((a) => {
+    //                console.log(a);
+    //            });
+    //            console.groupEnd();
+    //        }
+    //    });
+    //
+    //    console.log(found);
+    //}
+
     function getVariableType(node) {
         let type;
 
