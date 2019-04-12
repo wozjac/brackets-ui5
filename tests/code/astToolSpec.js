@@ -167,37 +167,6 @@ define((require, exports) => {
                 expect(requireEnd.functionEndLocation.end.line).toEqual(4);
                 expect(requireEnd.functionEndLocation.end.column).toEqual(39);
             });
-
-            it("Should return code info #1", () => {
-                const code = `
-                sap.ui.define([], function() {
-                    var defVar = "defVar value";
-
-                    defVar
-                });
-
-                function aa(param1) {
-                    const aa1 = "a var";
-
-                    function inner() {
-                        const aa1 = "inner val";
-                    }
-
-                    aa1
-                }
-
-                function bb(param2) {
-                    var bb1 = "b var";
-
-                    bb1
-                }`;
-
-                //const codeInfo = astTool.getCodeInfo(astTool.parse(code));
-
-                astTool.getNodeInfo(astTool.parse(code), 246, 249);
-
-                expect(true).toBe(false);
-            });
         });
     };
 });

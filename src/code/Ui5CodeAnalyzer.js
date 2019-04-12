@@ -18,8 +18,6 @@ define((require, exports, module) => {
                 onComment: comments
             });
 
-            astTool.getCodeInfo(this._ast);
-
             this._comments = comments;
         }
 
@@ -117,39 +115,6 @@ define((require, exports, module) => {
                 return jsTool.getUi5ObjectFromDefineStatement(variableType, this._ast);
             }
         }
-    }
-
-    function getObjectByConstructor(token, position, ast) {
-        AcornWalk.simple(ast, {
-
-        });
-
-        //const constructorPattern = `${token}[\\s]*=\\s*new\\s*([0-9a-zA-Z_$\\.]*)`,
-        //    constructorRegex = new RegExp(constructorPattern, "g"),
-        //    fullSourceCode = codeEditor.getSourceCode(document);
-        //
-        //let ui5Objects = [];
-        //
-        //const match = constructorRegex.exec(variableCodeScope);
-        //
-        //if (match) {
-        //    const constructorToken = match[1];
-        //    if (isFullUi5Path(constructorToken)) {
-        //        ui5Objects.push(ui5ApiFinder.findUi5ObjectByName(constructorToken));
-        //    } else {
-        //        //try to find the full path in define
-        //        const defineObject = getObjectFromDefineStatement(constructorToken, fullSourceCode);
-        //
-        //        if (defineObject) {
-        //            ui5Objects.push(defineObject);
-        //        } else {
-        //            //otherwise try to find using only the name
-        //            ui5Objects = ui5Objects.concat(ui5ApiFinder.findUi5ObjectByBasename(constructorToken));
-        //        }
-        //    }
-        //}
-        //
-        //return ui5Objects;
     }
 
     module.exports = Ui5CodeAnalyzer;
