@@ -31,15 +31,9 @@ define((require, exports) => {
     };
 
     const regex = {
-        defineStatement: /sap\.ui\.define\s*\(\s*\[([\s\S]*)(\])\s*,\s*function[^(]*\(([^)]*)(\))/,
-        defineES6Statement: /sap\.ui\.define\s*\(\s*\[([\s\S]*)(\])\s*,\s*[^(]*\(([^)]*)(\))\s*(=>)?/,
-        requireStatement: /sap\.ui\.require\s*\(\s*\[([\s\S]*)(\])\s*,\s*function[^(]*\(([^)]*)(\))/,
-        requireES6Statement: /sap\.ui\.require\s*\(\s*\[([\s\S]*)(\])\s*,\s*[^(]*\(([^)]*)(\))\s*(=>)?/,
-        singleFunctionStatement: /function[^(]*\(([^)]*)\)/,
-        functionStatement: /function[^(]*\([^)]*\)\s*({)/gi,
-        functionES6Statement: /=>\s*({)/gi,
         xmlNamespace: /xmlns\s*:?\s*(\w*)\s*=\s*['"]([\w.:/]+)/gi,
-        ui5ObjectInCommentPattern: "/+[\\*]*[\\s]*ui5:[\\s]*([\\w\\.]+)",
+        ui5ObjectComment: /\/\/\s*ui5:\s*([\w.]+)/,
+        ui5ObjectInComment: /ui5:\s*([\w.]+)/,
         comments: /(\/\*.*\*\/)|(\/\/.*)/g,
         headingsTags: /(<\/?h)(\d)(>)/gi,
         tagsAttributes: /<(\w+)(.|[\r\n])*?>/g,

@@ -73,13 +73,13 @@ define((require, exports) => {
                 "use strict";
 
                 init: function() { }
-            })`;
+                })`;
 
                 const codeExpected = `sap.ui.define(["sap/m/Label", "sap/m/Text","sap/m/Button"], function(Label, Text,Button) {
                 "use strict";
 
                 init: function() { }
-            })`;
+                })`;
 
                 const mockEditor = utils.createMockEditor(code, "javascript");
                 codeEditor.insertInDefine("sap.m.Button", mockEditor.editor);
@@ -97,18 +97,18 @@ define((require, exports) => {
                 "use strict";
 
                 init: function() { }
-            })`;
+                })`;
 
                 const codeExpected = `sap.ui.define([
                 "sap/m/Label",
-                "sap/m/Text"
-                ,"sap/m/Button"], function(
+                "sap/m/Text","sap/m/Button"
+                ], function(
                     Label,
                     Text,Button) {
                 "use strict";
 
                 init: function() { }
-            })`;
+                })`;
 
                 const mockEditor = utils.createMockEditor(code, "javascript");
                 codeEditor.insertInDefine("sap.m.Button", mockEditor.editor);
@@ -126,18 +126,18 @@ define((require, exports) => {
                 "use strict";
 
                 init: function() { }
-            })`;
+                })`;
 
                 const codeExpected = `sap.ui.define([
                 "sap/m/Label","sap/m/Button"],
                 function(
                     Label,
-                    Text
-                ,Button) {
+                    Text,Button
+                ) {
                 "use strict";
 
                 init: function() { }
-            })`;
+                })`;
 
                 const mockEditor = utils.createMockEditor(code, "javascript");
                 codeEditor.insertInDefine("sap.m.Button", mockEditor.editor);
@@ -156,19 +156,19 @@ define((require, exports) => {
                 "use strict";
 
                 init: function() { }
-            })`;
+                })`;
 
                 const codeExpected = `sap.ui.define(["sap/m/Label","sap/m/Button"],
                 function(
                     Label,
 
 
-                    Text
-                ,Button) {
+                    Text,Button
+                ) {
                 "use strict";
 
                 init: function() { }
-            })`;
+                })`;
 
                 const mockEditor = utils.createMockEditor(code, "javascript");
                 codeEditor.insertInDefine("sap.m.Button", mockEditor.editor);
@@ -182,14 +182,14 @@ define((require, exports) => {
                 "use strict";
 
                 init: function() { }
-            })`;
+                })`;
 
                 const codeExpected = `sap.ui.define(["sap/m/Button"],
                 function(Button) {
                 "use strict";
 
                 init: function() { }
-            })`;
+                })`;
 
                 const mockEditor = utils.createMockEditor(code, "javascript");
                 codeEditor.insertInDefine("sap.m.Button", mockEditor.editor);
@@ -203,14 +203,14 @@ define((require, exports) => {
                 "use strict";
 
                 init: function() { }
-            })`;
+                })`;
 
                 const codeExpected = `sap.ui.define(["path/loadOnly","sap/m/Button"],
                 function(Button) {
                 "use strict";
 
                 init: function() { }
-            })`;
+                })`;
 
                 const mockEditor = utils.createMockEditor(code, "javascript");
                 codeEditor.insertInDefine("sap.m.Button", mockEditor.editor);
@@ -224,14 +224,14 @@ define((require, exports) => {
                 "use strict";
 
                 init: function() { }
-            })`;
+                })`;
 
                 const codeExpected = `sap.ui.define(["sap/m/Button"],
                 function(Button) {
                 "use strict";
 
                 init: function() { }
-            })`;
+                })`;
 
                 const mockEditor = utils.createMockEditor(code, "javascript");
                 codeEditor.insertInDefine("sap.m.Button", mockEditor.editor);
@@ -270,8 +270,8 @@ define((require, exports) => {
             });
 
             it("Should insert the UI5 object into existing define statement #11", () => {
-                const code = "sap.ui.define([], function( { } })";
-                const codeExpected = "sap.ui.define([\"sap/m/Button\"], function( { } },Button)";
+                const code = "sap.ui.define([], function( { } )";
+                const codeExpected = "sap.ui.define([\"sap/m/Button\"], function( { },Button )";
 
                 const mockEditor = utils.createMockEditor(code, "javascript");
                 codeEditor.insertInDefine("sap.m.Button", mockEditor.editor);
@@ -290,8 +290,8 @@ define((require, exports) => {
             });
 
             it("Should insert the UI5 object into existing define statement (ES6)", () => {
-                const code = "sap.ui.define([], ( )  => { var i = 1})";
-                const codeExpected = "sap.ui.define([\"sap/m/Button\"], ( Button)  => { var i = 1})";
+                const code = "sap.ui.define([],    ( )  => { var i = 1})";
+                const codeExpected = "sap.ui.define([\"sap/m/Button\"],    (Button )  => { var i = 1})";
 
                 const mockEditor = utils.createMockEditor(code, "javascript");
                 codeEditor.insertInDefine("sap.m.Button", mockEditor.editor);
@@ -315,8 +315,37 @@ define((require, exports) => {
                 "sap/m/Label","sap/m/Button"],
                 function(
                     Label,
+                    Text,Button
+                ) {
+                "use strict";
+
+                init: function() { }
+                })`;
+
+                const mockEditor = utils.createMockEditor(code, "javascript");
+                codeEditor.insertInDefine("sap.m.Button", mockEditor.editor);
+                expect(mockEditor.doc.getText()).toBe(codeExpected);
+                utils.destroyMockEditor(mockEditor.doc);
+            });
+
+            it("Should insert the UI5 object into existing require statement (ES6)", () => {
+                const code = `sap.ui.require([
+                "sap/m/Label"],
+                (
+                    Label,
                     Text
-                ,Button) {
+                ) => {
+                "use strict";
+
+                init: function() { }
+                })`;
+
+                const codeExpected = `sap.ui.require([
+                "sap/m/Label","sap/m/Button"],
+                (
+                    Label,
+                    Text,Button
+                ) => {
                 "use strict";
 
                 init: function() { }
@@ -377,9 +406,9 @@ define((require, exports) => {
                 utils.destroyMockEditor(mockEditor.doc);
             });
 
-            it("Should exit without any error and changes if could not insert UI5 object #3", () => {
+            it("Should insert UI5 object into not complete define statement #1", () => {
                 const code = "sap.ui.define([], function { } })";
-                const codeExpected = "sap.ui.define([], function { } })";
+                const codeExpected = "sap.ui.define([\"sap/m/Button\"], function { } }Button)";
 
                 const mockEditor = utils.createMockEditor(code, "javascript");
                 codeEditor.insertInDefine("sap.m.Button", mockEditor.editor);
@@ -387,7 +416,7 @@ define((require, exports) => {
                 utils.destroyMockEditor(mockEditor.doc);
             });
 
-            it("Should exit without any error and changes if could not insert UI5 object #4", () => {
+            it("Should exit without any error and changes if could not insert UI5 object #3", () => {
                 const code = "sap.ui.define([], function }";
                 const codeExpected = "sap.ui.define([], function }";
 

@@ -22,15 +22,15 @@ sap.ui.define([
         },
 
         doSomething: function () {
-            var item = getProvider(); //ui5: sap.m.Button
+            var item2 = getProvider(); //ui5: sap.m.Button
 
-            item.
+            item2.
         },
 
         other: function (item) {
-            var item = new EventProvider();
+            var item3 = new EventProvider();
 
-            item.
+            item3.
         },
 
         extra: function () {
@@ -38,7 +38,7 @@ sap.ui.define([
         },
 
         another: function () {
-            var item = new Object();
+            var item4 = new Object();
         }
     });
 });
