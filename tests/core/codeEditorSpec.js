@@ -373,8 +373,8 @@ define((require, exports) => {
                 "sap/m/Label","sap/m/Button"],
                 (
                     Label,
-                    Text
-                ,Button) => {
+                    Text,Button
+                ) => {
                 "use strict";
 
                 init: function() { }
