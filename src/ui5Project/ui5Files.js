@@ -4,31 +4,6 @@ define((require, exports) => {
     const ProjectManager = brackets.getModule("project/ProjectManager"),
         strings = require("strings");
 
-    function getManifestFile() {
-        return new Promise((resolve, reject) => {
-            ProjectManager.getAllFiles((file) => {
-                return file.name === "manifest.json";
-            }).then((files) => {
-                if (files && files.length === 1) {
-                    files[0].read((error, content) => {
-                        if (error) {
-                            reject(error);
-                        }
-
-                        resolve({
-                            content: JSON.parse(content),
-                            path: files[0].parentPath
-                        });
-                    });
-                } else {
-                    reject(strings.MANIFEST_FILE_NOT_FOUND);
-                }
-            }, () => {
-                reject(strings.MANIFEST_FILE_NOT_FOUND);
-            });
-        });
-    }
-
     function getI18nModelInfo() {
         const promise = new Promise((resolve, reject) => {
             function manifestFound(manifestFile) {
@@ -75,6 +50,83 @@ define((require, exports) => {
         return promise;
     }
 
+    function getComponentId(manifestContent) {
+        let id;
+
+        try {
+            id = manifestContent["sap.app"].id;
+        } catch (error) {
+            id = null;
+        }
+
+        return id;
+    }
+
+    function getResourceRootPaths(indexFile, manifestFile) {
+        let result;
+
+        if (indexFile) {
+            result = _getResourcePathsFromIndex(indexFile);
+        } else {
+            try {
+                result = {};
+                const id = manifestFile.content["sap.app"].id;
+                result[id] = manifestFile.path;
+            } catch (error) {
+                result = null;
+            }
+        }
+
+        return result;
+    }
+
+    function getIndexFile() {
+        return _findFile("index.html");
+    }
+
+    function getManifestFile() {
+        try {
+            _findFile("manifest.json").then((file) => {
+                file.content = JSON.parse(file.content);
+            });
+        } catch (error) {
+            return Promise.reject(error);
+        }
+    }
+
+    function getControllerFile(controllerName) {
+        if (!controllerName.test(new RegExp(`${controllerName}.controller.js`))) {
+            controllerName += ".controller.js";
+        }
+
+        return _findFile(controllerName);
+    }
+
+    function _findFile(filename) {
+        return new Promise((resolve, reject) => {
+            ProjectManager.getAllFiles((file) => {
+                return file.name === filename;
+            }).then((files) => {
+                if (files && files.length === 1) {
+                    files[0].read((error, content) => {
+                        if (error) {
+                            reject(error);
+                        }
+
+                        resolve({
+                            content,
+                            path: files[0].parentPath
+                        });
+                    });
+                } else {
+                    reject(`${strings.FILE_NOT_FOUND}`);
+                }
+            }, () => {
+                reject(`${strings.FILE_NOT_FOUND}`);
+            });
+        });
+    }
+
     function _findModel(property, value, models, manifestFile) {
         let modelInfo, foundModel;
 
@@ -108,19 +160,51 @@ define((require, exports) => {
             return `${manifestFile.path}/${modelEntry.uri}`;
         } else if (modelEntry.settings.bundleName) {
             //get manifest path
-            const mainPath = manifestFile.content["sap.app"].id;
-            let bundlePath = modelEntry.settings.bundleName.replace(mainPath, "").replace(/\./g, "/");
+            try {
+                const mainPath = manifestFile.content["sap.app"].id;
+                let bundlePath = modelEntry.settings.bundleName.replace(mainPath, "").replace(/\./g, "/");
 
-            if (bundlePath.startsWith("/")) {
-                bundlePath = bundlePath.slice(1);
+                if (bundlePath.startsWith("/")) {
+                    bundlePath = bundlePath.slice(1);
+                }
+
+                return `${manifestFile.path}${bundlePath}.properties`;
+            } catch (error) {
+                return null;
             }
-
-            return `${manifestFile.path}${bundlePath}.properties`;
         }
+    }
+
+    function _getResourcePathsFromIndex(indexContent) {
+        const regex = /data-sap-ui-resourceroots=['"]{1}\{(.*)\}/gmi;
+        const match = regex.exec(indexContent);
+
+        let result;
+
+        if (match && match[1]) {
+            const parts = match[1].split(",");
+            parts.forEach((part) => {
+                const path = part.split(":");
+
+                if (path) {
+                    if (!result) {
+                        result = {};
+                    }
+
+                    result[path[0].replace(/['"]/g, "").trim()] = path[1].replace(/['"]/g, "").trim();
+                }
+            });
+        }
+
+        return result;
     }
 
     exports._projectManager = ProjectManager; //unit testing only
     exports.getManifestFile = getManifestFile;
+    exports.getIndexFile = getIndexFile;
+    exports.getControllerFile = getControllerFile;
     exports.getI18nModelInfo = getI18nModelInfo;
     exports.getModelInfo = getModelInfo;
+    exports.getComponentId = getComponentId;
+    exports.getResourceRootPaths = getResourceRootPaths;
 });
