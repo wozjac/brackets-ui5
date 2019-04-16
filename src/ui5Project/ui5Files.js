@@ -81,12 +81,12 @@ define((require, exports) => {
     }
 
     function getIndexFile() {
-        return _findFile("index.html");
+        return findFile("index.html");
     }
 
     function getManifestFile() {
         try {
-            _findFile("manifest.json").then((file) => {
+            findFile("manifest.json").then((file) => {
                 file.content = JSON.parse(file.content);
             });
         } catch (error) {
@@ -95,14 +95,14 @@ define((require, exports) => {
     }
 
     function getControllerFile(controllerName) {
-        if (!controllerName.test(new RegExp(`${controllerName}.controller.js`))) {
+        if (controllerName.search(new RegExp(`${controllerName}.controller.js`)) === -1) {
             controllerName += ".controller.js";
         }
 
-        return _findFile(controllerName);
+        return findFile(controllerName);
     }
 
-    function _findFile(filename) {
+    function findFile(filename) {
         return new Promise((resolve, reject) => {
             ProjectManager.getAllFiles((file) => {
                 return file.name === filename;
@@ -115,7 +115,8 @@ define((require, exports) => {
 
                         resolve({
                             content,
-                            path: files[0].parentPath
+                            path: files[0].parentPath,
+                            file: files[0]
                         });
                     });
                 } else {
@@ -207,4 +208,5 @@ define((require, exports) => {
     exports.getModelInfo = getModelInfo;
     exports.getComponentId = getComponentId;
     exports.getResourceRootPaths = getResourceRootPaths;
+    exports.findFile = findFile;
 });
