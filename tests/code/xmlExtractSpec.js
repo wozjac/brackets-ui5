@@ -20,6 +20,21 @@ define((require, exports) => {
                     "c": "sap.ui.commons"
                 });
             });
+
+            it("Should get controller name", () => {
+                const xml = "<mvc:View controllerName=\"com.name.my.DialogView\"></mvc:View>";
+                expect(xmlExtract.getControllerName(xml)).toEqual("com.name.my.DialogView");
+            });
+
+            it("Should not get controller name #1", () => {
+                const xml = "<mvc:View controllerNamee=\"com.name.my.DialogView\"></mvc:View>";
+                expect(xmlExtract.getControllerName(xml)).toBeNull();
+            });
+
+            it("Should not get controller name #2", () => {
+                const xml = "<mvc:View xmlns=\"sap.m\"></mvc:View>";
+                expect(xmlExtract.getControllerName(xml)).toBeNull();
+            });
         });
     };
 });
