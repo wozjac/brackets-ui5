@@ -23,7 +23,7 @@ define((require, exports) => {
 
             it("Should get controller name", () => {
                 const xml = "<mvc:View controllerName=\"com.name.my.DialogView\"></mvc:View>";
-                expect(xmlExtract.getControllerName(xml)).toEqual("com.name.my.DialogView");
+                expect(xmlExtract.getControllerName(xml)).toEqual("DialogView");
             });
 
             it("Should not get controller name #1", () => {

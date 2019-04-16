@@ -12,6 +12,7 @@ define((require) => {
         xmlViewHintsSpec = require("tests/providers/xmlViewHintsSpec"),
         ui5CodeHintsSpec = require("tests/providers/ui5CodeHintsSpec"),
         quickDocsSpec = require("tests/providers/quickDocsSpec"),
+        xmlViewQuickEditSpec = require("tests/providers/xmlViewQuickEditSpec"),
 
         odataMockGeneratorSpec = require("tests/features/odataMockGeneratorSpec"),
         docsPanelSpec = require("tests/features/docsPanelSpec"),
@@ -34,6 +35,7 @@ define((require) => {
         ui5CodeHintsSpec.getTests();
         xmlViewHintsSpec.getTests();
         quickDocsSpec.getTests();
+        xmlViewQuickEditSpec.getTests();
     });
 
     describe("[wozjac.ui5] Brackets UI5: features", () => {

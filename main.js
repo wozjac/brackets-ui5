@@ -22,7 +22,8 @@ define((require, exports, module) => {
         ui5SchemaService = require("src/core/ui5SchemaService"),
         ui5QuickDocsProvider = require("src/quickDocs/ui5QuickDocsProvider"),
         ui5HintsProvider = require("src/codeHints/ui5HintsProvider"),
-        i18nQuickEditProvider = require("src/quickEdit/i18nQuickEditProvider");
+        i18nQuickEditProvider = require("src/quickEdit/i18nQuickEditProvider"),
+        xmlViewQuickEditProvider = require("src/quickEdit/xmlViewQuickEditProvider");
 
     AppInit.appReady(() => {
         preferences.initPreferences();
@@ -31,6 +32,7 @@ define((require, exports, module) => {
         docsPanel.create();
         EditorManager.registerInlineDocsProvider(ui5QuickDocsProvider.getInlineProvider, 999);
         EditorManager.registerInlineEditProvider(i18nQuickEditProvider.getInlineEditProvider, 999);
+        EditorManager.registerInlineEditProvider(xmlViewQuickEditProvider.getInlineEditProvider, 999);
         CodeHintManager.registerHintProvider(ui5HintsProvider.getXmlViewTagsHintsProvider(), ["xml"], 999);
         CodeHintManager.registerHintProvider(ui5HintsProvider.getXmlViewAttributesHintsProvider(), ["xml"], 999);
         CodeHintManager.registerHintProvider(ui5HintsProvider.getUi5CodeHintsProvider(), ["javascript"], 999);

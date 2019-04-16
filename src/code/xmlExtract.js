@@ -28,7 +28,8 @@ define((require, exports) => {
         const match = xml.match(/controllerName=['"]{1}([\w.]+)['"]{1}/);
 
         if (match) {
-            return match[1];
+            const parts = match[1].split(".");
+            return parts[parts.length - 1];
         }
 
         return null;
