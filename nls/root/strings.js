@@ -49,5 +49,7 @@ define({
     "AGGREGATIONS": "Aggregations",
     "MANIFEST_FILE_NOT_FOUND": `${prefix} No manifest.json has been found`,
     "MODEL_DEFINITION_NOT_FOUND": "model definition has not been found in manifest.json",
-    "MODEL_READ_ERROR": `${prefix} Model read error`
+    "MODEL_READ_ERROR": `${prefix} Model read error`,
+    "COMPONENT_ID_NOT_FOUND": `${prefix} Component Id not found in the manifest file`,
+    "FILE_NOT_FOUND": `${prefix} File not found`
 });

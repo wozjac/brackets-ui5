@@ -18,6 +18,8 @@ define((require) => {
         snippetsSpec = require("tests/features/snippetsSpec"),
 
         i18nReaderSpec = require("tests/features/i18nReaderSpec"),
+        ui5FilesSpec = require("tests/features/ui5FilesSpec"),
+
         jsToolSpec = require("tests/code/jsToolSpec"),
         astToolSpec = require("tests/code/astToolSpec");
 
@@ -42,6 +44,7 @@ define((require) => {
 
     describe("[wozjac.ui5] Brackets UI5: UI5 project", () => {
         i18nReaderSpec.getTests();
+        ui5FilesSpec.getTests();
     });
 
     describe("[wozjac.ui5] Brackets UI5: code tools", () => {

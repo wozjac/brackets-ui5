@@ -162,36 +162,5 @@ define((require, exports) => {
         }
     }
 
-    //function _insertNewEntry(key, i18nDocument) {
-    //    const docLines = i18nDocument.getText().split("\n"),
-    //        lastDocLine = docLines.length - 1,
-    //        lastDocChar = docLines[docLines.length - 1].length,
-    //        entryLine = lastDocLine + 1;
-    //
-    //    const newEntry = `${key}=`;
-    //
-    //    i18nDocument.replaceRange(newEntry, {
-    //        line: entryLine,
-    //        ch: lastDocChar
-    //    });
-    //
-    //    return {
-    //        range: {
-    //            from: {
-    //                line: entryLine,
-    //                ch: 0
-    //            },
-    //            to: {
-    //                line: entryLine,
-    //                ch: newEntry.length + 1
-    //            }
-    //        },
-    //        pos: {
-    //            line: entryLine,
-    //            ch: newEntry + 1
-    //        }
-    //    };
-    //}
-
     exports.getInlineEditProvider = inlineEditProvider;
 });
