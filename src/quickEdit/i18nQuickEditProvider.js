@@ -162,5 +162,5 @@ define((require, exports) => {
         }
     }
 
-    exports.getInlineEditProvider = inlineEditProvider;
+    exports.inlineEditProvider = inlineEditProvider;
 });

@@ -53,9 +53,7 @@ define((require, exports) => {
 
     function _getFunctionName(hostEditor, position) {
         const token = hostEditor._codeMirror.getTokenAt(position, true);
-        const value = token.string.replace(/['"{}.]/g, "").trim().split("(");
-
-        return value[0];
+        return xmlExtract.getFunctionNameFromXmlViewElement(token.string);
     }
 
     function _getControllerName(hostEditor) {
@@ -63,5 +61,5 @@ define((require, exports) => {
     }
 
     exports._getFunctionName = _getFunctionName;
-    exports.getInlineEditProvider = inlineEditProvider;
+    exports.inlineEditProvider = inlineEditProvider;
 });
