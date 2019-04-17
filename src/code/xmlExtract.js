@@ -35,6 +35,13 @@ define((require, exports) => {
         return null;
     }
 
+    function getFunctionNameFromXmlViewElement(functionString) {
+        const value = functionString.replace(/['"{}.]/g, "").trim().split("(");
+
+        return value[0];
+    }
+
     exports.extractXmlNamespaces = extractXmlNamespaces;
     exports.getControllerName = getControllerName;
+    exports.getFunctionNameFromXmlViewElement = getFunctionNameFromXmlViewElement;
 });

@@ -23,16 +23,18 @@ define((require, exports, module) => {
         ui5QuickDocsProvider = require("src/quickDocs/ui5QuickDocsProvider"),
         ui5HintsProvider = require("src/codeHints/ui5HintsProvider"),
         i18nQuickEditProvider = require("src/quickEdit/i18nQuickEditProvider"),
-        xmlViewQuickEditProvider = require("src/quickEdit/xmlViewQuickEditProvider");
+        xmlViewQuickEditProvider = require("src/quickEdit/xmlViewQuickEditProvider"),
+        xmlViewJumpToDefProvider = require("src/jumpToDef/xmlViewJumpToDefProvider");
 
     AppInit.appReady(() => {
         preferences.initPreferences();
         commandHandler.registerCommands();
         menus.createUi5Menu();
         docsPanel.create();
-        EditorManager.registerInlineDocsProvider(ui5QuickDocsProvider.getInlineProvider, 999);
-        EditorManager.registerInlineEditProvider(i18nQuickEditProvider.getInlineEditProvider, 999);
-        EditorManager.registerInlineEditProvider(xmlViewQuickEditProvider.getInlineEditProvider, 999);
+        EditorManager.registerInlineDocsProvider(ui5QuickDocsProvider.inlineProvider, 999);
+        EditorManager.registerInlineEditProvider(i18nQuickEditProvider.inlineEditProvider, 999);
+        EditorManager.registerInlineEditProvider(xmlViewQuickEditProvider.inlineEditProvider, 999);
+        EditorManager.registerJumpToDefProvider(xmlViewJumpToDefProvider.jumpProvider, ["xml"], 999);
         CodeHintManager.registerHintProvider(ui5HintsProvider.getXmlViewTagsHintsProvider(), ["xml"], 999);
         CodeHintManager.registerHintProvider(ui5HintsProvider.getXmlViewAttributesHintsProvider(), ["xml"], 999);
         CodeHintManager.registerHintProvider(ui5HintsProvider.getUi5CodeHintsProvider(), ["javascript"], 999);

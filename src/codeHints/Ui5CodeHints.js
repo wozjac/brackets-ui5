@@ -7,7 +7,6 @@ define((require, exports, module) => {
         ScopeManager = brackets.getModule("JSUtils/ScopeManager"),
         EditorManager = brackets.getModule("editor/EditorManager"),
         ui5ApiService = require("src/core/ui5ApiService"),
-        codeEditor = require("src/editor/codeEditor"),
         strings = require("strings"),
         hintUtils = require("src/codeHints/hintsUtils"),
         ui5ApiFormatter = require("src/core/ui5ApiFormatter"),

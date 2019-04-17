@@ -47,5 +47,5 @@ define((require, exports) => {
         return result.promise();
     }
 
-    exports.getInlineProvider = inlineProvider;
+    exports.inlineProvider = inlineProvider;
 });
