@@ -222,7 +222,7 @@ define((require, exports) => {
                 });
 
                 it("Should return valid hints after changing the contructor from EventProvider to Object", () => {
-                    testEditor.doc.replaceRange("Object();", {
+                    testEditor.doc.replaceRange("SapObject();", {
                         line: 10,
                         ch: 29
                     }, {

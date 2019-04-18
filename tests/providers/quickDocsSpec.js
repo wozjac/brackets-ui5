@@ -9,7 +9,7 @@ define((require, exports) => {
         let testEditor;
 
         function expectQuickDocsWidgetForEventProvider(position) {
-            const providerPromise = ui5QuickDocsProvider.getInlineProvider(testEditor.editor, position);
+            const providerPromise = ui5QuickDocsProvider.inlineProvider(testEditor.editor, position);
             expect(providerPromise).not.toBeNull();
 
             let widget = null;
@@ -55,7 +55,7 @@ define((require, exports) => {
 
                 testEditor.editor.setCursorPos(position);
 
-                const provider = ui5QuickDocsProvider.getInlineProvider(testEditor.editor, position);
+                const provider = ui5QuickDocsProvider.inlineProvider(testEditor.editor, position);
                 expect(provider).toBeNull();
             });
 
@@ -67,7 +67,7 @@ define((require, exports) => {
 
                 testEditor.editor.setCursorPos(position);
 
-                const provider = ui5QuickDocsProvider.getInlineProvider(testEditor.editor, position);
+                const provider = ui5QuickDocsProvider.inlineProvider(testEditor.editor, position);
                 expect(provider).toBeNull();
             });
 
