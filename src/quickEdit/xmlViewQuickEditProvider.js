@@ -52,7 +52,8 @@ define((require, exports) => {
     }
 
     function _getFunctionName(hostEditor, position) {
-        const token = hostEditor._codeMirror.getTokenAt(position, true);
+        const token = hostEditor._codeMirror.getTokenAt(position, false);
+
         return xmlExtract.getFunctionNameFromXmlViewElement(token.string);
     }
 

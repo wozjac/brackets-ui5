@@ -36,9 +36,22 @@ define((require, exports) => {
     }
 
     function getFunctionNameFromXmlViewElement(functionString) {
-        const value = functionString.replace(/['"{}.]/g, "").trim().split("(");
+        let functionName = functionString.replace(/['"{}]/g, "").trim();
+        const startBracket = functionString.indexOf("(");
 
-        return value[0];
+        if (startBracket > 0) { //event handler with params
+            functionName = functionName.substring(0, startBracket - 1);
+        }
+
+        if (functionName.startsWith(".")) {
+            functionName = functionName.slice(1);
+        }
+
+        return functionName;
+
+        //const value = functionString.replace(/['"{}.]/g, "").trim().split("(");
+        //
+        //return value[0];
     }
 
     exports.extractXmlNamespaces = extractXmlNamespaces;
