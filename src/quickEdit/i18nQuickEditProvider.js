@@ -4,6 +4,7 @@ define((require, exports) => {
     const MultiRangeInlineEditor = brackets.getModule("editor/MultiRangeInlineEditor").MultiRangeInlineEditor,
         DocumentManager = brackets.getModule("document/DocumentManager"),
         StringUtils = brackets.getModule("utils/StringUtils"),
+        i18nTool = require("src/code/i18nTool"),
         ui5Files = require("src/ui5Project/ui5Files");
 
     function inlineEditProvider(hostEditor) {
@@ -17,7 +18,7 @@ define((require, exports) => {
             return null;
         }
 
-        const i18nInfo = _getI18nInfoFromAttribute(hostEditor, selection.start);
+        const i18nInfo = i18nTool.getI18nInfoFromAttribute(hostEditor, selection.start);
 
         if (!i18nInfo) {
             return null;
@@ -30,7 +31,7 @@ define((require, exports) => {
             return DocumentManager.getDocumentForPath(modelInfo.path);
         }).then((document) => {
             i18nDocument = document;
-            return _getEntryRange(i18nInfo, i18nDocument);
+            return i18nTool.getEntryRange(i18nInfo, i18nDocument);
         }).then((rangeInfo) => {
             let inlineEditor;
 
@@ -97,69 +98,6 @@ define((require, exports) => {
                 ch: newEntryText.length + 1
             }
         };
-    }
-
-    function _getEntryRange(i18nInfo, i18nDocument) {
-        return new Promise((resolve) => {
-            const rangeInfo = _getEntryStartEnd(i18nInfo.key, i18nDocument);
-
-            if (!rangeInfo) {
-                resolve(null);
-            }
-
-            resolve({
-                document: i18nDocument,
-                name: i18nInfo.key,
-                lineStart: rangeInfo.startLine,
-                lineEnd: rangeInfo.endLine
-            });
-        });
-    }
-
-    function _getI18nInfoFromAttribute(hostEditor, position) {
-        const token = hostEditor._codeMirror.getTokenAt(position, true),
-            value = token.string.replace(/['"{}]/g, "");
-
-        const parts = value.split(">");
-
-        if (parts.length !== 2) {
-            return null;
-        }
-
-        return {
-            modelName: parts[0],
-            key: parts[1]
-        };
-    }
-
-    function _getEntryStartEnd(key, document) {
-        const text = document.getText(),
-            lines = StringUtils.getLines(text),
-            regex = new RegExp(`^${key}\\s*=`, "gm");
-
-        const match = regex.exec(text);
-
-        if (match) {
-            const startLine = StringUtils.offsetToLineNum(lines, match.index);
-            const nextKeyRegex = /^[\w.]+\s*=/gm;
-            nextKeyRegex.lastIndex = regex.lastIndex;
-            const nextKeyMatch = nextKeyRegex.exec(text);
-
-            let endLine;
-
-            if (nextKeyMatch) {
-                endLine = StringUtils.offsetToLineNum(lines, nextKeyMatch.index) - 1;
-            } else {
-                endLine = lines.length - 1;
-            }
-
-            return {
-                startLine,
-                endLine
-            };
-        } else {
-            return null;
-        }
     }
 
     exports.inlineEditProvider = inlineEditProvider;
