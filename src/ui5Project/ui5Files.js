@@ -85,13 +85,16 @@ define((require, exports) => {
     }
 
     function getManifestFile() {
-        try {
-            findFile("manifest.json").then((file) => {
-                file.content = JSON.parse(file.content);
-            });
-        } catch (error) {
-            return Promise.reject(error);
-        }
+        return new Promise((resolve, reject) => {
+            try {
+                findFile("manifest.json").then((file) => {
+                    file.content = JSON.parse(file.content);
+                    resolve(file);
+                });
+            } catch (error) {
+                reject(error);
+            }
+        });
     }
 
     function getControllerFile(controllerName) {
