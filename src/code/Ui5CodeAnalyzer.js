@@ -72,6 +72,11 @@ define((require, exports, module) => {
             const that = this;
             let ui5Object, commentMatch;
 
+            //find the node at position
+            const foundNode = astTool.getNodeAt(this._ast, position);
+            console.log(foundNode.node);
+            console.log(foundNode);
+
             //check the variable declaration
             AcornWalk.simple(this._ast, {
                 VariableDeclarator(node) {

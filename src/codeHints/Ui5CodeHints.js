@@ -8,6 +8,7 @@ define((require, exports, module) => {
         EditorManager = brackets.getModule("editor/EditorManager"),
         ui5ApiService = require("src/core/ui5ApiService"),
         strings = require("strings"),
+        textTool = require("src/editor/textTool"),
         hintUtils = require("src/codeHints/hintsUtils"),
         ui5ApiFormatter = require("src/core/ui5ApiFormatter"),
         Ui5CodeAnalyzer = require("src/code/Ui5CodeAnalyzer");
@@ -93,7 +94,8 @@ define((require, exports, module) => {
                 if (this.objectIdentifier) {
                     const position = {
                         line: session.getCursor().line,
-                        ch: this.objectIdentifierToken.start
+                        ch: this.objectIdentifierToken.start,
+                        chEnd: this.objectIdentifierToken.end
                     };
 
                     try {

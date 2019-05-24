@@ -6,6 +6,11 @@ define((require, exports) => {
         testUtils = require("tests/testUtils"),
         jsContent = require("text!tests/fixtures/testCode.js");
 
+    const EVENT_PROVIDER_HINTS_LENGTH = 11,
+        EVENT_PROVIDER_NAME = "EventProvider",
+        SAP_OBJECT_NAME = "Object",
+        SAP_OBJECT_HINTS_LENGTH = 5;
+
     exports.getTests = function () {
         let testEditor,
             ui5ObjectsLoaded,
@@ -23,6 +28,13 @@ define((require, exports) => {
             return hintList.find((hintObject) => {
                 return hintObject.find("span.brackets-ui5-hint-name").text() === hintText;
             });
+        }
+
+        function expectHints(provider, sapui5Object, hintsLength) {
+            expect(provider.proposedUi5Object.basename).toBe(sapui5Object);
+            const hintsObject = provider.getHints();
+            expect(hintsObject).toBeTruthy();
+            expect(hintsObject.hints.length).toBe(hintsLength);
         }
 
         describe("[wozjac.ui5] ui5 JS code hints", () => {
@@ -55,10 +67,7 @@ define((require, exports) => {
 
                 const provider = ui5HintsProvider.getUi5CodeHintsProvider();
                 expect(provider.hasHints(testEditor.editor, null)).toBe(true);
-
-                const hintsObject = provider.getHints();
-                expect(hintsObject).toBeTruthy();
-                expect(hintsObject.hints.length).toBe(11);
+                expectHints(provider, EVENT_PROVIDER_NAME, EVENT_PROVIDER_HINTS_LENGTH);
             });
 
             it("Should have filtered hints after a partial member string", () => {
@@ -110,10 +119,7 @@ define((require, exports) => {
                     expect(provider.hasHints(testEditor.editor, null)).toBe(true);
                     expect(provider.useCachedHints).toBe(false);
                     expect(provider.useCachedUi5ObjectApi).toBe(false);
-
-                    hintsObject = provider.getHints();
-                    expect(hintsObject).toBeTruthy();
-                    expect(hintsObject.hints.length).toBe(11);
+                    expectHints(provider, EVENT_PROVIDER_NAME, EVENT_PROVIDER_HINTS_LENGTH);
                     expect(provider._resolveWithApiObjectSearch).toHaveBeenCalled();
                 });
 
@@ -127,10 +133,7 @@ define((require, exports) => {
                     expect(provider.hasHints(testEditor.editor, null)).toBe(true);
                     expect(provider.useCachedHints).toBe(false);
                     expect(provider.useCachedUi5ObjectApi).toBe(false);
-
-                    hintsObject = provider.getHints();
-                    expect(hintsObject).toBeTruthy();
-                    expect(hintsObject.hints.length).toBe(5);
+                    expectHints(provider, SAP_OBJECT_NAME, SAP_OBJECT_HINTS_LENGTH);
                     expect(provider._resolveWithApiObjectSearch).toHaveBeenCalled();
                 });
 
@@ -144,10 +147,7 @@ define((require, exports) => {
                     expect(provider.hasHints(testEditor.editor, null)).toBe(true);
                     expect(provider.useCachedHints).toBe(false);
                     expect(provider.useCachedUi5ObjectApi).toBe(false);
-
-                    hintsObject = provider.getHints();
-                    expect(hintsObject).toBeTruthy();
-                    expect(hintsObject.hints.length).toBe(11);
+                    expectHints(provider, EVENT_PROVIDER_NAME, EVENT_PROVIDER_HINTS_LENGTH);
                     expect(provider._resolveWithApiObjectSearch).toHaveBeenCalled();
                 });
 
@@ -161,10 +161,7 @@ define((require, exports) => {
                     expect(provider.hasHints(testEditor.editor, null)).toBe(true);
                     expect(provider.useCachedHints).toBe(false);
                     expect(provider.useCachedUi5ObjectApi).toBe(false);
-
-                    hintsObject = provider.getHints();
-                    expect(hintsObject).toBeTruthy();
-                    expect(hintsObject.hints.length).toBe(5);
+                    expectHints(provider, SAP_OBJECT_NAME, SAP_OBJECT_HINTS_LENGTH);
                     expect(provider._resolveWithApiObjectSearch).toHaveBeenCalled();
                 });
 
@@ -178,10 +175,7 @@ define((require, exports) => {
                     expect(provider.hasHints(testEditor.editor, null)).toBe(true);
                     expect(provider.useCachedHints).toBe(true);
                     expect(provider.useCachedUi5ObjectApi).toBe(true);
-
-                    hintsObject = provider.getHints();
-                    expect(hintsObject).toBeTruthy();
-                    expect(hintsObject.hints.length).toBe(5);
+                    expectHints(provider, SAP_OBJECT_NAME, SAP_OBJECT_HINTS_LENGTH);
                     expect(provider._resolveWithCachedApiObject).toHaveBeenCalled();
 
                 });
@@ -239,10 +233,7 @@ define((require, exports) => {
                     expect(provider.hasHints(testEditor.editor, null)).toBe(true);
                     expect(provider.useCachedHints).toBe(false);
                     expect(provider.useCachedUi5ObjectApi).toBe(false);
-
-                    hintsObject = provider.getHints();
-                    expect(hintsObject).toBeTruthy();
-                    expect(hintsObject.hints.length).toBe(5);
+                    expectHints(provider, SAP_OBJECT_NAME, SAP_OBJECT_HINTS_LENGTH);
                     expect(provider._resolveWithApiObjectSearch).toHaveBeenCalled();
                 });
 
@@ -264,10 +255,7 @@ define((require, exports) => {
                     expect(provider.hasHints(testEditor.editor, null)).toBe(true);
                     expect(provider.useCachedHints).toBe(false);
                     expect(provider.useCachedUi5ObjectApi).toBe(false);
-
-                    hintsObject = provider.getHints();
-                    expect(hintsObject).toBeTruthy();
-                    expect(hintsObject.hints.length).toBe(11);
+                    expectHints(provider, EVENT_PROVIDER_NAME, EVENT_PROVIDER_HINTS_LENGTH);
                     expect(provider._resolveWithApiObjectSearch).toHaveBeenCalled();
                 });
             });
@@ -283,7 +271,7 @@ define((require, exports) => {
 
                 const hintsObject = provider.getHints();
                 expect(hintsObject).toBeTruthy();
-                expect(hintsObject.hints.length).toBe(11);
+                expect(hintsObject.hints.length).toBe(EVENT_PROVIDER_HINTS_LENGTH);
                 const selectedHint = selectHint("destroy", hintsObject.hints);
                 provider.insertHint(selectedHint);
                 expect(testEditor.doc.getLine(13).trim()).toBe("tree.destroy()");
@@ -331,6 +319,20 @@ define((require, exports) => {
 
                 const provider = ui5HintsProvider.getUi5CodeHintsProvider();
                 expect(provider.hasHints(testEditor.editor, null)).toBe(false);
+            });
+
+            it("Should return correct item with the same name in another function", () => {
+                testEditor.editor.setCursorPos({
+                    line: 45,
+                    ch: 18
+                });
+
+                const provider = ui5HintsProvider.getUi5CodeHintsProvider();
+                expect(provider.hasHints(testEditor.editor, null)).toBe(true);
+
+                const hintsObject = provider.getHints();
+                expect(hintsObject).toBeTruthy();
+                expect(provider.proposedUi5Object.basename).toBe("EventProvider");
             });
         });
     };

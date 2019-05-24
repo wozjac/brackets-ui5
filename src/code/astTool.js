@@ -47,6 +47,25 @@ define((require, exports) => {
     //    console.log(found);
     //}
 
+    function getNodeAt(ast, position) {
+        let foundNode;
+
+        AcornWalk.fullAncestor(ast, (node, ancestors) => {
+            if (node.loc.start.column === position.ch
+                && node.loc.start.line === position.line + 1
+                && node.loc.end.line === position.line + 1
+                && node.loc.end.column === position.chEnd) {
+
+                foundNode = {
+                    node: Object.assign({}, node),
+                    ancestors: [...ancestors]
+                };
+            }
+        });
+
+        return foundNode;
+    }
+
     function getVariableType(node) {
         let type;
 
@@ -223,5 +242,6 @@ define((require, exports) => {
     exports.getDefineStatementObjects = getDefineStatementObjects;
     exports.getDefineStatementEndPositions = getDefineStatementEndPositions;
     exports.getVariableType = getVariableType;
+    exports.getNodeAt = getNodeAt;
     exports.parse = parse;
 });
