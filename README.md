@@ -160,6 +160,7 @@ For example pressing ctrl+e on *.handleChange*
 ![quickedit function](https://www.mediafire.com/convkey/bd42/upa7cket2bn8ktc6g.jpg)
 
 - i18n keys in i18n bindings (manifest.json is present and contains a valid i18n model entry, both *uri* and *bundleName* settings are supported). Pressing ctrl+e opens inline editor for the i18n entry; if it don't exist, it will be created and appended at the end of the file.
+
 ![i18n quick edit](https://www.mediafire.com/convkey/630a/h8ek9xbsk8f2h2u6g.jpg)
 
 ### Code hints
