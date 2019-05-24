@@ -89,7 +89,9 @@ define((require, exports, module) => {
                             });
 
                             if (!ui5Object) {
-                                ui5Object = that._getUi5VariableType(node);
+                                //TODO
+                                //ui5Object = that._getUi5VariableType(node);
+                                ui5Object = null;
                             }
                         } else {
                             ui5Object = null; //TODO: resolve variable shadowing
