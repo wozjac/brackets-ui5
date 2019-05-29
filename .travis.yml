@@ -1,19 +1,17 @@
 language: node_js
-node_js:
-    "node"
+node_js: node
 notifications:
   email: false
 branches:
   only:
-    - master
+  - master
 deploy:
   provider: releases
-  draft: true
-  overwrite: true
   skip_cleanup: true
+  draft: true
   api_key:
-    secure: ViHSgBYHfQZZHp1eTfY1bHe8oK1RYdjTe3yfAzx2rvjcBiQm2iHszp7Grdy9BWZDPIeSjnSQ+/E2/P837vYZKOwdi+cIQ7vs+9EcDxNNKvhisCVXSa57s+j9nMhf/C34b2eMA3rsI7D/tPc7Mdt58XvBOU+VmOaxL6HO1n/GvtBIQzK6qBeOG2/3HWKzoo+7SGQRcowO29NggtnHbFoLBGGofiyTMVTIobL0oubxgUWS/q4v9QIFREp7u5GPxRhZJNqXkCIEzKgilDIC/QGboPisMFdOHW3fuFsAAVxD2FEQI5RoBJsTmzyCDC4AeRXUzSrf0pWm6oVpipX/3a7xGMnrVSwXjeFEJl2pmwq5S5ilauUc3eyW9sjcz5BW77UWOJb8b3I/vOG0Ny81ygiqBKtSr0093B+J1soAESNLjtsGtEhpL8z3YpirycX3TN56PfGGAfwJPh89WzHsI29Nh3edtrY088bDNl8hceUzCph8phNWkuQGpQJpcSPZYN3hi16WSkKceLbAH3kMKwdhtCt1bdZPsTZCZnh3/N2fwZRMVTlgKfnzwzpiDKNEroyC23DmYpDQlAWcb69Dgjp233p2EasEoA0Ur0/NIFmvi7E0gKd2TEfly+31g4juztR4V2LdC3SBUth0uDaDOtCcEP7yyA9nI73ulIVck/P5mW4=
-  file: "dist/wozjac.ui5.zip"
+    secure: LV6XtSqt3FXgaPLTmgoX+xc8rq9wUPrbmOL3QAt+Fim81bbms94SWAbtJ8o9EUVQ+mrzBxYUkr/SM7DmfiOkAZJy4vJsumueREXvm4cy+CsYnNVaUvzPhzE3s2urP3KWfHW9V2lGN/MxvRzd062zBrxPLIvQJFPCCTW6YJgsW97AvV7Mppt2Heor7ATMEn5lEtHwlQbXxNTPNvw55GUJgL5TIKXAlNIY6M3TTh892VPi9z5bfgLb6ou3+argezpY3Po8CfuDAEG4P/vWjWFJaTFx/wn2Z+c7moZDKUCKSxayZ0s7XDOhG1HlFAPks3QCFBideCO1xsnPyWOmoZtTm/8YM4ImcwNyjKNdjHph4XiqpPOGwBx/YVcCLYY5NcityZSqc+FoHAIzsJU384uqRULH/wcwXQciqlLlBWeI7/RxGHwt5pCfiD/hU52JLnPNfIRDa25MYBSCxxlnBYptpAFEWozdPT1U5MBwoJLTx8wTh4ihy1BYowDzAS2n9rza8MfytzpTBMI4KrFOcjGUXfBDmm+oszMEMv9eAEpoPH+tuMW9wDm8bz260ErljDXnIocs/UVtylkagdCV4LU4hflyil0V6efn3j1KQwGRI30uSrGlfvl0PyOfoGjaGLBMz6TAPEeej4ziFZQq3RPwiAsn9gaFqNoc4FIVg+gokfQ=
+  file: dist/wozjac.ui5.zip
   on:
     repo: wozjac/brackets-ui5
 branch: master
