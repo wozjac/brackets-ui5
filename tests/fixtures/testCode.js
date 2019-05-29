@@ -39,6 +39,11 @@ sap.ui.define([
 
         another: function () {
             var item4 = new Object();
+        },
+
+        andOther: () => {
+            const item3 = new SapObject();
+            item3.
         }
     });
 });

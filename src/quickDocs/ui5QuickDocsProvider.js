@@ -27,22 +27,33 @@ define((require, exports) => {
 
         const result = new $.Deferred();
         const codeAnalyzer = new Ui5CodeAnalyzer(hostEditor.document.getText());
-        const ui5Objects = codeAnalyzer.resolveUi5Token(token.string, position, true);
 
-        if (ui5Objects.length === 0) {
-            return null;
-        }
+        const tokenPosition = {
+            line: position.line,
+            ch: token.start,
+            chEnd: token.end
+        };
 
-        //get the API and process - transform to Mustache's template values
-        const ui5ObjectApi = ui5ApiService.getUi5ObjectDesignApi(ui5Objects[0].name);
-        const templateObjects = [];
-        const templateObject = ui5ApiFormatter.getFormattedObjectApi(ui5ObjectApi, false, true);
-        templateObjects.push(templateObject);
+        codeAnalyzer.resolveUi5Token(token.string, tokenPosition, true).then((ui5Objects) => {
+            if (ui5Objects.length === 0) {
+                result.reject();
+                return;
+            }
+            //get the API and process - transform to Mustache's template values
+            const ui5ObjectApi = ui5ApiService.getUi5ObjectDesignApi(ui5Objects[0].name);
+            const templateObjects = [];
+            const templateObject = ui5ApiFormatter.getFormattedObjectApi(ui5ObjectApi, false, true);
+            templateObjects.push(templateObject);
 
-        const inlineWidget = new InlineDocsViewer(templateObjects);
-        inlineWidget.setDescriptionsVisibility();
-        inlineWidget.load(hostEditor);
-        result.resolve(inlineWidget);
+            const inlineWidget = new InlineDocsViewer(templateObjects);
+            inlineWidget.setDescriptionsVisibility();
+            inlineWidget.load(hostEditor);
+            result.resolve(inlineWidget);
+            return;
+        }, (error) => {
+            result.reject(error);
+            return;
+        });
 
         return result.promise();
     }

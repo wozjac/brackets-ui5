@@ -55,8 +55,6 @@ define((require, exports, module) => {
             this.cachedUi5Object = null;
             this.objectIdentifierToken = null;
             this.objectIdentifier = null;
-            this.useCachedHints = false;
-            this.useCachedUi5ObjectApi = false;
         }
 
         hasHints(editor, implicitChar) {
@@ -84,6 +82,7 @@ define((require, exports, module) => {
                     this.objectIdentifier = this.queryToken.string.trim().slice(0, -1);
                 } else {
                     const dotCursor = session.findPreviousDot();
+
                     if (dotCursor) {
                         this.objectIdentifierToken = session._getContextToken(dotCursor);
                         this.objectIdentifier = this.objectIdentifierToken.string;
@@ -91,42 +90,7 @@ define((require, exports, module) => {
                 }
 
                 if (this.objectIdentifier) {
-                    const position = {
-                        line: session.getCursor().line,
-                        ch: this.objectIdentifierToken.start
-                    };
-
-                    try {
-                        const codeAnalyzer = new Ui5CodeAnalyzer(editor.document.getText());
-
-                        this.proposedUi5Object = codeAnalyzer.resolveUi5Token(
-                            this.objectIdentifier, position, true
-                        )[0];
-
-                        if (this.proposedUi5Object === this.cachedUi5Object
-                            && this.queryToken.string === this.cachedQuery) {
-
-                            this.useCachedHints = true;
-                            this.useCachedUi5ObjectApi = true;
-                        } else if (this.proposedUi5Object === this.cachedUi5Object
-                            && this.queryToken.string !== this.cachedQuery) {
-
-                            this.useCachedUi5ObjectApi = true;
-                            this.useCachedHints = false;
-                        } else {
-                            this.useCachedUi5ObjectApi = false;
-                            this.useCachedHints = false;
-                        }
-
-                        if (this.proposedUi5Object) {
-                            this.cachedUi5Object = this.proposedUi5Object;
-                            this.cachedQuery = this.queryToken.string;
-                            return true;
-                        }
-
-                    } catch (error) {
-                        console.error(`[wozjac.ui5] ${error}`);
-                    }
+                    return true;
                 }
             }
 
@@ -138,23 +102,53 @@ define((require, exports, module) => {
                 return null;
             }
 
-            if (this.proposedUi5Object) {
-                if (this.useCachedHints === true
-                    && this.useCachedUi5ObjectApi === true) {
+            const defrerred = $.Deferred(); //eslint-disable-line
+
+            const position = {
+                line: session.getCursor().line,
+                ch: this.objectIdentifierToken.start,
+                chEnd: this.objectIdentifierToken.end
+            };
+
+            const codeAnalyzer = new Ui5CodeAnalyzer(this.editor.document.getText());
+
+            codeAnalyzer.resolveUi5Token(this.objectIdentifier, position, true).then((results) => {
+                if (results.length === 0) {
+                    defrerred.reject();
+                    return;
+                }
+
+                let hintsObject;
+                this.proposedUi5Object = results[0];
+
+                if (this.proposedUi5Object === this.cachedUi5Object
+                    && this.queryToken.string === this.cachedQuery) {
 
                     //FIXME: restore event handlers for cached events
                     //return this._resolveWithCachedHints();
-                    return this._resolveWithCachedApiObject();
-                } else if (this.useCachedHints === false
-                    && this.useCachedUi5ObjectApi === true) {
+                    this.cachedUi5Object = this.proposedUi5Object;
+                    this.cachedQuery = this.queryToken.string;
+                    hintsObject = this._resolveWithCachedApiObject();
+                } else if (this.proposedUi5Object === this.cachedUi5Object
+                    && this.queryToken.string !== this.cachedQuery) {
 
-                    return this._resolveWithCachedApiObject();
+                    hintsObject = this._resolveWithCachedApiObject();
                 } else {
-                    return this._resolveWithApiObjectSearch();
+                    hintsObject = this._resolveWithApiObjectSearch();
                 }
-            } else {
-                return null;
-            }
+
+                this.cachedUi5Object = this.proposedUi5Object;
+                this.cachedQuery = this.queryToken.string;
+
+                defrerred.resolveWith(null, [hintsObject]);
+                return;
+            }, (error) => {
+                console.log(`[wozjac.ui5] ${error}`);
+                defrerred.reject();
+                return;
+            });
+
+            return defrerred;
         }
 
         insertHint(hintObject) {
@@ -390,8 +384,6 @@ define((require, exports, module) => {
         _reset() {
             this.objectIdentifierToken = null;
             this.objectIdentifier = null;
-            this.useCachedHints = false;
-            this.useCachedUi5ObjectApi = false;
             this.proposedUi5Object = null;
         }
     }
