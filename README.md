@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/wozjac/brackets-ui5.svg?branch=master)](https://travis-ci.com/wozjac/brackets-ui5)
+
 # Brackets UI5
 
 1. [Intro](#info)
