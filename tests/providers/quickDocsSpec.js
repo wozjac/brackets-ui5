@@ -8,6 +8,24 @@ define((require, exports) => {
     exports.getTests = function () {
         let testEditor;
 
+        function waitsForProvider(provider, rejected) {
+            let complete = false;
+
+            if (rejected) {
+                provider.fail(() => {
+                    complete = true;
+                });
+            } else {
+                provider.done(() => {
+                    complete = true;
+                });
+            }
+
+            waitsFor(() => {
+                return complete;
+            });
+        }
+
         function expectQuickDocsWidgetForEventProvider(position) {
             const providerPromise = ui5QuickDocsProvider.inlineProvider(testEditor.editor, position);
             expect(providerPromise).not.toBeNull();
@@ -54,9 +72,8 @@ define((require, exports) => {
                 };
 
                 testEditor.editor.setCursorPos(position);
-
                 const provider = ui5QuickDocsProvider.inlineProvider(testEditor.editor, position);
-                expect(provider).toBeNull();
+                waitsForProvider(provider, true);
             });
 
             it("Should not return quick docs for a language identifier", () => {
@@ -66,9 +83,8 @@ define((require, exports) => {
                 };
 
                 testEditor.editor.setCursorPos(position);
-
                 const provider = ui5QuickDocsProvider.inlineProvider(testEditor.editor, position);
-                expect(provider).toBeNull();
+                waitsForProvider(provider, true);
             });
 
             it("Should return quick docs for an UI5 object variable in the define statement", () => {

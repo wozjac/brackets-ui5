@@ -65,18 +65,18 @@ define((require, exports) => {
     function insertInDefine(ui5objectPath, editor = EditorManager.getCurrentFullEditor()) {
         const sourceCode = getSourceCode(editor.document);
         const ast = astTool.parse(sourceCode);
-        const endPostions = astTool.getDefineStatementEndPositions(ast, sourceCode);
+        const endPositions = astTool.getDefineStatementEndPositions(ast, sourceCode);
 
-        if (endPostions) {
+        if (endPositions) {
             let insertObjectPosition = {
-                line: endPostions.functionEndLocation.end.line - 1,
-                ch: endPostions.functionEndLocation.end.column
+                line: endPositions.functionEndLocation.end.line - 1,
+                ch: endPositions.functionEndLocation.end.column
             };
 
             const objectName = ui5objectPath.substr(ui5objectPath.lastIndexOf(".") + 1);
             let insertText = objectName;
 
-            if (endPostions.emptyFunction) {
+            if (endPositions.emptyFunction) {
                 insertText = `${insertText}`;
             } else {
                 insertText = `,${insertText}`;
@@ -86,13 +86,13 @@ define((require, exports) => {
             insertObjectPosition = null;
 
             insertObjectPosition = {
-                line: endPostions.arrayEndLocation.end.line - 1,
-                ch: endPostions.arrayEndLocation.end.column
+                line: endPositions.arrayEndLocation.end.line - 1,
+                ch: endPositions.arrayEndLocation.end.column
             };
 
             insertText = textTool.getQuote() + ui5objectPath.replace(/\./g, "/") + textTool.getQuote();
 
-            if (endPostions.emptyArray) {
+            if (endPositions.emptyArray) {
                 insertText = `${insertText}`;
             } else {
                 insertText = `,${insertText}`;

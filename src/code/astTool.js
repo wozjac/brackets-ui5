@@ -1,10 +1,28 @@
-define((require, exports) => {
+define((require, exports, module) => {
     "use strict";
 
     const AcornLoose = brackets.getModule("thirdparty/acorn/dist/acorn_loose"),
         Acorn = brackets.getModule("thirdparty/acorn/dist/acorn"),
+        NodeDomain = brackets.getModule("utils/NodeDomain"),
         AcornWalk = brackets.getModule("thirdparty/acorn/dist/walk"),
-        constants = require("src/core/constants");
+        ExtensionUtils = brackets.getModule("utils/ExtensionUtils"),
+        constants = require("src/core/constants"),
+        flatted = require("src/3rdparty/flatted"),
+        variableScopeDomain = new NodeDomain("BracketsUI5", ExtensionUtils.getModulePath(module, "../../node/scopeDomain"));
+
+    function parseWithScopes(sourceCode, options) {
+        return new Promise((resolve, reject) => {
+            const parsed = parse(sourceCode, options);
+
+            variableScopeDomain.exec("addVariableScope", parsed)
+                .done((parsedWithScope) => {
+                    resolve(flatted.parse(parsedWithScope));
+                })
+                .fail((error) => {
+                    reject(error);
+                });
+        });
+    }
 
     function parse(sourceCode, options) {
         let parseOptions = {
@@ -30,38 +48,35 @@ define((require, exports) => {
         return parsed;
     }
 
-    //function getNodeInfo(ast, start, end) {
-    //    console.log(ast);
-    //    const found = AcornWalk.findNodeAt(ast, start, end);
-    //
-    //    AcornWalk.fullAncestor(ast, (node, ancestors) => {
-    //        if (node.name === "aa1") {
-    //            console.group(node);
-    //            ancestors.forEach((a) => {
-    //                console.log(a);
-    //            });
-    //            console.groupEnd();
-    //        }
-    //    });
-    //
-    //    console.log(found);
-    //}
-
-    function getNodeAt(ast, position) {
+    function getNodeAt(ast, position, withAncestors = false) {
         let foundNode;
 
-        AcornWalk.fullAncestor(ast, (node, ancestors) => {
-            if (node.loc.start.column === position.ch
-                && node.loc.start.line === position.line + 1
-                && node.loc.end.line === position.line + 1
-                && node.loc.end.column === position.chEnd) {
+        if (withAncestors) {
+            AcornWalk.fullAncestor(ast, (node, ancestors) => {
+                if (node.loc.start.column === position.ch
+                    && node.loc.start.line === position.line + 1
+                    && node.loc.end.line === position.line + 1
+                    && node.loc.end.column === position.chEnd) {
 
-                foundNode = {
-                    node: Object.assign({}, node),
-                    ancestors: [...ancestors]
-                };
-            }
-        });
+                    foundNode = {
+                        node: Object.assign({}, node),
+                        ancestors: [...ancestors]
+                    };
+                }
+            });
+        } else {
+            AcornWalk.full(ast, (node) => {
+                if (node.loc.start.column === position.ch
+                    && node.loc.start.line === position.line + 1
+                    && node.loc.end.line === position.line + 1
+                    && node.loc.end.column === position.chEnd) {
+
+                    foundNode = {
+                        node: Object.assign({}, node)
+                    };
+                }
+            });
+        }
 
         return foundNode;
     }
@@ -74,32 +89,31 @@ define((require, exports) => {
                 case "Identifier":
                     type = node.init.callee.name;
                     break;
-                case "MemberExpression":
-                    {
-                        let currentNode, path = "";
-                        currentNode = node.init.callee;
+                case "MemberExpression": {
+                    let currentNode, path = "";
+                    currentNode = node.init.callee;
 
-                        while (currentNode) {
-                            try {
-                                if (path === "") {
-                                    path = currentNode.property.name;
-                                } else {
-                                    path = `${currentNode.property.name}.${path}`;
-                                }
-
-                                currentNode = currentNode.object;
-                            } catch (error) {
-                                if (currentNode.type === "Identifier") {
-                                    path = `${currentNode.name}.${path}`;
-                                }
-
-                                currentNode = null;
+                    while (currentNode) {
+                        try {
+                            if (path === "") {
+                                path = currentNode.property.name;
+                            } else {
+                                path = `${currentNode.property.name}.${path}`;
                             }
-                        }
 
-                        type = path;
-                        break;
+                            currentNode = currentNode.object;
+                        } catch (error) {
+                            if (currentNode.type === "Identifier") {
+                                path = `${currentNode.name}.${path}`;
+                            }
+
+                            currentNode = null;
+                        }
                     }
+
+                    type = path;
+                    break;
+                }
             }
         } catch (error) {
             type = null;
@@ -243,5 +257,6 @@ define((require, exports) => {
     exports.getDefineStatementEndPositions = getDefineStatementEndPositions;
     exports.getVariableType = getVariableType;
     exports.getNodeAt = getNodeAt;
+    exports.parseWithScopes = parseWithScopes;
     exports.parse = parse;
 });

@@ -1,0 +1,7 @@
+{
+    "name": "brackets-ui5",
+    "dependencies": {
+        "ecma-variable-scope": "^2.1.0",
+        "flatted": "^2.0.0"
+    }
+}
