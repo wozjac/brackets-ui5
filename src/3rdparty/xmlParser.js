@@ -1,3 +1,4 @@
+/* eslint-disable */
 /*
 Copyright (c) 2016 Yusuke Kawasaki
 

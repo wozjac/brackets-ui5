@@ -1,11 +1,22 @@
 module.exports = function (grunt) {
+    require("load-grunt-tasks")(grunt);
+
+    const options = {
+        distDir: "dist"
+    };
+
     grunt.initConfig({
-        eslint: {
-            files: ["**/*.js", "!node_modules/**", "!src/3rdparty/**", "!src/mockGenerator/OdataMockGenerator.js", "!working/**", "!tests/fixtures/**"]
+        clean: {
+            dist: ["dist"]
+        },
+
+        zip: {
+            dist: {
+                src: ["assets/**", "src/**", "nls/**", "node/**", "main.js", "strings.js", "package.json", "*.md"],
+                dest: `${options.distDir}/wozjac.ui5.zip`
+            }
         }
     });
 
-    grunt.loadNpmTasks("grunt-eslint");
-
-    grunt.registerTask("default", ["eslint"]);
+    grunt.registerTask("dist", ["clean:dist", "zip:dist"]);
 };
