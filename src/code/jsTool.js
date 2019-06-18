@@ -16,10 +16,6 @@ define((require, exports) => {
     function getUi5ObjectFromDefineStatement(token, ast) {
         let ui5Object;
 
-        //const ast = astTool.parse(sourceCode, {
-        //    removeComments: true
-        //});
-
         const defineObjects = astTool.getDefineStatementObjects(ast);
 
         if (defineObjects) {
@@ -35,8 +31,8 @@ define((require, exports) => {
     }
 
     function isFullUi5Path(token) {
-        //if we have dots or / we can assume it's full object name
         const hasSlashes = token.indexOf("/") !== -1;
+
         if (token.indexOf(".") !== -1 || hasSlashes) {
             if (hasSlashes) {
                 token = token.replace(/\//g, ".");
@@ -50,7 +46,38 @@ define((require, exports) => {
         return false;
     }
 
+    function deepforEach(value, fn, path) {
+        path = path || "";
+        if (Array.isArray(value)) {
+            _forEachArray(value, fn, path);
+        } else if (_isObject(value)) {
+            _forEachObject(value, fn, path);
+        }
+    }
+
+    function _forEachObject(obj, fn, path) {
+        for (const key in obj) {
+            const deepPath = path ? `${path}.${key}` : key;
+            fn.call(obj, obj[key], key, obj, deepPath);
+            deepforEach(obj[key], fn, deepPath);
+        }
+    }
+
+    function _forEachArray(array, fn, path) {
+        array.forEach((value, index, arr) => {
+            const deepPath = `${path}[${index}]`;
+            fn.call(arr, value, index, arr, deepPath);
+            deepforEach(arr[index], fn, deepPath);
+        });
+    }
+
+    function _isObject(obj) {
+        const type = typeof obj;
+        return type === "function" || type === "object" && !!obj;
+    }
+
     exports.extractDefineObjects = extractDefineObjects;
     exports.isFullUi5Path = isFullUi5Path;
     exports.getUi5ObjectFromDefineStatement = getUi5ObjectFromDefineStatement;
+    exports.deepforEach = deepforEach;
 });

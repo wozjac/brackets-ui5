@@ -14,6 +14,7 @@ define((require, exports, module) => {
         EditorManager = brackets.getModule("editor/EditorManager"),
         CodeHintManager = brackets.getModule("editor/CodeHintManager"),
         ProjectManager = brackets.getModule("project/ProjectManager"),
+        JumpToDefManager = brackets.getModule("features/JumpToDefManager"),
         commandHandler = require("src/main/commandHandler"),
         menus = require("src/main/menus"),
         docsPanel = require("src/docsPanel/docsPanel"),
@@ -34,7 +35,7 @@ define((require, exports, module) => {
         EditorManager.registerInlineDocsProvider(ui5QuickDocsProvider.inlineProvider, 999);
         EditorManager.registerInlineEditProvider(i18nQuickEditProvider.inlineEditProvider, 999);
         EditorManager.registerInlineEditProvider(xmlViewQuickEditProvider.inlineEditProvider, 999);
-        EditorManager.registerJumpToDefProvider(xmlViewJumpToDefProvider.jumpProvider);
+        JumpToDefManager.registerJumpToDefProvider(xmlViewJumpToDefProvider.jumpProvider, ["xml"], 999);
         CodeHintManager.registerHintProvider(ui5HintsProvider.getXmlViewTagsHintsProvider(), ["xml"], 999);
         CodeHintManager.registerHintProvider(ui5HintsProvider.getXmlViewAttributesHintsProvider(), ["xml"], 999);
         CodeHintManager.registerHintProvider(ui5HintsProvider.getUi5CodeHintsProvider(), ["javascript"], 999);

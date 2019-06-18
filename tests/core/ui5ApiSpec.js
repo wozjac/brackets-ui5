@@ -17,6 +17,7 @@ define((require, exports) => {
 
                 ui5ApiService.loadUi5Objects().then(() => {
                     ui5ObjectsLoaded = true;
+
                     ui5ApiService.loadUi5LibrariesDesignApi().then(() => {
                         ui5LibrariesLoaded = true;
                     });

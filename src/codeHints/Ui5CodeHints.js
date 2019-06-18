@@ -9,6 +9,7 @@ define((require, exports, module) => {
         ui5ApiService = require("src/core/ui5ApiService"),
         strings = require("strings"),
         hintUtils = require("src/codeHints/hintsUtils"),
+        ui5Files = require("src/ui5Project/ui5Files"),
         ui5ApiFormatter = require("src/core/ui5ApiFormatter"),
         Ui5CodeAnalyzer = require("src/code/Ui5CodeAnalyzer");
 
@@ -286,7 +287,7 @@ define((require, exports, module) => {
         }
 
         _resolveWithCachedApiObject() {
-            const formattedApi = ui5ApiFormatter.getFormattedObjectApi(this.cachedUi5ObjectApi);
+            const formattedApi = ui5ApiFormatter.getFormattedObjectApi(this.cachedUi5ObjectApi, false, false, true);
             const result = this._findObjectMembers(this.queryToken.string, formattedApi);
 
             this.cachedHints = result;
@@ -301,7 +302,7 @@ define((require, exports, module) => {
 
         _resolveWithApiObjectSearch() {
             const api = ui5ApiService.getUi5ObjectDesignApi(this.proposedUi5Object.name);
-            const formattedApi = ui5ApiFormatter.getFormattedObjectApi(api);
+            const formattedApi = ui5ApiFormatter.getFormattedObjectApi(api, false, false, true);
             const result = this._findObjectMembers(this.queryToken.string, formattedApi);
 
             this.cachedHints = result;
