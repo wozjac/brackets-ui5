@@ -136,18 +136,21 @@ define((require, exports, module) => {
             return new Promise((resolve) => {
                 if (!node) {
                     resolve(null);
+                    return;
                 }
 
                 const controlId = astTool.getControlIdFromByIdCall(node, this._resolveContext().parsedCode);
 
                 if (!controlId) {
                     resolve(null);
+                    return;
                 }
 
                 const controllerId = astTool.getControllerId(this._resolveContext().parsedCode);
 
                 if (!controllerId) {
                     resolve(null);
+                    return;
                 }
 
                 ui5Files.findXmlViewsControllers()
@@ -158,14 +161,17 @@ define((require, exports, module) => {
 
                         if (!view) {
                             resolve(null);
+                            return;
                         }
 
                         const elementInfo = xmlExtract.findElementById(controlId, view.content);
 
                         if (!elementInfo) {
                             resolve(null);
+                            return;
                         } else {
-                            resolve(ui5ApiFinder.findUi5ObjectByName(`${elementInfo.namespace}.elementInfo.element`));
+                            const ui5Object = ui5ApiFinder.findUi5ObjectByName(`${elementInfo.namespace}.${elementInfo.element}`);
+                            resolve(ui5Object ? [ui5Object] : []);
                         }
                     }, (error) => {
                         console.log(error);
@@ -226,12 +232,14 @@ define((require, exports, module) => {
 
                 if (!scopeNode) {
                     resolve([]);
+                    return;
                 }
 
                 this._findVariableInScope(scopeNode)
                     .then((ui5Object) => {
                         if (ui5Object.length > 0) {
                             resolve(ui5Object);
+                            return;
                         }
 
                         //check for identifier and its scope
@@ -240,6 +248,7 @@ define((require, exports, module) => {
 
                         if (!identifierNode || !scopeNode) {
                             resolve([]);
+                            return;
                         }
 
                         resolve(this._findVariableInScope(scopeNode));
@@ -269,7 +278,6 @@ define((require, exports, module) => {
                                     }
                                 });
 
-                                //return that._getUi5VariableDeclaratorType(node);
                                 if (!ui5Object) {
                                     promises.push(that._getUi5VariableDeclaratorType(node));
                                 }
@@ -307,19 +315,26 @@ define((require, exports, module) => {
         _getUi5VariableDeclaratorType(node) {
             return new Promise((resolve) => {
                 this._resolveCallNode(node.init.object)
-                    .then((variableType) => {
-                        if (!variableType) {
-                            variableType = astTool.getVariableDeclaratorType(node, this._resolveContext().parsedCode);
-                        }
-
-                        if (!variableType) {
-                            resolve(null);
-                        }
-
-                        if (jsTool.isFullUi5Path(variableType)) {
-                            resolve(ui5ApiFinder.findUi5ObjectByName(variableType));
+                    .then((ui5Object) => {
+                        if (ui5Object) {
+                            resolve(ui5Object);
                         } else {
-                            resolve(jsTool.getUi5ObjectFromDefineStatement(variableType, this._resolveContext().parsedCode));
+                            let variableType;
+
+                            if (!ui5Object) {
+                                variableType = astTool.getVariableDeclaratorType(node, this._resolveContext().parsedCode);
+                            }
+
+                            if (!variableType) {
+                                resolve(null);
+                                return;
+                            }
+
+                            if (jsTool.isFullUi5Path(variableType)) {
+                                resolve(ui5ApiFinder.findUi5ObjectByName(variableType));
+                            } else {
+                                resolve(jsTool.getUi5ObjectFromDefineStatement(variableType, this._resolveContext().parsedCode));
+                            }
                         }
                     });
             });

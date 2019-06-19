@@ -1,0 +1,35 @@
+<mvc:View xmlns:mvc="sap.ui.core.mvc"
+    controllerName="com.my.controller.DetailOrder"
+    xmlns="sap.m"
+    xmlns:semantic="sap.m.semantic">
+
+    <semantic:DetailPage id="detailTemplatePage"
+        showNavButton="{Device>/system/phone}"
+        navButtonPress="onPressBack">
+        <semantic:content>
+            <ObjectHeader id="templateHeader"
+                title="{Title}"
+                responsive="true"
+                intro="{Description}">
+            </ObjectHeader>
+            <IconTabBar id="templatesTabBar">
+            </IconTabBar>
+        </semantic:content>
+        <semantic:positiveAction>
+            <semantic:PositiveAction text="{i18n>generate}"
+                id="generateButton"
+                press="onPressGenerate" />
+        </semantic:positiveAction>
+        <semantic:messagesIndicator>
+            <semantic:MessagesIndicator id="messageButton"
+                visible="false"
+                press="onPressMessages" />
+        </semantic:messagesIndicator>
+        <semantic:customFooterContent>
+            <Button icon="sap-icon://pdf-attachment"
+                id="previewButton"
+                text="{i18n>preview}"
+                press="onPressPreview" />
+        </semantic:customFooterContent>
+    </semantic:DetailPage>
+</mvc:View>

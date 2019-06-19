@@ -82,11 +82,6 @@ define((require, exports) => {
                     });
                 });
             });
-
-            it("Should", () => {
-                ui5Files.findXmlViewsControllers();
-                expect(true).toBe(false);
-            });
         });
     };
 });
