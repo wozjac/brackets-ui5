@@ -20,7 +20,7 @@ define((require, exports, module) => {
                 const comments = [];
                 let ui5Objects = [];
 
-                //check ui5 comment at the cursor position
+                //ui5 comment in the current line?
                 const ui5Object = this._getUi5ObjectFromCurrentLineComment(token, position);
 
                 if (ui5Object) {
@@ -51,7 +51,6 @@ define((require, exports, module) => {
                             return ui5Object.name.startsWith("sap.m");
                         });
 
-                        //FIXME: jQuery.sap - resolves to 2 objects, correct the above empty filter result
                         if (ui5Objects.length > 1) {
                             const selected = ui5Objects[0];
                             ui5Objects = [];
@@ -181,48 +180,74 @@ define((require, exports, module) => {
         }
 
         _resolveMemberNode(node) {
-            return new Promise((resolve) => {
+            const that = this;
+
+            function walk(startNode) {
                 let ui5Object;
+                const promises = [];
 
-                //check scope
-                if (node._nearestScope.node) {
-                    AcornWalk.full(node._nearestScope.node, (n) => {
-                        switch (n.type) {
-                            case "AssignmentExpression":
-                                if (n.operator === "="
-                                    && n.left.property.name === this._resolveContext().token
-                                    && n.right.callee.type === "Identifier") {
+                AcornWalk.full(startNode, (n) => {
+                    switch (n.type) {
+                        case "AssignmentExpression":
+                            if (n.operator === "="
+                                && n.left.property.name === that._resolveContext().token) {
 
-                                    if (jsTool.isFullUi5Path(n.right.callee.name)) {
-                                        ui5Object = ui5ApiFinder.findUi5ObjectByName(n.right.callee.name);
-                                    } else {
-                                        ui5Object = jsTool.getUi5ObjectFromDefineStatement(
-                                            n.right.callee.name,
-                                            this._resolveContext().parsedCode
-                                        );
-                                    }
+                                switch (n.right.callee.type) {
+                                    case "Identifier":
+                                        if (jsTool.isFullUi5Path(n.right.callee.name)) {
+                                            ui5Object = ui5ApiFinder.findUi5ObjectByName(n.right.callee.name);
+                                        } else {
+                                            ui5Object = jsTool.getUi5ObjectFromDefineStatement(
+                                                n.right.callee.name,
+                                                that._resolveContext().parsedCode
+                                            );
+                                        }
+
+                                        break;
+                                    case "MemberExpression":
+                                        if (n.right.type === "CallExpression") {
+                                            promises.push(that._resolveCallNode(n.right));
+                                        }
                                 }
+                            }
 
-                                break;
+                            break;
 
-                            case "ExpressionStatement":
-                                if (n.expression.type === "MemberExpression"
-                                    && n.expression.object.property
-                                    && n.expression.object.property.name === this._resolveContext().token) {
+                        case "ExpressionStatement":
+                            if (n.expression.type === "MemberExpression"
+                                && n.expression.object.property
+                                && n.expression.object.property.name === that._resolveContext().token) {
 
-                                    const ui5ObjectFullPath = astTool.resolveMemberExpression(n.expression.object);
+                                const ui5ObjectFullPath = astTool.resolveMemberExpression(n.expression.object);
 
-                                    if (jsTool.isFullUi5Path(ui5ObjectFullPath)) {
-                                        ui5Object = ui5ApiFinder.findUi5ObjectByName(ui5ObjectFullPath);
-                                    }
+                                if (jsTool.isFullUi5Path(ui5ObjectFullPath)) {
+                                    ui5Object = ui5ApiFinder.findUi5ObjectByName(ui5ObjectFullPath);
                                 }
+                            }
 
-                                break;
-                        }
-                    });
+                            break;
+                    }
+                });
+
+                if (ui5Object) {
+                    promises.push(Promise.resolve(ui5Object));
                 }
 
-                resolve(ui5Object ? [ui5Object] : []);
+                return promises;
+            }
+
+            return new Promise((resolve) => {
+                let promises = [];
+
+                if (node._nearestScope.node) {
+                    promises = walk(node._nearestScope.node);
+
+                    Promise.all(promises).then((values) => {
+                        resolve([].concat(...values));
+                    });
+                } else {
+                    resolve([]);
+                }
             });
         }
 
@@ -307,36 +332,29 @@ define((require, exports, module) => {
                 }
 
                 Promise.all(promises).then((values) => {
-                    resolve(values);
+                    resolve([].concat(...values));
                 });
             });
         }
 
         _getUi5VariableDeclaratorType(node) {
+            if (node.init && node.init && node.init.type === "CallExpression") {
+                return this._resolveCallNode(node.init);
+            }
+
             return new Promise((resolve) => {
-                this._resolveCallNode(node.init.object)
-                    .then((ui5Object) => {
-                        if (ui5Object) {
-                            resolve(ui5Object);
-                        } else {
-                            let variableType;
+                const variableType = astTool.getVariableDeclaratorType(node, this._resolveContext().parsedCode);
 
-                            if (!ui5Object) {
-                                variableType = astTool.getVariableDeclaratorType(node, this._resolveContext().parsedCode);
-                            }
+                if (!variableType) {
+                    resolve(null);
+                    return;
+                }
 
-                            if (!variableType) {
-                                resolve(null);
-                                return;
-                            }
-
-                            if (jsTool.isFullUi5Path(variableType)) {
-                                resolve(ui5ApiFinder.findUi5ObjectByName(variableType));
-                            } else {
-                                resolve(jsTool.getUi5ObjectFromDefineStatement(variableType, this._resolveContext().parsedCode));
-                            }
-                        }
-                    });
+                if (jsTool.isFullUi5Path(variableType)) {
+                    resolve(ui5ApiFinder.findUi5ObjectByName(variableType));
+                } else {
+                    resolve(jsTool.getUi5ObjectFromDefineStatement(variableType, this._resolveContext().parsedCode));
+                }
             });
         }
     }
