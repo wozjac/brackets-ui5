@@ -1,7 +1,9 @@
 define((require, exports) => {
     "use strict";
 
-    const constants = require("src/core/constants");
+    const constants = require("src/core/constants"),
+        xmlParser = require("src/3rdparty/xmlParser"),
+        jsTool = require("src/code/jsTool");
 
     function extractXmlNamespaces(xml) {
         const namespaces = {};
@@ -24,12 +26,16 @@ define((require, exports) => {
         return namespaces;
     }
 
-    function getControllerName(xml) {
+    function getControllerName(xml, fullName = false) {
         const match = xml.match(/controllerName=['"]{1}([\w.]+)['"]{1}/);
 
         if (match) {
-            const parts = match[1].split(".");
-            return parts[parts.length - 1];
+            if (fullName) {
+                return match[1];
+            } else {
+                const parts = match[1].split(".");
+                return parts[parts.length - 1];
+            }
         }
 
         return null;
@@ -48,13 +54,42 @@ define((require, exports) => {
         }
 
         return functionName;
+    }
 
-        //const value = functionString.replace(/['"{}.]/g, "").trim().split("(");
-        //
-        //return value[0];
+    function findElementById(id, xml) {
+        let result;
+
+        const parsedXml = xmlParser.fromXML(xml);
+        const namespaces = extractXmlNamespaces(xml);
+
+        if (!parsedXml) {
+            return;
+        }
+
+        jsTool.deepforEach(parsedXml, (value, key, subject, path) => {
+            if (value["@id"] && value["@id"] === id) {
+                let namespace;
+
+                result = {};
+                const name = path.replace(/\[.\]/g, "");
+                result.element = name.substring(name.lastIndexOf(".") + 1);
+
+                if (result.element.indexOf(":") !== -1) {
+                    [namespace, result.element] = result.element.split(":");
+                    namespace = namespaces[namespace];
+                } else {
+                    namespace = namespaces.root;
+                }
+
+                result.namespace = namespace;
+            }
+        });
+
+        return result;
     }
 
     exports.extractXmlNamespaces = extractXmlNamespaces;
     exports.getControllerName = getControllerName;
     exports.getFunctionNameFromXmlViewElement = getFunctionNameFromXmlViewElement;
+    exports.findElementById = findElementById;
 });

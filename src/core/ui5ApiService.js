@@ -114,7 +114,6 @@ define((require, exports) => {
             addToObjectDesignApiBuffer(resultApi);
             return resultApi;
         }
-        //}
     }
 
     function loadUi5Objects() {

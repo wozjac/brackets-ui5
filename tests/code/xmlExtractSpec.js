@@ -1,7 +1,8 @@
 define((require, exports) => {
     "use strict";
 
-    const xmlExtract = require("src/code/xmlExtract");
+    const xmlExtract = require("src/code/xmlExtract"),
+        xmlViewContent = require("text!tests/fixtures/testView3.xml");
 
     exports.getTests = function () {
         describe("[wozjac.ui5] xmlExtract", () => {
@@ -34,6 +35,20 @@ define((require, exports) => {
             it("Should not get controller name #2", () => {
                 const xml = "<mvc:View xmlns=\"sap.m\"></mvc:View>";
                 expect(xmlExtract.getControllerName(xml)).toBeNull();
+            });
+
+            it("Should find non-namespaced element by id", () => {
+                expect(xmlExtract.findElementById("previewButton", xmlViewContent)).toEqual({
+                    element: "Button",
+                    namespace: "sap.m"
+                });
+            });
+
+            it("Should find namespaced element by id", () => {
+                expect(xmlExtract.findElementById("messageButton", xmlViewContent)).toEqual({
+                    element: "MessagesIndicator",
+                    namespace: "sap.m.semantic"
+                });
             });
         });
     };

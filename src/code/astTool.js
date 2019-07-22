@@ -74,6 +74,13 @@ define((require, exports, module) => {
                     foundNode = {
                         node: Object.assign({}, node)
                     };
+                } else if (node.loc.start.line === position.line + 1
+                    && node.loc.end.line === position.line + 1
+                    && node.loc.end.column === position.chEnd) {
+
+                    foundNode = {
+                        node: Object.assign({}, node)
+                    };
                 }
             });
         }
@@ -81,7 +88,27 @@ define((require, exports, module) => {
         return foundNode;
     }
 
-    function getVariableType(node) {
+    function getControlIdFromByIdCall(node) {
+        let id;
+
+        if (node.type === "CallExpression"
+            && node.callee
+            && node.callee.object
+            && node.callee.object.type === "ThisExpression"
+            && node.callee.property
+            && node.callee.property.type === "Identifier"
+            && node.callee.property.name === "byId"
+            && node.arguments
+            && node.arguments.length === 1
+            && node.arguments[0].type === "Literal") {
+
+            id = node.arguments[0].value;
+        }
+
+        return id;
+    }
+
+    function getVariableDeclaratorType(node) {
         let type;
 
         try {
@@ -120,6 +147,31 @@ define((require, exports, module) => {
         }
 
         return type;
+    }
+
+    function resolveMemberExpression(node) {
+        let currentNode, path = "";
+        currentNode = node;
+
+        while (currentNode) {
+            try {
+                if (path === "") {
+                    path = currentNode.property.name;
+                } else {
+                    path = `${currentNode.property.name}.${path}`;
+                }
+
+                currentNode = currentNode.object;
+            } catch (error) {
+                if (currentNode.type === "Identifier") {
+                    path = `${currentNode.name}.${path}`;
+                }
+
+                currentNode = null;
+            }
+        }
+
+        return path;
     }
 
     function getDefineStatementObjects(ast) {
@@ -253,10 +305,72 @@ define((require, exports, module) => {
         return result;
     }
 
+    function getControllerId(ast) {
+        let result;
+
+        AcornWalk.simple(ast, {
+            CallExpression(node) {
+                if (!result
+                    && node.callee
+                    && node.callee.object
+                    && node.callee.object.name
+                    && node.callee.object.name.toLowerCase().indexOf("controller") !== -1
+                    && node.callee.property
+                    && node.callee.property.name
+                    && node.callee.property.name === "extend"
+                    && node.arguments
+                    && node.arguments[0]
+                    && node.arguments[0].type === "Literal"
+                    && node.arguments[0].value) {
+
+                    result = node.arguments[0].value;
+                }
+            }
+        });
+
+        return result;
+    }
+
+    function findIdentifierInScope(scopeNode, token) {
+        let foundNode;
+
+        AcornWalk.simple(scopeNode, {
+            Identifier(node) {
+                if (node.name === token
+                    && node.scope
+                    && node.scope.node) {
+
+                    if (!foundNode) {
+                        foundNode = node;
+                    }
+                }
+            }
+        });
+
+        return foundNode;
+    }
+
+    function getScopeNode(node) {
+        if (!node) {
+            return null;
+        }
+
+        const scope = node.scope || node._nearestScope;
+
+        if (scope) {
+            return scope.node;
+        }
+    }
+
     exports.getDefineStatementObjects = getDefineStatementObjects;
     exports.getDefineStatementEndPositions = getDefineStatementEndPositions;
-    exports.getVariableType = getVariableType;
+    exports.getVariableDeclaratorType = getVariableDeclaratorType;
+    exports.getControlIdFromByIdCall = getControlIdFromByIdCall;
+    exports.getControllerId = getControllerId;
     exports.getNodeAt = getNodeAt;
+    exports.getScopeNode = getScopeNode;
+    exports.resolveMemberExpression = resolveMemberExpression;
     exports.parseWithScopes = parseWithScopes;
     exports.parse = parse;
+    exports.findIdentifierInScope = findIdentifierInScope;
 });

@@ -2,6 +2,7 @@ define((require, exports) => {
     "use strict";
 
     const ProjectManager = brackets.getModule("project/ProjectManager"),
+        xmlExtract = require("src/code/xmlExtract"),
         strings = require("strings");
 
     function getI18nModelInfo() {
@@ -131,6 +132,51 @@ define((require, exports) => {
         });
     }
 
+    function findXmlViewsControllers() {
+        return new Promise((resolve, reject) => {
+            ProjectManager.getAllFiles((file) => {
+                return file.name.search(/.*\.view\.xml/) !== -1;
+            }).then((files) => {
+                const promises = [];
+
+                for (const file of files) {
+                    const promise = new Promise((resolve, reject) => {
+                        _readFile(file).then((content) => {
+                            const controllerId = xmlExtract.getControllerName(content, true);
+
+                            resolve({
+                                controllerId,
+                                viewName: file.name,
+                                content
+                            });
+
+                        }, (error) => {
+                            reject(error);
+                        });
+                    });
+
+                    promises.push(promise);
+                }
+
+                resolve(Promise.all(promises));
+            }, () => {
+                reject(`${strings.FILE_NOT_FOUND}`);
+            });
+        });
+    }
+
+    function _readFile(file) {
+        return new Promise((resolve, reject) => {
+            file.read((error, content) => {
+                if (error) {
+                    reject(error);
+                }
+
+                resolve(content);
+            });
+        });
+    }
+
     function _findModel(property, value, models, manifestFile) {
         let modelInfo, foundModel;
 
@@ -212,4 +258,5 @@ define((require, exports) => {
     exports.getComponentId = getComponentId;
     exports.getResourceRootPaths = getResourceRootPaths;
     exports.findFile = findFile;
+    exports.findXmlViewsControllers = findXmlViewsControllers;
 });

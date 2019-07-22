@@ -4,7 +4,7 @@ define((require, exports) => {
     const codeEditor = require("src/editor/codeEditor"),
         constants = require("src/core/constants");
 
-    function getFormattedObjectApi(ui5ObjectApi, cleanHtml = false, inheritedAsArray = false) {
+    function getFormattedObjectApi(ui5ObjectApi, cleanHtml = false, inheritedAsArray = false, flatStatic = false) {
         const api = {
             name: ui5ObjectApi.name,
             extends: ui5ObjectApi.extends,
@@ -43,7 +43,11 @@ define((require, exports) => {
                 }
 
                 if (method.static) {
-                    method.name = `${ui5ObjectApi.name}.${method.name}`;
+                    if (flatStatic === true) {
+                        method.name = `${method.name}`;
+                    } else {
+                        method.name = `${ui5ObjectApi.name}.${method.name}`;
+                    }
                 }
 
                 if (method.parameters) {

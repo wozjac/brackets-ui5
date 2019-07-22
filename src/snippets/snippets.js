@@ -18,6 +18,7 @@ define((require, exports, module) => {
 
     function openSnippetsFolder() {
         const path = ExtensionsUtil.getModulePath(module);
+
         brackets.app.showOSFolder(`${path}/files`, (error) => {
             if (error) {
                 console.error(`[wozjac.ui5]: ${strings.OPEN_TEMPL_DIR_ERROR}`, error);
@@ -31,6 +32,7 @@ define((require, exports, module) => {
 
         try {
             const snippetTitle = snippetText.split(/[\r\n]/)[0].replace("//", "").trim();
+
             if (snippetTitle.length > 0) {
                 title = snippetTitle;
             }

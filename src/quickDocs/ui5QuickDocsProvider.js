@@ -5,9 +5,11 @@ define((require, exports) => {
         Ui5CodeAnalyzer = require("src/code/Ui5CodeAnalyzer"),
         codeEditor = require("src/editor/codeEditor"),
         ui5ApiFormatter = require("src/core/ui5ApiFormatter"),
+        ui5Files = require("src/ui5Project/ui5Files"),
         ui5ApiService = require("src/core/ui5ApiService");
 
     function inlineProvider(hostEditor, position) {
+        ui5Files.findXmlViewsControllers();
         if (hostEditor.getLanguageForSelection().getId() !== "javascript") {
             return null;
         }

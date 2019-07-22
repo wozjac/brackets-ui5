@@ -23,6 +23,14 @@ define((require, exports) => {
             name: "sap.m.Label"
         };
 
+        const ui5SapUiNamespace = {
+            name: "sap.ui",
+            kind: "namespace",
+            visibility: "public",
+            library: "sap.ui.core",
+            apiDocUrl: "https: //openui5.hana.ondemand.com/#/api/sap.ui"
+        };
+
         describe("[wozjac.ui5] jsTool.js", () => {
             beforeEach(() => {
                 testUtils.mockUi5Api();
@@ -34,6 +42,8 @@ define((require, exports) => {
                             return ui5CoreLabelObject;
                         case "sap.m.Tree":
                             return ui5LabelObject;
+                        case "sap.ui":
+                            return ui5SapUiNamespace;
                     }
                 });
             });
@@ -51,6 +61,10 @@ define((require, exports) => {
             it("Should resolve the token as an object with a full path", () => {
                 expect(jsTool.isFullUi5Path("sap.m.Tree")).toBe(true);
                 expect(jsTool.isFullUi5Path("sap/m/Tree")).toBe(true);
+            });
+
+            it("Should resolve the namespace sap.ui as a full path object", () => {
+                expect(jsTool.isFullUi5Path("sap.ui")).toBe(true);
             });
 
             it("Should not resolve the token as an object with a full path", () => {

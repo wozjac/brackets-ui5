@@ -23,6 +23,14 @@ define((require, exports) => {
             name: "sap.m.Label"
         };
 
+        const ui5SapUiNamespace = {
+            name: "sap.ui",
+            kind: "namespace",
+            visibility: "public",
+            library: "sap.ui.core",
+            apiDocUrl: "https: //openui5.hana.ondemand.com/#/api/sap.ui"
+        };
+
         function expectSapUi5Object(sapUi5Object, code, token, position) {
             let resolvedObjects;
             const testEditor = editorUtils.createMockEditor(code, "javascript");
@@ -52,6 +60,8 @@ define((require, exports) => {
                             return ui5CoreLabelObject;
                         case "sap.m.Label":
                             return ui5LabelObject;
+                        case "sap.ui":
+                            return ui5SapUiNamespace;
                     }
                 });
             });
@@ -375,6 +385,49 @@ define((require, exports) => {
                     };
 
                 expectSapUi5Object(ui5LabelObject, code, token, position);
+            });
+
+            it("Should resolve member variable #1", () => {
+                const code = `sap.ui.define([
+                "sap/m/Label", "sap/m/Button"
+                ],
+                function(Label, Button) {
+                    return function Classy(){
+                       this.param = new Label();
+                       this.param.des
+                    }
+                }
+                )}`;
+
+                const token = "param",
+                    position = {
+                        line: 6,
+                        ch: 28,
+                        chEnd: 33
+                    };
+
+                expectSapUi5Object(ui5LabelObject, code, token, position);
+            });
+
+            it("Should resolve member variable #2", () => {
+                const code = `sap.ui.define([
+                "sap/m/Label", "sap/m/Button"
+                ],
+                function(Label, Button) {
+                    return function Classy(){
+                       sap.ui.def
+                    }
+                }
+                )}`;
+
+                const token = "ui",
+                    position = {
+                        line: 5,
+                        ch: 27,
+                        chEnd: 29
+                    };
+
+                expectSapUi5Object(ui5SapUiNamespace, code, token, position);
             });
 
             it("Should resolve correctly with various scopes", () => {
