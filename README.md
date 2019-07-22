@@ -39,7 +39,7 @@ In XML views:
 - controller functions in attributes (complex syntax not supported yet)
 - i18n keys
 
-##### Code hints (under development)
+##### Code hints
 XML views
 - tags and attributes
 - i18n keys for i18n model bindings
@@ -55,7 +55,7 @@ XML views:
 Brackets version >= 1.11
 
 ## Installation
-The extension is not yet added to the Bracket extensions repository. It can be installed using a downloaded ZIP file, extension's GitHub repository URL: https://github.com/wozjac/brackets-ui5 or ZIP file URL: https://github.com/wozjac/brackets-ui5/archive/master.zip.
+The extension is not yet added to the Bracket extensions repository. It can be installed using a downloaded ZIP file, extension's GitHub repository URL: https://github.com/wozjac/brackets-ui5 or ZIP file URL - check [releases](https://github.com/wozjac/brackets-ui5/releases).
 
 ![install](https://www.mediafire.com/convkey/6a27/l6ae100r9dj3azy6g.jpg)
 
@@ -175,8 +175,8 @@ In XML views:
 ![i18n hints](https://www.mediafire.com/convkey/82d5/tonl3c4pmf8ur8o6g.jpg)
 
 ### Code hints for UI5 objects
-**UNDER DEVELOPMENT**  
-Code hints in JS files displays public properties & methods of a UI5 object.
+Code hints in JS files displays public properties & methods of a UI5 object. Recognition works for basic cases based on the current scope - please check "UI5 identifier type recognition in Javascript code" section for handled cases. Module memebers (sap.ui for example) are also hintable.  
+A convenient feature is when you use *this.byId("controlerId")* function - it will try to find the control type in the associated view.
 
 ![code hints](https://www.mediafire.com/convkey/e633/ums5nbag40af4il6g.jpg)
 
@@ -186,19 +186,31 @@ In XML views quick edit (ctrl+j) will jump to the file with the definition of:
 - i18n entry in i18n bindings (manifest.json is present and contains a valid i18n model entry, both *uri* and *bundleName* settings are supported)
 
 ## UI5 identifier type recognition in Javascript code
-The recognition works for variables and will try to find the UI5 object type. This recognition is relevant for quick docs and code hints in Javascript files.
+The recognition is relevant for quick docs and code hints in Javascript files, works for basic cases.
 
 Currently, the type of an identifier will be resolved from:
 1. A special comment *//ui5: object*. It will search the current line or the variable declaration.
 ```javascript
 const button = getButton() //ui5: sap.m.Button
-
     if(button) { //Ctrl+k opens quick docs and typing . after the variable opens hints
         ...
     }
 ```
 
-More to come...
+2. Variable initialization with *new* with objects from the *define* statement
+```javascript
+this.page = new MasterPage();
+this.page. //ctrl+k, hints
+const range = new DateRangeSelection();
+range.  //ctrl+k, hints
+```
+
+3. *this.byId("controlId")*
+It will try to recognize the control type using the associated view.
+```javascript
+const control = this.byId("myId");
+    control. //ctrl+k, hints - if it will find the view and myId inside it
+```
 
 ## Preferences
 The extension uses Brackets [preferences](https://github.com/adobe/brackets/wiki/How-to-Use-Brackets) system, which means that you can specify per project settings by defining a .brackets.json in the root directory of your project. Below is a sample file with all options and their default values, which can be copy-pasted or used as a reference. For more information about specific option please check the related feature documentation.
