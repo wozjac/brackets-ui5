@@ -23,7 +23,7 @@
         "eslint": "^4.19.1",
         "grunt": "^1.0.3",
         "grunt-contrib-clean": "^2.0.0",
-        "grunt-eslint": "^21.0.0",
+        "grunt-eslint": "^21.1.0",
         "grunt-zip": "^0.18.2",
         "load-grunt-tasks": "^5.0.0"
     },

@@ -9,7 +9,6 @@ define((require, exports, module) => {
         ui5ApiService = require("src/core/ui5ApiService"),
         strings = require("strings"),
         hintUtils = require("src/codeHints/hintsUtils"),
-        ui5Files = require("src/ui5Project/ui5Files"),
         ui5ApiFormatter = require("src/core/ui5ApiFormatter"),
         Ui5CodeAnalyzer = require("src/code/Ui5CodeAnalyzer");
 
