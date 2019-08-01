@@ -52,10 +52,11 @@ XML views:
 - i18n keys
 
 ## Requirements
-Brackets version >= 1.11
+Brackets version >= 1.13
 
 ## Installation
-The extension is not yet added to the Bracket extensions repository. It can be installed using a downloaded ZIP file, extension's GitHub repository URL: https://github.com/wozjac/brackets-ui5 or ZIP file URL - check [releases](https://github.com/wozjac/brackets-ui5/releases).
+The extension is not yet added to the Bracket extensions repository. It can be installed using a downloaded ZIP file, extension's GitHub repository URL: https://github.com/wozjac/brackets-ui5 or ZIP file URL - check [releases](https://github.com/wozjac/brackets-ui5/releases).  
+**If the extension fail to start (sometimes happen) just hit F5 (reload).**
 
 ![install](https://www.mediafire.com/convkey/6a27/l6ae100r9dj3azy6g.jpg)
 
