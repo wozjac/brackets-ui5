@@ -17,7 +17,7 @@
         "en"
     ],
     "engines": {
-        "brackets": ">=1.13.0"
+        "brackets": ">=1.14.0"
     },
     "devDependencies": {
         "eslint": "^4.19.1",

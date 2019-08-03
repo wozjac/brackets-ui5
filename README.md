@@ -20,8 +20,6 @@ An extension for [Brackets](http://brackets.io) editor providing helpers (quick 
 Works with UI5 versions >= 1.52 with online documentation available, please check here: [https://openui5.hana.ondemand.com/versionoverview.html](https://openui5.hana.ondemand.com/versionoverview.html), 
 scroll down to the section "Available OpenUI5 Versions". For SAP UI5 please use [https://sapui5.hana.ondemand.com/versionoverview.html](https://sapui5.hana.ondemand.com/versionoverview.html).  
 
-As the majority of the older versions is out of maintenance, I do not plan to add support for them.
-
 **Please notice (if you are new to UI5)! [OpenUI5](https://openui5.org) is open source, but SAPUI5 - although SAP shares publicly SAPUI5 library runtime & SDK etc. - is not free. Please check the company [site](https://sap.com) for more details.**
 
 ## Features summary
@@ -43,6 +41,7 @@ In XML views:
 XML views
 - tags and attributes
 - i18n keys for i18n model bindings
+
 Javascript files:
 - UI5 pubic methods and properties
 
@@ -52,11 +51,11 @@ XML views:
 - i18n keys
 
 ## Requirements
-Brackets version >= 1.13
+Brackets version >= 1.14
 
 ## Installation
 The extension is not yet added to the Bracket extensions repository. It can be installed using a downloaded ZIP file, extension's GitHub repository URL: https://github.com/wozjac/brackets-ui5 or ZIP file URL - check [releases](https://github.com/wozjac/brackets-ui5/releases).  
-**If the extension fail to start (sometimes happen) just hit F5 (reload).**
+**If the extension fail to start just hit F5 (reload).**
 
 ![install](https://www.mediafire.com/convkey/6a27/l6ae100r9dj3azy6g.jpg)
 

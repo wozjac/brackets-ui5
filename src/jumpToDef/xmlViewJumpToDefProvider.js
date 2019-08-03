@@ -10,34 +10,46 @@ define((require, exports) => {
         xmlExtract = require("src/code/xmlExtract"),
         ui5Files = require("src/ui5Project/ui5Files");
 
-    function xmlViewJumpToDefProvider(editor, position) {
-        if (editor.getModeForSelection() !== "xml") {
-            return null;
+    class XmlViewJumpToDefProvider {
+        constructor() {
+            this.editor = null;
+            this.selection = null;
         }
 
-        // no multiline selection
-        const selection = editor.getSelection();
-
-        if (selection.start.line !== selection.end.line) {
-            return null;
-        }
-
-        //i18n model attribute?
-        const i18nInfo = i18nTool.getI18nInfoFromAttribute(editor, selection.start);
-
-        if (i18nInfo) {
-            return _handleI18nJump(i18nInfo);
-        } else {
-            //function?
-            const token = codeEditor.getToken(position, editor);
-            const functionName = xmlExtract.getFunctionNameFromXmlViewElement(token.string);
-            const controllerName = xmlExtract.getControllerName(editor.document.getText());
-
-            if (!controllerName || !functionName) {
-                return null;
+        canJumpToDef(editor) {
+            if (editor.getModeForSelection() !== "xml") {
+                return false;
             }
 
-            return _handleFunctionJump(functionName, controllerName);
+            // no multiline selection
+            this.selection = editor.getSelection();
+
+            if (this.selection.start.line !== this.selection.end.line) {
+                return false;
+            }
+
+            this.editor = editor;
+            return true;
+        }
+
+        doJumpToDef() {
+            const i18nInfo = i18nTool.getI18nInfoFromAttribute(this.editor, this.selection.start);
+
+            if (i18nInfo) {
+                return _handleI18nJump(i18nInfo);
+            } else {
+                //function?
+                const position = this.editor.getCursorPos();
+                const token = codeEditor.getToken(position, this.editor);
+                const functionName = xmlExtract.getFunctionNameFromXmlViewElement(token.string);
+                const controllerName = xmlExtract.getControllerName(this.editor.document.getText());
+
+                if (!controllerName || !functionName) {
+                    return null;
+                }
+
+                return _handleFunctionJump(functionName, controllerName);
+            }
         }
     }
 
@@ -118,5 +130,5 @@ define((require, exports) => {
         return result.promise();
     }
 
-    exports.jumpProvider = xmlViewJumpToDefProvider;
+    exports.jumpProvider = new XmlViewJumpToDefProvider();
 });

@@ -67,7 +67,7 @@ define((require, exports) => {
         }
 
         jsTool.deepforEach(parsedXml, (value, key, subject, path) => {
-            if (value["@id"] && value["@id"] === id) {
+            if (value && value["@id"] && value["@id"] === id) {
                 let namespace;
 
                 result = {};

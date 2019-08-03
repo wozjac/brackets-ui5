@@ -155,7 +155,7 @@ define((require, exports, module) => {
                 ui5Files.findXmlViewsControllers()
                     .then((viewInfo) => {
                         const view = viewInfo.find((element) => {
-                            return element.controllerId = controllerId;
+                            return element.controllerId === controllerId;
                         });
 
                         if (!view) {
