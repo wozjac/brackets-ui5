@@ -149,20 +149,40 @@ define((require, exports) => {
         });
     }
 
-    function prepareUi5Objects(apiIndexJson) {
-        for (const object of apiIndexJson.symbols) {
-            ui5Objects[object.name] = {
-                name: object.name,
-                basename: object.name.substring(object.name.lastIndexOf(".") + 1),
-                kind: object.kind,
-                library: object.lib,
-                apiDocUrl: getUi5ObjectApiDocUrl(object.name)
-            };
+    function prepareUi5Objects(apiEntry) {
+        if (apiEntry.symbols) {
+            for (const object of apiEntry.symbols) {
+                ui5Objects[object.name] = getEntry(object);
 
-            //extract library
-            ui5LibrariesDesignApi[object.lib] = {};
+                //extract library
+                ui5LibrariesDesignApi[object.lib] = {};
+
+                if (object.nodes) {
+                    for (const node of object.nodes) {
+                        prepareUi5Objects(node);
+                    }
+                }
+            }
+        } else {
+            ui5Objects[apiEntry.name] = getEntry(apiEntry);
+            ui5LibrariesDesignApi[apiEntry.lib] = {};
+
+            if (apiEntry.nodes) {
+                for (const node of apiEntry.nodes) {
+                    prepareUi5Objects(node);
+                }
+            }
         }
+    }
 
+    function getEntry(apiIndexObject) {
+        return {
+            name: apiIndexObject.name,
+            basename: apiIndexObject.name.substring(apiIndexObject.name.lastIndexOf(".") + 1),
+            kind: apiIndexObject.kind,
+            library: apiIndexObject.lib,
+            apiDocUrl: getUi5ObjectApiDocUrl(apiIndexObject.name)
+        };
     }
 
     function searchObjectDesignApiBuffer(objectName) {
