@@ -114,21 +114,20 @@ define((require, exports) => {
                 });
             });
 
-            //TODO
-            //it("Should hint for a variable created as a member", () => {
-            //    testEditor.editor.setCursorPos({
-            //        line: 20,
-            //        ch: 26
-            //    });
-            //
-            //    const provider = ui5HintsProvider.getUi5CodeHintsProvider();
-            //    expect(provider.hasHints(testEditor.editor, null)).toBe(true);
-            //
-            //    waitForHints(provider.getHints(), (hintList) => {
-            //        expect(hintList.length).toBe(1);
-            //        expectHintsEntries(hintList, ["destroy"]);
-            //    });
-            //});
+            it("Should hint for a variable created as a member", () => {
+                testEditor.editor.setCursorPos({
+                    line: 20,
+                    ch: 26
+                });
+
+                const provider = ui5HintsProvider.getUi5CodeHintsProvider();
+                expect(provider.hasHints(testEditor.editor, null)).toBe(true);
+
+                waitForHints(provider.getHints(), (hintList) => {
+                    expect(hintList.length).toBe(1);
+                    expectHintsEntries(hintList, ["destroy"]);
+                });
+            });
 
             describe("Should have valid hints for objects in a serie", () => {
                 const provider = ui5HintsProvider.getUi5CodeHintsProvider();

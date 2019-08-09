@@ -225,7 +225,8 @@ The extension uses Brackets [preferences](https://github.com/adobe/brackets/wiki
     "bracketsUi5.mockDataDir": "localService/mockData",
     "bracketsUi5.mockDataRootUri": "",
     "bracketsUi5.mockDataEntitySize": 30,
-    "bracketsUi5.mockDataOverwrite": true
+    "bracketsUi5.mockDataOverwrite": true,
+    "bracketsUi5.insertMethodSignature": true
 }
 ```
 
@@ -240,6 +241,7 @@ oData mock data generator:
 - mockDataRootUri: the root URI for mock data
 - mockDataEntitySize: how many entries should be created
 - mockDataOverwrite: whether to overwrite or not existing JSON files
+- insertMethodSignature: whether to insert method signature when using code hints
 
 ## Unit tests
 Unit tests are using Brackets embedded mechanism based on Jasmine. The entry point is the unittests.js file, you can run in via menu path Debug->Run Tests. Please keep in mind, that this option is not available in the standard version; to reveal it a version [build from source](https://github.com/adobe/brackets/wiki/How-to-Hack-on-Brackets) is required.
