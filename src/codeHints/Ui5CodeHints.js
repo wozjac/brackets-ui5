@@ -10,7 +10,9 @@ define((require, exports, module) => {
         strings = require("strings"),
         hintUtils = require("src/codeHints/hintsUtils"),
         ui5ApiFormatter = require("src/core/ui5ApiFormatter"),
-        Ui5CodeAnalyzer = require("src/code/Ui5CodeAnalyzer");
+        Ui5CodeAnalyzer = require("src/code/Ui5CodeAnalyzer"),
+        prefs = require("src/main/preferences"),
+        constants = require("src/core/constants");
 
     Session.prototype._getContextToken = function (cursor, depth) {
         const token = this.getToken(cursor);
@@ -170,7 +172,7 @@ define((require, exports, module) => {
 
                 textToInsert += "(";
 
-                if (hintObject._ui5Parameters) {
+                if (prefs.get(constants.prefs.INSERT_METHOD_SIGNATURE) && hintObject._ui5Parameters) {
                     for (let i = 0; i < hintObject._ui5Parameters.length; i++) {
                         textToInsert += hintObject._ui5Parameters[i].name;
 
@@ -179,6 +181,7 @@ define((require, exports, module) => {
                         }
                     }
                 }
+
                 textToInsert += ")";
             }
 

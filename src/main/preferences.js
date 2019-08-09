@@ -16,18 +16,20 @@ define((require, exports) => {
         prefs.definePreference(constants.prefs.MOCK_DATA_DIR, "string", "localService/mockData");
         prefs.definePreference(constants.prefs.MOCK_DATA_ENTITY_SIZE, "number", 30);
         prefs.definePreference(constants.prefs.MOCK_DATA_OVERWRITE, "boolean", true);
+        prefs.definePreference(constants.prefs.INSERT_METHOD_SIGNATURE, "boolean", true);
     }
 
     function get(key) {
         switch (key) {
-            case constants.prefs.API_URL:
-                {
-                    let apiUrl = prefs.get(constants.prefs.API_URL);
-                    if (apiUrl.substring(apiUrl.length - 1) === "/") {
-                        apiUrl = apiUrl.slice(0, -1);
-                    }
-                    return apiUrl;
+            case constants.prefs.API_URL: {
+                let apiUrl = prefs.get(constants.prefs.API_URL);
+
+                if (apiUrl.substring(apiUrl.length - 1) === "/") {
+                    apiUrl = apiUrl.slice(0, -1);
                 }
+
+                return apiUrl;
+            }
             default:
                 return prefs.get(key);
         }
