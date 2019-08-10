@@ -1,5 +1,10 @@
 # brackets-ui5 changelog
 
+## 1.4.3-beta
+##### Added
+- inserting full method signature is now controller in preferences
+- Quick Docs in XML views
+
 ## 1.2.2-beta
 ##### Added
 - jump to definition in XML views for i18n keys in i18n bindings

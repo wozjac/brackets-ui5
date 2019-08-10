@@ -30,7 +30,7 @@ Please check "Feature details" section for detailed information & working cases.
 
 ### Brackets-specific features adjusted to work with UI5:
 ##### Quick docs [ctrl+k] 
-- available in JS code
+- available in JS code and XML views
 
 ##### Quick edit [ctrl+e]
 In XML views: 
@@ -149,8 +149,8 @@ The default root URI is an empty string, it can be changed by setting *"brackets
 Please check the [preferences](#preferences) for details about preferences.
 
 ### Quick docs
-Quick docs is a Brackets feature and provide inline documentation for a token at the current cursor position (Ctrl + k).
-This feauture is related with Code Hints in terms of resolving types - please check "UI5 identifier type recognition" section for more details.
+Quick docs is a Brackets feature and provide inline documentation for a token at the current cursor position (Ctrl + k). Supported are .js files and XML views.  
+This feauture is related with Code Hints (resolving types) - please check "UI5 identifier type recognition" section for more details.
 
 ![quick docs](https://www.mediafire.com/convkey/c18b/bwe4bc862ntg68h6g.jpg)
 
