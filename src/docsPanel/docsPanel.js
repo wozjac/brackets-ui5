@@ -285,7 +285,7 @@ define((require, exports) => {
         _registerUi5ObjectLinkHandlers() {
             const objectNameLink = this._elements.apiDocsElement.find(".brackets-ui5-docs-panel-name");
             objectNameLink.on("click", (event) => {
-                codeEditor.insertAtPosition($(event.target).attr("data-name"));
+                codeEditor.insertAtPosition(this._prepareInsertName(event));
             });
 
             objectNameLink.on("contextmenu", (event) => {
@@ -293,11 +293,11 @@ define((require, exports) => {
             });
 
             this._elements.apiDocsElement.find("#brackets-ui5-docs-panel-insert-define-link").on("click", (event) => {
-                codeEditor.insertInDefine($(event.target).attr("data-name"));
+                codeEditor.insertInDefine(this._prepareInsertName(event));
             });
 
             this._elements.apiDocsElement.find("#brackets-ui5-docs-panel-insert-replace-link").on("click", (event) => {
-                codeEditor.insertWithSlash($(event.target).attr("data-name"));
+                codeEditor.insertWithSlash(this._prepareInsertName(event));
             });
 
             this._elements.apiDocsElement.on("click", ".brackets-ui5-docs-panel-expand-link", (event) => {
@@ -311,6 +311,16 @@ define((require, exports) => {
                     this._displayObjectApi($(event.target).text().trim());
                 });
             }
+        }
+
+        _prepareInsertName(event) {
+            let name = $(event.target).attr("data-name");
+
+            if (name.indexOf("module:") !== -1) {
+                name = ui5ApiFormatter.convertModuleNameToPath(name);
+            }
+
+            return name;
         }
 
         _unregisterUi5ObjectLinkHandlers() {

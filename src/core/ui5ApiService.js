@@ -54,7 +54,13 @@ define((require, exports) => {
     function getUi5ObjectApiDocUrl(objectFullName) {
         const apiBaseUrl = prefs.get(constants.prefs.API_URL);
 
-        return `${apiBaseUrl}/#/api/${objectFullName}`;
+        let path = objectFullName;
+
+        if (path.indexOf("module:") !== -1) {
+            path = encodeURIComponent(path);
+        }
+
+        return `${apiBaseUrl}/#/api/${path}`;
     }
 
     function getUi5Objects() {

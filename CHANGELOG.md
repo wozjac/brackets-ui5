@@ -1,5 +1,9 @@
 # brackets-ui5 changelog
 
+## 1.4.4-beta
+##### Fixed
+- handling "modules:..." API in the docs panel & code features
+
 ## 1.4.3-beta
 ##### Added
 - inserting full method signature is now controller in preferences

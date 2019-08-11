@@ -13,13 +13,21 @@ define((require, exports) => {
         const ui5Objects = ui5ApiService.getUi5Objects();
         const keys = Object.keys(ui5Objects);
 
+        let regexQuery = query.name;
+
+        if (regexQuery.indexOf("module:") !== -1) {
+            regexQuery = regexQuery.replace("module:", "").replace(/\//g, ".");
+        }
+
+        regexQuery = regexQuery.replace(".", "\\.");
+
         const objectNames = keys.filter((key) => {
             let regex;
 
             if (query.ignoreCase === true) {
-                regex = new RegExp(query.name, "i");
+                regex = new RegExp(regexQuery, "i");
             } else {
-                regex = new RegExp(query.name);
+                regex = new RegExp(regexQuery);
             }
 
             return key.search(regex) !== -1;
@@ -53,13 +61,21 @@ define((require, exports) => {
 
         for (const objectKey in ui5Objects) {
             objectName = objectKey;
+            let searchString = searchedName;
 
             if (ignoreCase === true) {
                 objectName = objectName.toLowerCase();
-                searchedName = searchedName.toLowerCase();
+                searchString = searchString.toLowerCase();
             }
 
-            if (objectName === searchedName) {
+            if (objectName === searchString) {
+                return ui5Objects[objectKey];
+            }
+
+            //module check
+            searchString = `module:${searchString.replace(/\./g, "/")}`;
+
+            if (objectName === searchString) {
                 return ui5Objects[objectKey];
             }
         }

@@ -54,7 +54,14 @@ define((require, exports) => {
                     prepareParameters(method, cleanHtml);
                 }
 
-                method.apiDocUrl = `${ui5ObjectApi.apiDocUrl}/methods/${method.name}`;
+                let path = method.name;
+
+                if (path.indexOf("module:") !== -1) {
+                    path = path.replace("module:", "");
+                    path = encodeURIComponent(path);
+                }
+
+                method.apiDocUrl = `${ui5ObjectApi.apiDocUrl}/methods/${path}`;
             });
         }
 
@@ -325,6 +332,11 @@ define((require, exports) => {
         }
     }
 
+    function convertModuleNameToPath(moduleName) {
+        return moduleName.replace("module:", "").replace(/\//g, ".");
+    }
+
     exports.getFormattedObjectApi = getFormattedObjectApi;
     exports.filterApiMembers = filterApiMembers;
+    exports.convertModuleNameToPath = convertModuleNameToPath;
 });
