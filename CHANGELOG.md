@@ -1,5 +1,9 @@
 # brackets-ui5 changelog
 
+## 1.4.5-beta
+##### Fixed
+- correct case in module names - causing "module not found" in Linux os
+
 ## 1.4.4-beta
 ##### Fixed
 - handling "modules:..." API in the docs panel & code features
