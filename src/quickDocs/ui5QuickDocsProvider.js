@@ -2,7 +2,7 @@ define((require, exports) => {
     "use strict";
 
     const XmlUtils = brackets.getModule("language/XMLUtils"),
-        InlineDocsViewer = require("./inlineDocsViewer"),
+        InlineDocsViewer = require("./InlineDocsViewer"),
         Ui5CodeAnalyzer = require("src/code/Ui5CodeAnalyzer"),
         codeEditor = require("src/editor/codeEditor"),
         ui5ApiFormatter = require("src/core/ui5ApiFormatter"),

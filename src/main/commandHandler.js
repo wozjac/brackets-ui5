@@ -6,7 +6,7 @@ define((require, exports) => {
         DefaultDialogs = brackets.getModule("widgets/DefaultDialogs"),
         snippets = require("src/snippets/snippets"),
         docsPanel = require("src/docsPanel/docsPanel"),
-        ODataGenerator = require("src/mockGenerator/ODataMockGenerator"),
+        ODataGenerator = require("src/mockGenerator/OdataMockGenerator"),
         constants = require("src/core/constants"),
         strings = require("strings");
 

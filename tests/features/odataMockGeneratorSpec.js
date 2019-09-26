@@ -2,7 +2,7 @@ define((require, exports, module) => {
     "use strict";
 
     const ProjectManager = brackets.getModule("project/ProjectManager"),
-        ODataMockGenerator = require("src/mockGenerator/ODataMockGenerator"),
+        ODataMockGenerator = require("src/mockGenerator/OdataMockGenerator"),
         modulePath = brackets.getModule("utils/ExtensionUtils").getModulePath(module),
         testUtils = require("tests/testUtils");
 

@@ -6,7 +6,7 @@ define((require, exports, module) => {
         codeEditor = require("src/editor/codeEditor"),
         xmlExtract = require("src/code/xmlExtract"),
         astTool = require("src/code/astTool"),
-        ui5Files = require("src/ui5project/ui5Files"),
+        ui5Files = require("src/ui5Project/ui5Files"),
         jsTool = require("src/code/jsTool"),
         constants = require("src/core/constants");
 
