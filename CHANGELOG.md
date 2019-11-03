@@ -1,5 +1,9 @@
 # brackets-ui5 changelog
 
+## 1.4.6-beta
+##### Added
+- Quick Jump: open controller file at the beginning if function does not exist
+
 ## 1.4.5-beta
 ##### Fixed
 - correct case in module names - causing "module not found" in Linux os
