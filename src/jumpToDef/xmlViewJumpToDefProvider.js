@@ -44,8 +44,12 @@ define((require, exports) => {
                 const functionName = xmlExtract.getFunctionNameFromXmlViewElement(token.string);
                 const controllerName = xmlExtract.getControllerName(this.editor.document.getText());
 
-                if (!controllerName || !functionName) {
-                    return null;
+                if (!functionName) {
+                    if (!controllerName) {
+                        return null;
+                    } else {
+                        return _handleControllerJump(controllerName);
+                    }
                 }
 
                 return _handleFunctionJump(functionName, controllerName);
@@ -120,11 +124,32 @@ define((require, exports) => {
                             result.reject();
                         });
                 } else {
-                    result.resolve(null);
+                    _handleControllerJump(controllerName);
                 }
             })
             .catch((error) => {
                 result.reject(error);
+            });
+
+        return result.promise();
+    }
+
+    function _handleControllerJump(controllerName) {
+        const result = new $.Deferred();
+
+        ui5Files.getControllerFile(controllerName)
+            .then((fileInfo) => {
+                CommandManager.execute(Commands.FILE_OPEN, {
+                        fullPath: fileInfo.file.fullPath
+                    })
+                    .done(() => {
+                        const newEditor = EditorManager.getActiveEditor();
+                        newEditor.setCursorPos(0, 0, true);
+                        result.resolve(true);
+                    })
+                    .catch(() => {
+                        result.reject();
+                    });
             });
 
         return result.promise();
