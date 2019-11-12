@@ -1,5 +1,9 @@
 # brackets-ui5 changelog
 
+## 1.4.7-beta
+##### Added:
+- .mockconfig.json for configuring values used in generation of mock data
+
 ## 1.4.6-beta
 ##### Added
 - Quick Jump: open controller file at the beginning if function does not exist

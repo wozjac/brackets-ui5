@@ -1,3 +1,17 @@
+// Based on https://github.com/SAP/openui5/blob/master/src/sap.ui.core/src/sap/ui/core/util/MockServer.js
+// Copyright 2019 SAP
+//
+//   Licensed under the Apache License, Version 2.0 (the "License");
+//   you may not use this file except in compliance with the License.
+//   You may obtain a copy of the License at
+//
+//       http://www.apache.org/licenses/LICENSE-2.0
+//
+//   Unless required by applicable law or agreed to in writing, software
+//   distributed under the License is distributed on an "AS IS" BASIS,
+//   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//   See the License for the specific language governing permissions and
+//   limitations under the License.
 define((require, exports, module) => {
     "use strict";
 
@@ -9,6 +23,10 @@ define((require, exports, module) => {
 
     class OdataMockGenerator {
         constructor(rootUri = prefs.get(constants.prefs.MOCK_DATA_ROOT_URI), metadataUrl) {
+            this._predefinedValuesConfig = {};
+            this._skipMockGeneration = [];
+            this._mockConfigLoadError;
+
             if (!metadataUrl) {
                 metadataUrl = prefs.get(constants.prefs.METADATA_PATH);
 
@@ -24,11 +42,16 @@ define((require, exports, module) => {
 
             this.rootUri = rootUri;
             this._loadMetadata(metadataUrl);
+            this._loadMockDataConfig();
         }
 
         createMockData() {
             if (!this._oMetadata) {
                 throw strings.ODATA_SERVICE_NOT_LOADED;
+            }
+
+            if (this._mockConfigLoadError) {
+                throw strings.MOCK_CONFIG_ERROR;
             }
 
             const path = ProjectManager.getProjectRoot().fullPath;
@@ -58,6 +81,18 @@ define((require, exports, module) => {
 
         _getMockData() {
             const entitySets = this._findEntitySets(this._oMetadata);
+            const entitySetNames = Object.keys(entitySets);
+
+            //exclude adjsutments
+            this._skipMockGeneration.forEach((element) => {
+                if (entitySetNames.find((name) => {
+                        return name === element;
+                    })) {
+
+                    delete entitySets[element];
+                }
+            });
+
             this._findEntityTypes(this._oMetadata);
             this._generateMockdata(entitySets, this._oMetadata);
 
@@ -86,14 +121,45 @@ define((require, exports, module) => {
             });
         }
 
+        _loadMockDataConfig() {
+            const mockDataDir = prefs.get(constants.prefs.MOCK_DATA_DIR);
+            const projectPath = ProjectManager.getProjectRoot().fullPath;
+            const mockDataConfig = `${projectPath}${mockDataDir}/.mockconfig.json`;
+
+            jQuery.ajax({
+                url: mockDataConfig,
+                dataType: "json",
+                async: false,
+                success: (json) => {
+                    if (json) {
+                        this._mockDataConfig = json;
+
+                        if (this._mockDataConfig.predefined) {
+                            this._predefinedValuesConfig = this._mockDataConfig.predefined;
+                        }
+
+                        if (this._mockDataConfig.skipMockGeneration) {
+                            this._skipMockGeneration = this._mockDataConfig.skipMockGeneration;
+                        }
+                    }
+                },
+                error: (xhr, status, text) => {
+                    console.error(`${strings.PREFIX} .mockconfig.json - ${status}: ${text.message}`);
+                    this._mockConfigLoadError = true;
+                }
+            });
+        }
+
         _generateMockdata(mEntitySets, oMetadata) {
             const oMockData = {};
             const sRootUri = this._getRootUri();
+
             jQuery.each(mEntitySets, (sEntitySetName, oEntitySet) => {
                 const mEntitySet = {};
                 mEntitySet[oEntitySet.name] = oEntitySet;
                 oMockData[sEntitySetName] = this._generateODataMockdataForEntitySet(mEntitySet, oMetadata)[sEntitySetName];
             });
+
             // changing the values if there is a referential constraint
             jQuery.each(mEntitySets, (sEntitySetName, oEntitySet) => {
                 for (const navprop in oEntitySet.navprops) {
@@ -107,6 +173,7 @@ define((require, exports, module) => {
                         }
                     }
                 }
+
                 jQuery.each(oMockData[sEntitySetName], (iIndex, oEntry) => {
                     // add the metadata for the entry
                     oEntry.__metadata = {
@@ -123,6 +190,7 @@ define((require, exports, module) => {
                     });
                 });
             });
+
             this._oMockdata = oMockData;
         }
 
@@ -137,6 +205,7 @@ define((require, exports, module) => {
             jQuery.each(mEntitySets, (sEntitySetName, oEntitySet) => {
                 oMockData[sEntitySetName] = this._generateDataFromEntitySet(oEntitySet, mEntityTypes, mComplexTypes);
             });
+
             return oMockData;
         }
 
@@ -144,11 +213,13 @@ define((require, exports, module) => {
             const mEntityTypes = {};
             jQuery(oMetadata).find("EntityType").each((iIndex, oEntityType) => {
                 const $EntityType = jQuery(oEntityType);
+
                 mEntityTypes[$EntityType.attr("Name")] = {
                     "name": $EntityType.attr("Name"),
                     "properties": [],
                     "keys": []
                 };
+
                 $EntityType.find("Property").each((iIndex, oProperty) => {
                     const $Property = jQuery(oProperty);
                     const type = $Property.attr("Type");
@@ -160,12 +231,14 @@ define((require, exports, module) => {
                         "scale": $Property.attr("Scale")
                     });
                 });
+
                 $EntityType.find("PropertyRef").each((iIndex, oKey) => {
                     const $Key = jQuery(oKey);
                     const sPropertyName = $Key.attr("Name");
                     mEntityTypes[$EntityType.attr("Name")].keys.push(sPropertyName);
                 });
             });
+
             return mEntityTypes;
         }
 
@@ -177,6 +250,7 @@ define((require, exports, module) => {
                     "name": $ComplexType.attr("Name"),
                     "properties": []
                 };
+
                 $ComplexType.find("Property").each((iIndex, oProperty) => {
                     const $Property = jQuery(oProperty);
                     const type = $Property.attr("Type");
@@ -189,47 +263,99 @@ define((require, exports, module) => {
                     });
                 });
             });
+
             return mComplexTypes;
         }
 
         _generateDataFromEntitySet(oEntitySet, mEntityTypes, mComplexTypes) {
             const oEntityType = mEntityTypes[oEntitySet.type];
             const aMockedEntries = [];
+
             for (let i = 0; i < prefs.get(constants.prefs.MOCK_DATA_ENTITY_SIZE); i++) {
                 aMockedEntries.push(this._generateDataFromEntity(oEntityType, i + 1, mComplexTypes));
             }
+
             return aMockedEntries;
         }
 
         _generateDataFromEntity(oEntityType, iIndex, mComplexTypes) {
             const oEntity = {};
+
             if (!oEntityType) {
                 return oEntity;
             }
+
             for (let i = 0; i < oEntityType.properties.length; i++) {
                 const oProperty = oEntityType.properties[i];
-                oEntity[oProperty.name] = this._generatePropertyValue(oProperty.name, oProperty.type, mComplexTypes, iIndex);
+                oEntity[oProperty.name] = this._generatePropertyValue(oProperty, mComplexTypes, iIndex, oEntityType, oEntity);
             }
+
             return oEntity;
         }
 
-        _generatePropertyValue(sKey, sType, mComplexTypes, iIndexParameter) {
+        _generatePropertyValue(property, mComplexTypes, iIndexParameter, entityType, entity) {
+            //already created?
+            if (entity[property.name]) {
+                return entity[property.name];
+            }
+
+            //predefined?
+            if (this._predefinedValuesConfig[entityType.name]
+                && this._predefinedValuesConfig[entityType.name][property.name]) {
+
+                //dependent?
+                const propertyConfig = this._predefinedValuesConfig[entityType.name][property.name];
+
+                if (Array.isArray(propertyConfig)) {
+                    //array of values
+                    return propertyConfig[Math.floor(Math.random() * propertyConfig.length)];
+                } else {
+                    if (propertyConfig.reference) {
+                        if (entity[propertyConfig.reference]) {
+                            //already created - get its value
+                            const referencedValue = entity[propertyConfig.reference];
+                            //get assigned value
+                            if (propertyConfig.values) {
+                                for (const el of propertyConfig.values) {
+                                    if (el.key && el.key === referencedValue) {
+                                        return el.value ? el.value : "missing value";
+                                    }
+                                };
+                            }
+                        } else {
+                            //not yet
+                            //get missing property value
+                            for (const i in entityType.properties) {
+                                if (entityType.properties[i].name === propertyConfig.reference) {
+                                    const emptyProperty = entityType.properties[i];
+                                    entity[emptyProperty.name] = this._generatePropertyValue(emptyProperty, mComplexTypes, iIndexParameter, entityType, entity);
+                                    //and run again for current
+                                    return this._generatePropertyValue(property, mComplexTypes, iIndexParameter, entityType, entity);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            //standard way - random values
             let iIndex = iIndexParameter;
+
             if (!iIndex) {
                 iIndex = Math.floor(this._getPseudoRandomNumber("String") * 10000) + 101;
             }
-            switch (sType) {
+
+            switch (property.type) {
                 case "String":
-                    return sKey + " " + iIndex;
-                case "DateTime":
-                    {
-                        const date = new Date();
-                        date.setFullYear(2000 + Math.floor(this._getPseudoRandomNumber("DateTime") * 20));
-                        date.setDate(Math.floor(this._getPseudoRandomNumber("DateTime") * 30));
-                        date.setMonth(Math.floor(this._getPseudoRandomNumber("DateTime") * 12));
-                        date.setMilliseconds(0);
-                        return "/Date(" + date.getTime() + ")/";
-                    }
+                    return property.name + " " + iIndex;
+                case "DateTime": {
+                    const date = new Date();
+                    date.setFullYear(2000 + Math.floor(this._getPseudoRandomNumber("DateTime") * 20));
+                    date.setDate(Math.floor(this._getPseudoRandomNumber("DateTime") * 30));
+                    date.setMonth(Math.floor(this._getPseudoRandomNumber("DateTime") * 12));
+                    date.setMilliseconds(0);
+                    return "/Date(" + date.getTime() + ")/";
+                }
                 case "Int16":
                 case "Int32":
                 case "Int64":
@@ -255,28 +381,26 @@ define((require, exports, module) => {
                             v = c === "x" ? r : (r & 0x3 | 0x8);
                         return v.toString(16);
                     }.bind(this));
-                case "Binary":
-                    {
-                        const nMask = Math.floor(-2147483648 + this._getPseudoRandomNumber("Binary") * 4294967295);
-                        let sMask = "";
-                        /*eslint-disable */
-                        for (let nFlag = 0, nShifted = nMask; nFlag < 32; nFlag++, sMask += String(nShifted >>> 31), nShifted <<= 1)
-                        ;
+                case "Binary": {
+                    const nMask = Math.floor(-2147483648 + this._getPseudoRandomNumber("Binary") * 4294967295);
+                    let sMask = "";
+                    /*eslint-disable */
+                    for (let nFlag = 0, nShifted = nMask; nFlag < 32; nFlag++, sMask += String(nShifted >>> 31), nShifted <<= 1)
+                    ;
 
-                        /*eslint-enable*/
-                        return sMask;
-                    }
-                case "DateTimeOffset":
-                    {
-                        const date = new Date();
-                        date.setFullYear(2000 + Math.floor(this._getPseudoRandomNumber("DateTimeOffset") * 20));
-                        date.setDate(Math.floor(this._getPseudoRandomNumber("DateTimeOffset") * 30));
-                        date.setMonth(Math.floor(this._getPseudoRandomNumber("DateTimeOffset") * 12));
-                        date.setMilliseconds(0);
-                        return "/Date(" + date.getTime() + "+0000)/";
-                    }
+                    /*eslint-enable*/
+                    return sMask;
+                }
+                case "DateTimeOffset": {
+                    const date = new Date();
+                    date.setFullYear(2000 + Math.floor(this._getPseudoRandomNumber("DateTimeOffset") * 20));
+                    date.setDate(Math.floor(this._getPseudoRandomNumber("DateTimeOffset") * 30));
+                    date.setMonth(Math.floor(this._getPseudoRandomNumber("DateTimeOffset") * 12));
+                    date.setMilliseconds(0);
+                    return "/Date(" + date.getTime() + "+0000)/";
+                }
                 default:
-                    return this._generateDataFromEntity(mComplexTypes[sType], iIndex, mComplexTypes);
+                    return this._generateDataFromEntity(mComplexTypes[property.type], iIndex, mComplexTypes);
             }
         }
 
