@@ -123,6 +123,11 @@ define((require, exports, module) => {
                 let hintsObject;
                 this.proposedUi5Object = results[0];
 
+                if (!this.proposedUi5Object) {
+                    defrerred.reject();
+                    return;
+                }
+
                 if (this.proposedUi5Object === this.cachedUi5Object
                     && this.queryToken.string === this.cachedQuery) {
 
