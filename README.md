@@ -178,9 +178,9 @@ In XML views:
 
 ### Code hints for UI5 objects
 Code hints in JS files displays public properties & methods of a UI5 object. Recognition works for basic cases based on the current scope - please check "UI5 identifier type recognition in Javascript code" section for handled cases. Module memebers (sap.ui for example) are also hintable.  
-A convenient feature is when you use *this.byId("controlerId")* function - it will try to find the control type in the associated view.
+A convenient feature is when you use *this.byId("controlerId")* function (or any with "byId" in its name) - it will try to find the control type in the associated view.
 
-![code hints](https://www.mediafire.com/convkey/e633/ums5nbag40af4il6g.jpg)
+![code hints](https://www.mediafire.com/convkey/9569/sm6okv7ottv87st6g.jpg)
 
 ### Jump to definition
 In XML views quick edit (ctrl+j) will jump to the file with the definition of:
@@ -207,7 +207,7 @@ const range = new DateRangeSelection();
 range.  //ctrl+k, hints
 ```
 
-3. *this.byId("controlId")*
+3. *this.byId("controlId"), or other method with "byId" in the name*
 It will try to recognize the control type using the associated view.
 ```javascript
 const control = this.byId("myId");

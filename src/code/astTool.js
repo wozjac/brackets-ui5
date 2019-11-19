@@ -97,7 +97,7 @@ define((require, exports, module) => {
             && node.callee.object.type === "ThisExpression"
             && node.callee.property
             && node.callee.property.type === "Identifier"
-            && node.callee.property.name === "byId"
+            && node.callee.property.name.toUpperCase().indexOf("BYID") !== -1
             && node.arguments
             && node.arguments.length === 1
             && node.arguments[0].type === "Literal") {
