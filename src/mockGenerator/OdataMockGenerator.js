@@ -303,13 +303,27 @@ define((require, exports, module) => {
             if (this._predefinedValuesConfig[entityType.name]
                 && this._predefinedValuesConfig[entityType.name][property.name]) {
 
-                //dependent?
                 const propertyConfig = this._predefinedValuesConfig[entityType.name][property.name];
 
                 if (Array.isArray(propertyConfig)) {
                     //array of values
                     return propertyConfig[Math.floor(Math.random() * propertyConfig.length)];
+                } else if (typeof propertyConfig === "string" && propertyConfig.indexOf("$ref") !== -1) {
+                    const variableName = propertyConfig.split(":")[1];
+
+                    if (this._mockDataConfig.variables && this._mockDataConfig.variables[variableName]) {
+                        const variable = this._mockDataConfig.variables[variableName];
+
+                        if (Array.isArray(variable)) {
+                            return variable[Math.floor(Math.random() * propertyConfig.length)];
+                        } else {
+                            return variable;
+                        }
+                    } else {
+                        throw `Variable ${propertyConfig} not found`;
+                    }
                 } else {
+                    //dependent?
                     if (propertyConfig.reference) {
                         if (entity[propertyConfig.reference]) {
                             //already created - get its value
