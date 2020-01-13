@@ -1,5 +1,12 @@
 # brackets-ui5 changelog
 
+## 1.4.8-beta
+##### Added
+- optional parameters markers in Quick Docs & Panel
+
+##### Fixed
+- ...byId.. call type recognition 
+
 ## 1.4.7-beta
 ##### Added:
 - .mockconfig.json for configuring values used in generation of mock data
