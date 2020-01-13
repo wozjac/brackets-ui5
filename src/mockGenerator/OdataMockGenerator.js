@@ -315,7 +315,7 @@ define((require, exports, module) => {
                         const variable = this._mockDataConfig.variables[variableName];
 
                         if (Array.isArray(variable)) {
-                            return variable[Math.floor(Math.random() * propertyConfig.length)];
+                            return variable[Math.floor(Math.random() * variable.length)];
                         } else {
                             return variable;
                         }
