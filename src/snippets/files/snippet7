@@ -1,1 +1,10 @@
-//custom code 1
+//plain object
+sap.ui.define([
+    
+], function () {
+    "use strict";
+
+    return {
+	
+	};
+});
