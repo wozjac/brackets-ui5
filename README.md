@@ -13,6 +13,7 @@
 9. [License](#license)
 10. [Contributing](#contributing)
 11. [Author](#author)
+12. [Appendix A](#appendix-a)
 
 ![main](http://public_repo.vipserv.org/images/main.png)
 
@@ -153,6 +154,132 @@ The default root URI is an empty string, it can be changed by setting *"brackets
 
 Please check the [preferences](#preferences) for details about preferences.
 
+#### Configuring mock data generation
+In the mock data folder (bracketsUi5.mockDataDir), a special file named *.mockconfig.json* can be used to influence mock data generation. 
+
+##### Skipping mock data generation
+"skipMockGeneration": [*EntitySetName1*,*EntitySetName2*] - mock data generation will be skipped for selected entity sets, for example:
+```javascript
+{
+    "skipMockGeneration": ["Persons", "Suppliers"]
+}
+```
+
+##### Predefined values
+If for some entities randomly selected but predefined values should be picked up, it can be configured in the following way:
+```javascript
+{
+    "predefined": {
+        "Entity": {
+            "Property": [Value1, Value2, Value3]
+        }
+    }
+}
+```
+for example:
+```javascript
+{
+    "predefined": {
+        "Product": {
+            "Rating": [1, 2, 3]
+        }
+    }
+}
+```
+
+##### Predefined values based on other values
+For some values it make sense to make them dependent on other values. This can be achieved with:
+```javascript
+{
+    "predefined": {
+        "Entity": {
+            "Property1": [Value1, Value2, Value2],
+            "Property2": {
+                "reference": "Property1",
+                "values": [{
+                    "key": Value1,
+                    "value": "Description for value 1"
+                },{
+                    "key": Value2,
+                    "value": "Description for value 2"
+                }]
+            }
+        }
+    }
+}
+
+Not all dependent values has to be provided - if not found in *values* array, it will be generated as usual.
+```
+Example:
+```javascript
+{
+    "predefined": {
+        "Product": {
+            "Rating": [1, 2, 3],
+            "Description": {
+                "reference": "Rating",
+                "values": [{
+                    "key": 1,
+                    "value": "Description for rating 1"
+                }]
+            }
+        }
+    }
+}
+```
+##### Re-using predefined values
+It easier to keep predefined values in one place, as they might be used in several places. It can be done with help of special *variables* property and special $ref:... handling:
+```javascript
+{
+    "variables": {
+        "myValues": [value1, value2, value3]
+    },
+    "predefined": {
+        "Entity": {
+            "Property1": "$ref:myValues",
+            "Property2": {
+                "reference": "Property1",
+                "values": [{
+                    "key": "value1",
+                    "value": "Text1"
+                }, {
+                    "key": "value2",
+                    "value": "Text2"
+                }]
+            }
+        }
+    }
+}
+```
+for example
+```javascript
+{
+    "variables": {
+        "categoryIds": ["ID1", "ID2", "ID3"]
+    },
+     "predefined": {
+        "Category": {
+            "ID": "$ref:categoryIds",
+            "Name": {
+                "reference": "ID",
+                "values": [{
+                    "key": "ID1",
+                    "value": "Category1"
+                }, {
+                    "key": "ID2",
+                    "value": "Category2"
+                }, {
+                    "key": "ID3",
+                    "value": "Category3"
+                }]
+            }
+        }
+    }
+}
+```
+
+Please check the Appendix A for sample .mockconfig file.
+
 ### Quick docs
 Quick docs is a Brackets feature and provide inline documentation for a token at the current cursor position (Ctrl + k). Supported are .js files and XML views.  
 This feauture is related with Code Hints (resolving types) - please check "UI5 identifier type recognition" section for more details.
@@ -259,3 +386,42 @@ See [CONTRIBUTING](CONTRIBUTING.md).
 
 ## Author
 Feel free to contact me: wozjac@zoho.com or via LinkedIn (https://www.linkedin.com/in/jacek-wznk).
+
+## Appendix A
+Sample .mockconfig.json file, based on Northwind oData metadata: https://services.odata.org/V3/OData/OData.svc/$metadata
+```javascript
+{
+    "variables": {
+        "categoryIds": ["ID1", "ID2", "ID3"]
+    },
+    "skipMockGeneration": ["Persons", "Suppliers"],
+    "predefined": {
+        "Product": {
+            "Rating": [1, 2, 3],
+            "Description": {
+                "reference": "Rating",
+                "values": [{
+                    "key": 1,
+                    "value": "Description for rating 1"
+                }]
+            }
+        },
+        "Category": {
+            "ID": "$ref:categoryIds",
+            "Name": {
+                "reference": "ID",
+                "values": [{
+                    "key": "ID1",
+                    "value": "Category1"
+                }, {
+                    "key": "ID2",
+                    "value": "Category2"
+                }, {
+                    "key": "ID3",
+                    "value": "Category3"
+                }]
+            }
+        }
+    }
+}
+```
