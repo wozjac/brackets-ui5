@@ -86,8 +86,15 @@ define((require, exports, module) => {
                     const dotCursor = session.findPreviousDot();
 
                     if (dotCursor) {
-                        this.objectIdentifierToken = session._getContextToken(dotCursor);
-                        this.objectIdentifier = this.objectIdentifierToken.string;
+                        const previous = session._getPreviousToken(dotCursor);
+
+                        if (previous && previous.string === ")") {
+                            this.objectIdentifierToken = previous;
+                            this.objectIdentifier = this.objectIdentifierToken.string.trim();
+                        } else {
+                            this.objectIdentifierToken = session._getContextToken(dotCursor);
+                            this.objectIdentifier = this.objectIdentifierToken.string;
+                        }
                     }
                 }
 
