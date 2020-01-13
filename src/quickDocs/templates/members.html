@@ -8,7 +8,7 @@
             {{/deprecated}}
             {{^deprecated}}
             <strong>{{name}}</strong>
-            {{/deprecated}}(<span class="brackets-ui5-qdocs-element-list">{{#parameters}}<span>{{name}}</span>{{/parameters}})</span> <span class="brackets-ui5-qdocs-return-type">{{returnValue.type}}</span>
+            {{/deprecated}}(<span class="brackets-ui5-qdocs-element-list">{{#parameters}}<span>{{name}}{{#optional}}(opt){{/optional}}</span>{{/parameters}})</span> <span class="brackets-ui5-qdocs-return-type">{{returnValue.type}}</span>
             <div class="brackets-ui5-qdocs-api-description">
                 {{description}}
                 {{#parameters}}
@@ -16,7 +16,7 @@
                     <li>{{name}} ({{type}}): {{description}}
                     {{#parameterProperties}}
                         <ul>
-                            <li>{{name}} ({{type}}): {{description}}</li>
+                            <li>{{name}} ({{type}}{{#optional}},opt{{/optional}}): {{description}}</li>
                         </ul>
                     {{/parameterProperties}}
                     </li>
@@ -27,6 +27,21 @@
         </li>
     </ul>
 {{/hasMethods}}
+{{#hasConstructor}}
+    <h4>{{strings.CONSTRUCTOR}}:</h4>
+        {{#hasConstructorParams}}
+        <ul class="brackets-ui5-qdocs-object-members">
+        {{#constructorParams}}
+        <li>
+                <strong>{{name}}</strong><span class="brackets-ui5-qdocs-return-type"> {{type}}</span>{{#optional}}(opt){{/optional}}<span class="brackets-ui5-qdocs-api-description"> | {{description}}</span>
+        {{/constructorParams}}
+        </li>
+        </ul>
+        {{/hasConstructorParams}}
+        {{^hasConstructorParams}}
+            <span>no parameters</span>
+        {{/hasConstructorParams}}
+{{/hasConstructor}}
 {{#hasEvents}}
     <h4>{{strings.EVENTS}}:</h4>
     <ul class="brackets-ui5-qdocs-object-members">
@@ -85,18 +100,3 @@
         {{/aggregations}}
     </ul>
 {{/hasAggregations}}
-{{#hasConstructor}}
-    <h4>{{strings.CONSTRUCTOR}}:</h4>
-        {{#hasConstructorParams}}
-        <ul class="brackets-ui5-qdocs-object-members">
-        {{#constructorParams}}
-        <li>
-                <strong>{{name}}</strong><span class="brackets-ui5-qdocs-return-type"> {{type}}</span><span class="brackets-ui5-qdocs-api-description"> | {{description}}</span>
-        {{/constructorParams}}
-        </li>
-        </ul>
-        {{/hasConstructorParams}}
-        {{^hasConstructorParams}}
-            <span>no parameters</span>
-        {{/hasConstructorParams}}
-{{/hasConstructor}}

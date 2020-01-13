@@ -1,3 +1,58 @@
+{{#hasConstructor}}
+    <h5>{{strings.CONSTRUCTOR}}:
+        <a href="#"
+            class="brackets-ui5-docs-panel-expand-link"
+            data-target-description="pod_constructor:{{name}}">[+]
+        </a>
+    </h5>
+    <p id="pod_constructor:{{name}}"
+        class="brackets-ui5-docs-panel-api-description">
+        {{constructor.description}}
+    </p>
+    <ul>
+        {{#hasConstructorParams}}
+            {{#constructorParams}}
+                <li>
+                    <span class="brackets-ui5-docs-panel-name">{{name}}</span>
+                    <span class="brackets-ui5-docs-panel-return-type"> {{type}}</span>
+                    {{#optional}}
+                        <span>(opt)</span>
+                    {{/optional}}
+                    <a href="#"
+                        class="brackets-ui5-docs-panel-expand-link"
+                        data-target-description="pod:{{objectName}}:{{name}}">[+]</a>
+                    <p id="pod:{{objectName}}:{{name}}"
+                        class="brackets-ui5-docs-panel-api-description">
+                        {{description}}
+                        {{#hasProperties}}
+                        <ul>
+                        {{#parameterProperties}}
+                            <li>
+                                <span class="brackets-ui5-docs-panel-name">{{name}}</span>
+                                <span class="brackets-ui5-docs-panel-return-type"> {{type}}</span>
+                                {{#optional}}
+                                    <span>(opt)</span>
+                                {{/optional}}
+                                 <a href="#"
+                                    class="brackets-ui5-docs-panel-expand-link"
+                                    data-target-description="pod:{{objectName}}:{{name}}">[+]</a>
+                                <p id="pod:{{objectName}}:{{name}}"
+                                   class="brackets-ui5-docs-panel-api-description">
+                                    {{description}}
+                                </p>
+                            </li>
+                        {{/parameterProperties}}
+                        </ul>
+                    {{/hasProperties}}
+                    </p>
+                </li>
+            {{/constructorParams}}
+        {{/hasConstructorParams}}
+        {{^hasConstructorParams}}
+            <li>no parameters</li>
+        {{/hasConstructorParams}}
+    </ul>
+{{/hasConstructor}}
 {{#hasMethods}}
     <h5>{{strings.METHODS}}:</h5>
     <ul>
@@ -10,7 +65,7 @@
                            {{/deprecated}}"
                     data-apiDocUrl="{{apiDocUrl}}"
                     data-name="{{name}}">
-                    {{name}}</a>(<span class="brackets-ui5-docs-panel-element-list">{{#parameters}}<span>{{name}}</span>{{/parameters}})
+                    {{name}}</a>(<span class="brackets-ui5-docs-panel-element-list">{{#parameters}}<span>{{name}}{{#optional}}(opt){{/optional}}</span>{{/parameters}})
                 </span> <span class="brackets-ui5-docs-panel-return-type">{{returnValue.type}}</span>
                 <a href="#"
                     class="brackets-ui5-docs-panel-expand-link"
@@ -21,7 +76,7 @@
                     </p>
                     <span class="brackets-ui5-docs-panel-api-description">
                         {{#parameters}}
-                            <p>- <span class="brackets-ui5-docs-panel-sbold">{{name}} ({{type}})</span>: {{description}}</p>
+                            <p>- <span class="brackets-ui5-docs-panel-sbold">{{name}} ({{type}}) {{#optional}}(opt){{/optional}}</span>: {{description}}</p>
                             {{#parameterProperties}}
                                 <ul>
                                     <li>{{name}} ({{type}}): {{description}}</li>
@@ -72,7 +127,7 @@
                     data-apiDocUrl="{{apiDocUrl}}"
                     data-name="{{name}}">
                     {{name}}
-                </a>(<span class="brackets-ui5-element-list">{{#parameters}}<span>{{name}}</span>{{/parameters}})</span>
+                </a>(<span class="brackets-ui5-element-list">{{#parameters}}<span>{{name}}{{#optional}}(opt){{/optional}}</span>{{/parameters}})</span>
                 <a href="#"
                     class="brackets-ui5-docs-panel-expand-link"
                     data-target-description="pod:{{name}}">[+]</a>
@@ -82,7 +137,7 @@
                     {{#parameters}}
                         <ul>
                         {{#parameterProperties}}
-                            <li>{{name}} ({{type}}): {{description}}</li>
+                            <li>{{name}} ({{type}} {{#optional}},opt{{/optional}}): {{description}}</li>
                         {{/parameterProperties}}
                         </ul>
                     {{/parameters}}
@@ -117,32 +172,3 @@
         {{/properties}}
     </ul>
 {{/hasProperties}}
-{{#hasConstructor}}
-    <h5>{{strings.CONSTRUCTOR}}:
-        <a href="#"
-            class="brackets-ui5-docs-panel-expand-link"
-            data-target-description="pod_constructor:{{name}}">[+]
-        </a>
-    </h5>
-    <p id="pod_constructor:{{name}}"
-        class="brackets-ui5-docs-panel-api-description">
-        {{constructor.description}}
-    </p>
-    <ul>
-        {{#hasConstructorParams}}
-            {{#constructorParams}}
-                <li>
-                    <span class="brackets-ui5-docs-panel-name">{{name}}</span><span class="brackets-ui5-docs-panel-return-type"> {{type}}</span>
-                    <a href="#"
-                        class="brackets-ui5-docs-panel-expand-link"
-                        data-target-description="pod:{{name}}">[+]</a>
-                    <p id="pod:{{name}}"
-                        class="brackets-ui5-docs-panel-api-description">{{description}}</p>
-                </li>
-            {{/constructorParams}}
-        {{/hasConstructorParams}}
-        {{^hasConstructorParams}}
-            <li>no parameters</li>
-        {{/hasConstructorParams}}
-    </ul>
-{{/hasConstructor}}

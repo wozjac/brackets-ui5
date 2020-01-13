@@ -110,6 +110,24 @@ define((require, exports) => {
 
                         api.constructorParams.forEach((param) => {
                             param.description = codeEditor.formatJsDoc(param.description, cleanHtml);
+                            param.objectName = ui5ObjectApi.name;
+
+                            if (param.parameterProperties) {
+                                param.hasProperties = true;
+
+                                param.parameterProperties = JSON.parse(JSON.stringify(param.parameterProperties));
+
+                                const properties = [];
+
+                                for (const prop in param.parameterProperties) {
+                                    const parameterProperty = param.parameterProperties[prop];
+                                    parameterProperty.description = codeEditor.formatJsDoc(parameterProperty.description, cleanHtml);
+                                    parameterProperty.objectName = ui5ObjectApi.name;
+                                    properties.push(parameterProperty);
+                                }
+
+                                param.parameterProperties = properties;
+                            }
                         });
                     }
                 }
