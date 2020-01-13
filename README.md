@@ -14,6 +14,8 @@
 10. [Contributing](#contributing)
 11. [Author](#author)
 
+![main](http://public_repo.vipserv.org/images/main.png)
+
 ## Info
 An extension for [Brackets](http://brackets.io) editor providing helpers (quick docs, code hints, API reference and more) for SAP© UI5 library [OpenUI5](openui5.hana.ondemand.com)/[SAPUI5](https://sapui5.hana.ondemand.com).
 
@@ -22,7 +24,7 @@ Overview: https://blogs.sap.com/2019/08/06/ui5-in-brackets-editor/
 Works with UI5 versions >= 1.52 with online documentation available, please check here: [https://openui5.hana.ondemand.com/versionoverview.html](https://openui5.hana.ondemand.com/versionoverview.html), 
 scroll down to the section "Available OpenUI5 Versions". For SAP UI5 please use [https://sapui5.hana.ondemand.com/versionoverview.html](https://sapui5.hana.ondemand.com/versionoverview.html).  
 
-**Please notice (if you are new to UI5)! [OpenUI5](https://openui5.org) is open source, but SAPUI5 - although SAP shares publicly SAPUI5 library runtime & SDK etc. - is not free. Please check the company [site](https://sap.com) for more details.**
+**Please notice (if you are new to UI5)! [OpenUI5](https://openui5.org) is open source, but SAPUI5 - although SAP shares publicly SAPUI5 library runtime & SDK etc. - it is not free to use it. Please check the company [site](https://sap.com) for more details.**
 
 ## Features summary
 Please check "Feature details" section for detailed information & working cases.  
@@ -47,7 +49,7 @@ XML views
 Javascript files:
 - UI5 pubic methods and properties
 
-##### Jump to definition
+##### Jump to definition [ctrl+j]
 XML views:
 - controller functions in attributes (complex syntax not supported yet)
 - i18n keys
@@ -59,11 +61,11 @@ Brackets version >= 1.14
 The extension is not yet added to the Bracket extensions repository. It can be installed using a downloaded ZIP file, extension's GitHub repository URL: https://github.com/wozjac/brackets-ui5 or ZIP file URL - check [releases](https://github.com/wozjac/brackets-ui5/releases).  
 **If the extension fail to start just hit F5 (reload).**
 
-![install](https://www.mediafire.com/convkey/6a27/l6ae100r9dj3azy6g.jpg)
+![install](http://public_repo.vipserv.org/images/install.png)
 
 After successful installation the *UI5 tools* menu should be available.
 
-![menu](https://www.mediafire.com/convkey/084f/ka8lbla1rjvkrmi6g.jpg)
+![menu](http://public_repo.vipserv.org/images/menu.png)
 
 By default, the extension uses the latest OpenUI5 version available (https://openui5.hana.ondemand.com).
 This can be changed using Brackets [preferences](#preferences). For example, create .brackets.json file in the project's root and set the required library version (>= 1.52.0): 
@@ -86,31 +88,32 @@ Switching to SAPUI5:
 
 If something is not working please check the console (F12). Extension's messages are prefixed with [wozjac.ui5].
 
-![console](https://www.mediafire.com/convkey/e45c/kbwi4ux1p6bxd676g.jpg)
+![console](http://public_repo.vipserv.org/images/console.png)
 
 ## Features
 ### UI5 API reference panel
 The API reference panel shows UI5 documentation in a side panel (thanks to Hirse and his [Brackets Outline List](https://github.com/Hirse/brackets-outline-list) for the example and inspiration).
-It can be opened via the *UI5 tools* menu, Ctrl + 2 or the side icon ![api icon](https://www.mediafire.com/convkey/5cd4/kuggxo1kdgm67wp6g.jpg)
+It can be opened via the *UI5 tools* menu, Ctrl + 2 or the side icon ![api icon](http://public_repo.vipserv.org/images/icon.png)
 
-![API reference panel](https://www.mediafire.com/convkey/143f/q771rfj7ggs107d6g.jpg)
+![API reference panel](http://public_repo.vipserv.org/images/panel.png)
 
 Functionality:
 - search can be done with or without namespace
 - members search is supported after space, for example typing "m.page add" will show the hitlist with matching objects and then, after selecting desired object, only members matching the "add" word will be showed; anything typed after the space will filter the displayed API - as long as the base object search string (the one before space) has not changed
-![filtered search](https://www.mediafire.com/convkey/dabe/futwsi6t6832zf56g.jpg)
+![filtered search](http://public_repo.vipserv.org/images/api_filtered.jpg)
 - displaying specific members: ?p will display only properties, ?c - contructor, ?e - events, ?m - methods; this can be also filtered by a search term. For example to search sap.m.Page properties with "add" term, type: m.page ?padd
+![members_search](http://public_repo.vipserv.org/images/filtered_search.png)
 - clicking the [+]/[-] sign will expand or collapse the description 
 - if the item is clickable (object name, methods, properties etc.): **left click** will insert the name at the current cursor position, **right click** will open element's online documentation in the default browser 
 - items with line-through decoration are deprecated
 - *Insert (define)* will insert the object at the end of the **existing** sap.ui.define/sap.ui.require statement; formatting or beautifying is **not** applied. If the preference *brackets.Ui5.insertObjectsInDefine* is set to true (default: false) then object's name (without its namespace) will be also inserted at the current cursor position 
 
-![insert into define](https://www.mediafire.com/convkey/653d/1reg1ck7a523hog6g.jpg)
+![insert into define](http://public_repo.vipserv.org/images/insert-define.gif)
 - *Insert (/)* - will insert the object full name with "/" at the cursor position, for example, "sap/m/Button", useful sometimes to fill a define statement list. The preference *"bracketsUi5.objectPathsInQuotes": true/false* (default: false) controls if the object's path will be inserted in quotes, while *"bracketsUi5.useSingleQuotes": true/false* (defualt: false) decides whether it will be " or '.
 
 Please check the [preferences](#preferences) for details about preferences.
 
-The panel shows **public** members.
+The panel shows **public** members. Optional items are marked with *opt*.
 
 The format is:
 - methods: name(parameters) *return type*
@@ -131,7 +134,7 @@ Object.extend("", {
 });
 ```
 
-![snippet menu item](https://www.mediafire.com/convkey/02f8/du73oefey4p9f4q6g.jpg)
+![snippet menu item](http://public_repo.vipserv.org/images/menu-snippet.png)
 
 ** Please remember to reload the editor (F5) after editing the snippets.**
 
@@ -140,11 +143,11 @@ The oData mock data generator is based on the [MockServer](https://openui5.hana.
 
 For the [Northwind test service](https://services.odata.org/V3/OData/OData.svc/$metadata):
 
-![mock files](https://www.mediafire.com/convkey/651a/j2hw3d6tcyhf25v6g.jpg)
+![mock files](http://public_repo.vipserv.org/images/mock-files.png)
 
 By default in each file there will be 30 entries (this is adjustable by the preference *"bracketsUi5.mockDataEntitySize": number*) and new files will overwrite old ones (change this with *"bracketsUi5.mockDataOverwrite": true/false*. 
 
-![mock file](https://www.mediafire.com/convkey/48ec/dix4oaku3ax6ldh6g.jpg)
+![mock file](http://public_repo.vipserv.org/images/mock-example.png)
 
 The default root URI is an empty string, it can be changed by setting *"bracketsUi5.mockDataRootUri": "myURI"*.
 
@@ -154,33 +157,33 @@ Please check the [preferences](#preferences) for details about preferences.
 Quick docs is a Brackets feature and provide inline documentation for a token at the current cursor position (Ctrl + k). Supported are .js files and XML views.  
 This feauture is related with Code Hints (resolving types) - please check "UI5 identifier type recognition" section for more details.
 
-![quick docs](https://www.mediafire.com/convkey/c18b/bwe4bc862ntg68h6g.jpg)
+![quick docs](http://public_repo.vipserv.org/images/quick-docs.png)
 
 ### Quick edit
 In XML views quick edit (ctrl+e) will open inline editor for:
 - controller function names in attributes (comples binding syntax not supported):
 For example pressing ctrl+e on *.handleChange*
 
-![quickedit function](https://www.mediafire.com/convkey/bd42/upa7cket2bn8ktc6g.jpg)
+![quickedit function](http://public_repo.vipserv.org/images/quick-edit-function.png)
 
 - i18n keys in i18n bindings (manifest.json is present and contains a valid i18n model entry, both *uri* and *bundleName* settings are supported). Pressing ctrl+e opens inline editor for the i18n entry; if it don't exist, it will be created and appended at the end of the file.
 
-![i18n quick edit](https://www.mediafire.com/convkey/630a/h8ek9xbsk8f2h2u6g.jpg)
+![i18n quick edit](http://public_repo.vipserv.org/images/i18n_quick_edit_short.gif)
 
 ### Code hints
 In XML views:
 - tags and attributes (namespaces are supported)
 
-![xml hints](https://www.mediafire.com/convkey/7c85/vs1muc5m4zmzdc46g.jpg)
+![xml hints](http://public_repo.vipserv.org/images/xml-hints-collage.jpg)
 - i18n keys in i18n bindings (manifest.json is present and contains a valid i18n model entry, both *uri* and *bundleName* settings are supported)
 
-![i18n hints](https://www.mediafire.com/convkey/82d5/tonl3c4pmf8ur8o6g.jpg)
+![i18n hints](http://public_repo.vipserv.org/images/i18n_hints_short.gif)
 
 ### Code hints for UI5 objects
 Code hints in JS files displays public properties & methods of a UI5 object. Recognition works for basic cases based on the current scope - please check "UI5 identifier type recognition in Javascript code" section for handled cases. Module memebers (sap.ui for example) are also hintable.  
-A convenient feature is when you use *this.byId("controlerId")* function (or any with "byId" in its name) - it will try to find the control type in the associated view.
+A convenient feature is when you use *this.byId("controlId")* function (or any with "byId" in its name) - it will try to find the control type in the associated view.
 
-![code hints](https://www.mediafire.com/convkey/9569/sm6okv7ottv87st6g.jpg)
+![code hints](http://public_repo.vipserv.org/images/code-hints-collage.jpg)
 
 ### Jump to definition
 In XML views quick edit (ctrl+j) will jump to the file with the definition of:
