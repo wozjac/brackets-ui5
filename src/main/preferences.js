@@ -7,7 +7,7 @@ define((require, exports) => {
         prefs = PreferencesManager.getExtensionPrefs(constants.prefs.PREFS_PREFIX);
 
     function initPreferences() {
-        prefs.definePreference(constants.prefs.API_URL, "string", "https://openui5.hana.ondemand.com");
+        prefs.definePreference(constants.prefs.API_URL, "string", "https://openui5.hana.ondemand.com/1.72.4");
         prefs.definePreference(constants.prefs.USE_SINGLE_QUOTES, "boolean", false);
         prefs.definePreference(constants.prefs.OBJECT_IN_QUOTES, "boolean", false);
         prefs.definePreference(constants.prefs.INSERT_OBJECT_IN_DEFINE, "boolean", false);
