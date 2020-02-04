@@ -1,5 +1,9 @@
 # brackets-ui5 changelog
 
+## 1.4.10-beta
+##### Fixed
+- error handling for missing/incorrect .mockconfig.json
+
 ## 1.4.9-beta
 ##### Added:
 - specific OpenUI5 version as a default version

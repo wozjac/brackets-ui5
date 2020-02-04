@@ -144,8 +144,12 @@ define((require, exports, module) => {
                     }
                 },
                 error: (xhr, status, text) => {
-                    console.error(`${strings.PREFIX} .mockconfig.json - ${status}: ${text.message}`);
-                    this._mockConfigLoadError = true;
+                    if (text.message === "Unexpected end of input") {
+                        //file not found, continue normally
+                    } else {
+                        console.warn(`${strings.PREFIX} .mockconfig.json - ${status}: ${text.message}`);
+                        this._mockConfigLoadError = true;
+                    }
                 }
             });
         }
