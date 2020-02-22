@@ -69,7 +69,7 @@ define((require, exports) => {
                 index += position.ch;
                 return index;
             } else {
-                index += lines[i].length - 1;
+                index += lines[i].length + 1;
             }
         }
     }

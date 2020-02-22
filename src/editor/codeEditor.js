@@ -65,9 +65,9 @@ define((require, exports) => {
     function insertInDefine(ui5objectPath, editor = EditorManager.getCurrentFullEditor()) {
         const sourceCode = getSourceCode(editor.document);
         const ast = astTool.parse(sourceCode);
-        const endPositions = astTool.getDefineStatementEndPositions(ast, sourceCode);
+        const endPositions = astTool.getDefineStatementPositions(ast, sourceCode);
 
-        if (endPositions) {
+        if (endPositions && endPositions.functionEndLocation) {
             let insertObjectPosition = {
                 line: endPositions.functionEndLocation.end.line - 1,
                 ch: endPositions.functionEndLocation.end.column

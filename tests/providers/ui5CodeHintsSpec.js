@@ -4,6 +4,7 @@ define((require, exports) => {
     const ui5ApiService = require("src/core/ui5ApiService"),
         ui5HintsProvider = require("src/codeHints/ui5HintsProvider"),
         testUtils = require("tests/testUtils"),
+        hintsExpect = require("tests/jsHintsExpect"),
         jsContent = require("text!tests/fixtures/testCode.js");
 
     const EVENT_PROVIDER_HINTS_LENGTH = 10,
@@ -17,54 +18,6 @@ define((require, exports) => {
             ui5LibrariesLoaded;
 
         testEditor = testUtils.createTestEditor(jsContent, "js");
-
-        function waitForHints(hintObj, callback) {
-            let complete = false,
-                hintList = null;
-
-            if (hintObj.hasOwnProperty("hints")) {
-                complete = true;
-                hintList = hintObj.hints;
-            } else {
-                hintObj.done((obj) => {
-                    complete = true;
-                    hintList = obj.hints;
-                });
-            }
-
-            waitsFor(() => {
-                return complete;
-            }, "Expected hints did not resolve", 3000);
-
-            runs(() => {
-                callback(hintList);
-            });
-        }
-
-        function expectHintsEntries(hintList, expectedEntries) {
-            const hints = hintList.map((element) => {
-                return element.find("span.brackets-ui5-hint-name").text();
-            });
-
-            expect(hints).toEqual(expectedEntries);
-        }
-
-        function selectHint(hintText, hintList) {
-            return hintList.find((hintObject) => {
-                return hintObject.find("span.brackets-ui5-hint-name").text() === hintText;
-            });
-        }
-
-        function expectHints(provider, sapui5Object, hintsLength, callback) {
-            waitForHints(provider.getHints(), (hintList) => {
-                expect(provider.proposedUi5Object.basename).toBe(sapui5Object);
-                expect(hintList.length).toBe(hintsLength);
-
-                if (callback) {
-                    callback(hintList);
-                }
-            });
-        }
 
         describe("[wozjac.ui5] ui5 JS code hints", () => {
             beforeEach(() => {
@@ -86,6 +39,8 @@ define((require, exports) => {
 
             afterEach(() => {
                 testUtils.destroyTestEditor(testEditor);
+                ui5LibrariesLoaded = false;
+                ui5ObjectsLoaded = false;
             });
 
             it("Should have all possible hints after .", () => {
@@ -96,7 +51,7 @@ define((require, exports) => {
 
                 const provider = ui5HintsProvider.getUi5CodeHintsProvider();
                 expect(provider.hasHints(testEditor.editor, null)).toBe(true);
-                expectHints(provider, EVENT_PROVIDER_NAME, EVENT_PROVIDER_HINTS_LENGTH);
+                hintsExpect.expectHints(provider, EVENT_PROVIDER_NAME, EVENT_PROVIDER_HINTS_LENGTH);
             });
 
             it("Should have filtered hints after a partial member string", () => {
@@ -108,9 +63,9 @@ define((require, exports) => {
                 const provider = ui5HintsProvider.getUi5CodeHintsProvider();
                 expect(provider.hasHints(testEditor.editor, null)).toBe(true);
 
-                waitForHints(provider.getHints(), (hintList) => {
+                hintsExpect.waitForHints(provider.getHints(), (hintList) => {
                     expect(hintList.length).toBe(1);
-                    expectHintsEntries(hintList, ["destroy"]);
+                    hintsExpect.expectHintsEntries(hintList, ["destroy"]);
                 });
             });
 
@@ -123,9 +78,9 @@ define((require, exports) => {
                 const provider = ui5HintsProvider.getUi5CodeHintsProvider();
                 expect(provider.hasHints(testEditor.editor, null)).toBe(true);
 
-                waitForHints(provider.getHints(), (hintList) => {
+                hintsExpect.waitForHints(provider.getHints(), (hintList) => {
                     expect(hintList.length).toBe(1);
-                    expectHintsEntries(hintList, ["destroy"]);
+                    hintsExpect.expectHintsEntries(hintList, ["destroy"]);
                 });
             });
 
@@ -146,7 +101,7 @@ define((require, exports) => {
 
                     expect(provider.hasHints(testEditor.editor, null)).toBe(true);
 
-                    expectHints(provider, EVENT_PROVIDER_NAME, EVENT_PROVIDER_HINTS_LENGTH, () => {
+                    hintsExpect.expectHints(provider, EVENT_PROVIDER_NAME, EVENT_PROVIDER_HINTS_LENGTH, () => {
                         expect(provider._resolveWithApiObjectSearch).toHaveBeenCalled();
                     });
                 });
@@ -159,7 +114,7 @@ define((require, exports) => {
 
                     expect(provider.hasHints(testEditor.editor, null)).toBe(true);
 
-                    expectHints(provider, SAP_OBJECT_NAME, SAP_OBJECT_HINTS_LENGTH, () => {
+                    hintsExpect.expectHints(provider, SAP_OBJECT_NAME, SAP_OBJECT_HINTS_LENGTH, () => {
                         expect(provider._resolveWithApiObjectSearch).toHaveBeenCalled();
                     });
 
@@ -173,7 +128,7 @@ define((require, exports) => {
 
                     expect(provider.hasHints(testEditor.editor, null)).toBe(true);
 
-                    expectHints(provider, EVENT_PROVIDER_NAME, EVENT_PROVIDER_HINTS_LENGTH, () => {
+                    hintsExpect.expectHints(provider, EVENT_PROVIDER_NAME, EVENT_PROVIDER_HINTS_LENGTH, () => {
                         expect(provider._resolveWithApiObjectSearch).toHaveBeenCalled();
                     });
                 });
@@ -186,7 +141,7 @@ define((require, exports) => {
 
                     expect(provider.hasHints(testEditor.editor, null)).toBe(true);
 
-                    expectHints(provider, SAP_OBJECT_NAME, SAP_OBJECT_HINTS_LENGTH, () => {
+                    hintsExpect.expectHints(provider, SAP_OBJECT_NAME, SAP_OBJECT_HINTS_LENGTH, () => {
                         expect(provider._resolveWithApiObjectSearch).toHaveBeenCalled();
                     });
 
@@ -200,7 +155,7 @@ define((require, exports) => {
 
                     expect(provider.hasHints(testEditor.editor, null)).toBe(true);
 
-                    expectHints(provider, SAP_OBJECT_NAME, SAP_OBJECT_HINTS_LENGTH, () => {
+                    hintsExpect.expectHints(provider, SAP_OBJECT_NAME, SAP_OBJECT_HINTS_LENGTH, () => {
                         expect(provider._resolveWithCachedApiObject).toHaveBeenCalled();
                     });
                 });
@@ -213,7 +168,7 @@ define((require, exports) => {
 
                     expect(provider.hasHints(testEditor.editor, null)).toBe(true);
 
-                    expectHints(provider, SAP_OBJECT_NAME, 2, () => {
+                    hintsExpect.expectHints(provider, SAP_OBJECT_NAME, 2, () => {
                         expect(provider._resolveWithCachedApiObject).toHaveBeenCalled();
                     });
                 });
@@ -226,9 +181,9 @@ define((require, exports) => {
 
                     expect(provider.hasHints(testEditor.editor, null)).toBe(true);
 
-                    expectHints(provider, EVENT_PROVIDER_NAME, 1, (hintList) => {
+                    hintsExpect.expectHints(provider, EVENT_PROVIDER_NAME, 1, (hintList) => {
                         expect(hintList.length).toBe(1);
-                        expectHintsEntries(hintList, ["destroy"]);
+                        hintsExpect.expectHintsEntries(hintList, ["destroy"]);
                         expect(provider._resolveWithApiObjectSearch).toHaveBeenCalled();
                     });
                 });
@@ -249,7 +204,7 @@ define((require, exports) => {
 
                     expect(provider.hasHints(testEditor.editor, null)).toBe(true);
 
-                    expectHints(provider, SAP_OBJECT_NAME, SAP_OBJECT_HINTS_LENGTH, () => {
+                    hintsExpect.expectHints(provider, SAP_OBJECT_NAME, SAP_OBJECT_HINTS_LENGTH, () => {
                         expect(provider._resolveWithApiObjectSearch).toHaveBeenCalled();
                     });
                 });
@@ -270,7 +225,7 @@ define((require, exports) => {
 
                     expect(provider.hasHints(testEditor.editor, null)).toBe(true);
 
-                    expectHints(provider, EVENT_PROVIDER_NAME, EVENT_PROVIDER_HINTS_LENGTH, () => {
+                    hintsExpect.expectHints(provider, EVENT_PROVIDER_NAME, EVENT_PROVIDER_HINTS_LENGTH, () => {
                         expect(provider._resolveWithApiObjectSearch).toHaveBeenCalled();
                     });
                 });
@@ -285,8 +240,8 @@ define((require, exports) => {
                 const provider = ui5HintsProvider.getUi5CodeHintsProvider();
                 expect(provider.hasHints(testEditor.editor, null)).toBe(true);
 
-                expectHints(provider, EVENT_PROVIDER_NAME, EVENT_PROVIDER_HINTS_LENGTH, (hintList) => {
-                    const selectedHint = selectHint("destroy", hintList);
+                hintsExpect.expectHints(provider, EVENT_PROVIDER_NAME, EVENT_PROVIDER_HINTS_LENGTH, (hintList) => {
+                    const selectedHint = hintsExpect.selectHint("destroy", hintList);
                     provider.insertHint(selectedHint);
                     expect(testEditor.doc.getLine(13).trim()).toBe("tree.destroy()");
                 });
@@ -301,8 +256,8 @@ define((require, exports) => {
                 const provider = ui5HintsProvider.getUi5CodeHintsProvider();
                 expect(provider.hasHints(testEditor.editor, null)).toBe(true);
 
-                expectHints(provider, EVENT_PROVIDER_NAME, 1, (hintList) => {
-                    const selectedHint = selectHint("destroy", hintList);
+                hintsExpect.expectHints(provider, EVENT_PROVIDER_NAME, 1, (hintList) => {
+                    const selectedHint = hintsExpect.selectHint("destroy", hintList);
                     provider.insertHint(selectedHint);
                     expect(testEditor.doc.getLine(14).trim()).toBe("tree.destroy()");
                 });
@@ -317,8 +272,8 @@ define((require, exports) => {
                 const provider = ui5HintsProvider.getUi5CodeHintsProvider();
                 expect(provider.hasHints(testEditor.editor, null)).toBe(true);
 
-                expectHints(provider, EVENT_PROVIDER_NAME, 1, (hintList) => {
-                    const selectedHint = selectHint("destroy", hintList);
+                hintsExpect.expectHints(provider, EVENT_PROVIDER_NAME, 1, (hintList) => {
+                    const selectedHint = hintsExpect.selectHint("destroy", hintList);
                     provider.insertHint(selectedHint);
                     expect(testEditor.doc.getLine(17).trim()).toBe("tree.destroy(param1)");
                 });
@@ -342,7 +297,7 @@ define((require, exports) => {
 
                 const provider = ui5HintsProvider.getUi5CodeHintsProvider();
                 expect(provider.hasHints(testEditor.editor, null)).toBe(true);
-                expectHints(provider, SAP_OBJECT_NAME, SAP_OBJECT_HINTS_LENGTH);
+                hintsExpect.expectHints(provider, SAP_OBJECT_NAME, SAP_OBJECT_HINTS_LENGTH);
             });
         });
     };

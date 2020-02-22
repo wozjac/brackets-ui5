@@ -40,7 +40,7 @@ define((require, exports) => {
                     ch: 2
                 });
 
-                expect(result).toBe(7);
+                expect(result).toBe(9);
             });
 
             it("Should return a single quote", () => {

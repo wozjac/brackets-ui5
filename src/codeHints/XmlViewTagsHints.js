@@ -3,7 +3,8 @@ define((require, exports, module) => {
 
     const XmlUtils = brackets.getModule("language/XMLUtils"),
         CodeHintManager = brackets.getModule("editor/CodeHintManager"),
-        hintUtils = require("src/codeHints/hintsUtils"),
+        hintsSorter = require("src/codeHints/hintsSorter"),
+        hintsRenderer = require("src/codeHints/hintsRenderer"),
         ui5SchemaService = require("src/core/ui5SchemaService"),
         xmlExtract = require("src/code/xmlExtract");
 
@@ -139,7 +140,7 @@ define((require, exports, module) => {
 
                 for (const object in namespaceObject) {
                     if (object.toLowerCase().startsWith(tagQuery.toLowerCase())) {
-                        result.push(hintUtils.buildHintListEntry({
+                        result.push(hintsRenderer.buildXmlTagHintListEntry({
                             name: object,
                             description: namespaceObject[object].documentation,
                             keyword: namespace
@@ -194,7 +195,7 @@ define((require, exports, module) => {
                 }
             }
 
-            result.sort(hintUtils.sortWrappedHintList);
+            result.sort(hintsSorter.sortWrappedHintList);
 
             return result;
         }

@@ -7,7 +7,8 @@ define((require, exports, module) => {
         xmlExtract = require("src/code/xmlExtract"),
         I18nReader = require("src/ui5Project/I18nReader"),
         ui5Files = require("src/ui5Project/ui5Files"),
-        hintsUtils = require("src/codeHints/hintsUtils");
+        hintsRenderer = require("src/codeHints/hintsRenderer"),
+        hintsSorter = require("src/codeHints/hintsSorter");
 
     class AttributeHints {
         constructor() {
@@ -182,7 +183,7 @@ define((require, exports, module) => {
                 }
             }
 
-            result.sort(hintsUtils.sortWrappedHintList);
+            result.sort(hintsSorter.sortWrappedHintList);
 
             return result.filter((elem, pos, arr) => {
                 return arr.indexOf(elem) === pos;
@@ -193,8 +194,8 @@ define((require, exports, module) => {
             const result = [];
 
             if (attributeQuery.trim().length === 0) {
-                return attributes.sort(hintsUtils.sortAttributes).map((attribute) => {
-                    return hintsUtils.buildHintListEntry({
+                return attributes.sort(hintsSorter.sortAttributes).map((attribute) => {
+                    return hintsRenderer.buildXmlTagHintListEntry({
                         name: attribute.name,
                         description: attribute.documentation
                     });
@@ -202,7 +203,7 @@ define((require, exports, module) => {
             } else {
                 for (const attribute of attributes) {
                     if (attribute.name.startsWith(attributeQuery)) {
-                        result.push(hintsUtils.buildHintListEntry({
+                        result.push(hintsRenderer.buildXmlTagHintListEntry({
                             name: attribute.name,
                             description: attribute.documentation
                         }));
@@ -237,8 +238,8 @@ define((require, exports, module) => {
                         attributes = ui5SchemaService.tags[namespace][object].attributes;
 
                         if (attributeQuery.trim().length === 0) {
-                            return attributes.sort(hintsUtils.sortAttributes).map((attribute) => {
-                                return hintsUtils.buildHintListEntry({
+                            return attributes.sort(hintsSorter.sortAttributes).map((attribute) => {
+                                return hintsRenderer.buildXmlTagHintListEntry({
                                     name: attribute.name,
                                     description: attribute.documentation
                                 });
@@ -246,7 +247,7 @@ define((require, exports, module) => {
                         } else {
                             for (const attribute of attributes) {
                                 if (attribute.name.startsWith(attributeQuery)) {
-                                    result.push(hintsUtils.buildHintListEntry({
+                                    result.push(hintsRenderer.buildXmlTagHintListEntry({
                                         name: attribute.name,
                                         description: attribute.documentation
                                     }));
@@ -321,7 +322,7 @@ define((require, exports, module) => {
                     item.description = item.description[0];
                 }
 
-                item = hintsUtils.buildHintListEntry(item);
+                item = hintsRenderer.buildXmlTagHintListEntry(item);
                 items.push(item);
             });
 
