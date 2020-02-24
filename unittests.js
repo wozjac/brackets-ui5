@@ -11,6 +11,7 @@ define((require) => {
 
         xmlViewHintsSpec = require("tests/providers/xmlViewHintsSpec"),
         ui5CodeHintsSpec = require("tests/providers/ui5CodeHintsSpec"),
+        ui5CodeHintsInDefineSpec = require("tests/providers/ui5CodeHintsInDefineSpec"),
         quickDocsSpec = require("tests/providers/quickDocsSpec"),
         xmlViewQuickEditSpec = require("tests/providers/xmlViewQuickEditSpec"),
 
@@ -51,8 +52,12 @@ define((require) => {
 
     describe("[wozjac.ui5] Brackets UI5: code tools", () => {
         jsToolSpec.getTests();
-        ui5CodeAnalyzerSpec.getTests();
         xmlExtractSpec.getTests();
         astToolSpec.getTests();
+        ui5CodeAnalyzerSpec.getTests();
+    });
+
+    describe("[wozjac.ui5] Brackets UI5: sap.ui.define hints", () => {
+        ui5CodeHintsInDefineSpec.getTests();
     });
 });

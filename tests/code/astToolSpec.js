@@ -104,7 +104,7 @@ define((require, exports) => {
                 }
                 })`;
 
-                const defineEnd = astTool.getDefineStatementEndPositions(astTool.parse(code));
+                const defineEnd = astTool.getDefineStatementPositions(astTool.parse(code));
 
                 expect(defineEnd.arrayEndLocation.end.line).toEqual(1);
                 expect(defineEnd.arrayEndLocation.end.column).toEqual(42);
@@ -121,7 +121,7 @@ define((require, exports) => {
                 }
                 })`;
 
-                const defineEnd = astTool.getDefineStatementEndPositions(astTool.parse(code));
+                const defineEnd = astTool.getDefineStatementPositions(astTool.parse(code));
                 expect(defineEnd.arrayEndLocation.end.line).toEqual(1);
                 expect(defineEnd.arrayEndLocation.end.column).toEqual(42);
                 expect(defineEnd.functionEndLocation.end.line).toEqual(1);
@@ -140,7 +140,7 @@ define((require, exports) => {
                 }
                 })`;
 
-                const defineEnd = astTool.getDefineStatementEndPositions(astTool.parse(code));
+                const defineEnd = astTool.getDefineStatementPositions(astTool.parse(code));
 
                 expect(defineEnd.arrayEndLocation.end.line).toEqual(3);
                 expect(defineEnd.arrayEndLocation.end.column).toEqual(32);
@@ -160,7 +160,7 @@ define((require, exports) => {
                 }
                 })`;
 
-                const requireEnd = astTool.getDefineStatementEndPositions(astTool.parse(code));
+                const requireEnd = astTool.getDefineStatementPositions(astTool.parse(code));
 
                 expect(requireEnd.arrayEndLocation.end.line).toEqual(3);
                 expect(requireEnd.arrayEndLocation.end.column).toEqual(32);

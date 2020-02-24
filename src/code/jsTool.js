@@ -33,14 +33,12 @@ define((require, exports) => {
     function isFullUi5Path(token) {
         const hasSlashes = token.indexOf("/") !== -1;
 
-        if (token.indexOf(".") !== -1 || hasSlashes) {
-            if (hasSlashes) {
-                token = token.replace(/\//g, ".");
-            }
+        if (hasSlashes) {
+            token = token.replace(/\//g, ".");
+        }
 
-            if (ui5ApiFinder.findUi5ObjectByName(token)) {
-                return true;
-            }
+        if (ui5ApiFinder.findUi5ObjectByName(token)) {
+            return true;
         }
 
         return false;

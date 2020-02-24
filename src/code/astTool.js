@@ -225,9 +225,11 @@ define((require, exports, module) => {
         return result;
     }
 
-    function getDefineStatementEndPositions(ast, sourceCode) {
-        let result, lastPath, lastIdentifier;
-        let emptyArray, emptyFunction, offset;
+    function getDefineStatementPositions(ast, sourceCode) {
+        let result, lastPath, lastIdentifier, defineArrayBegin, defineArrayEnd, defineArrayTokens;
+        let emptyArray, emptyFunction, offset, defineFunctionBegin, defineFunctionEnd, defineFunctionTokens;
+        let noFunction = false,
+            noArray = false;
 
         AcornWalk.fullAncestor(ast, (node, ancestors) => {
             if (node.type === "MemberExpression"
@@ -240,48 +242,81 @@ define((require, exports, module) => {
 
                 if (parent) {
                     try {
-                        const paths = parent.arguments[0].elements;
+                        if (parent.arguments[0] && parent.arguments[0].type === "ArrayExpression") {
+                            const paths = parent.arguments[0].elements;
+                            defineArrayBegin = parent.arguments[0].start;
+                            defineArrayEnd = parent.arguments[0].end;
 
-                        if (paths.length > 0) {
-                            lastPath = paths[paths.length - 1];
+                            defineArrayTokens = paths.filter((token) => {
+                                return !!token;
+                            });
+
+                            if (paths.length > 0) {
+                                lastPath = paths[paths.length - 1];
+                            } else {
+                                //empty, get array end
+                                lastPath = parent.arguments[0];
+                                emptyArray = true;
+                            }
                         } else {
-                            //empty, get array end
-                            lastPath = parent.arguments[0];
-                            emptyArray = true;
+                            lastPath = null;
+                            noArray = true;
                         }
                     } catch (error) {
                         lastPath = null;
+                        noArray = true;
                     }
 
                     try {
-                        const identifiers = parent.arguments[1].params;
+                        if (parent.arguments[1]
+                            && (parent.arguments[1].type === "FunctionExpression"
+                                || parent.arguments[1].type === "ArrowFunctionExpression")) {
 
-                        if (identifiers.length > 0) {
-                            lastIdentifier = identifiers[identifiers.length - 1];
-                        } else {
-                            //empty, get function parens
-                            lastIdentifier = parent.arguments[1];
+                            const identifiers = parent.arguments[1].params;
+                            defineFunctionBegin = parent.arguments[1].start;
+                            defineFunctionEnd = parent.arguments[1].end;
 
-                            if (lastIdentifier.type === "FunctionExpression") {
-                                offset = sourceCode.substring(lastIdentifier.start).indexOf(")");
-                            } else if (lastIdentifier.type === "ArrowFunctionExpression") {
-                                offset = 1;
+                            defineFunctionTokens = identifiers.filter((token) => {
+                                return !!token;
+                            });
+
+                            if (identifiers.length > 0) {
+                                lastIdentifier = identifiers[identifiers.length - 1];
+                            } else {
+                                //empty, get function parens
+                                lastIdentifier = parent.arguments[1];
+
+                                if (lastIdentifier.type === "FunctionExpression") {
+                                    offset = sourceCode.substring(lastIdentifier.start).indexOf(")");
+                                } else if (lastIdentifier.type === "ArrowFunctionExpression") {
+                                    offset = 1;
+                                }
+
+                                emptyFunction = true;
                             }
-
-                            emptyFunction = true;
+                        } else {
+                            lastIdentifier = null;
+                            noFunction = true;
                         }
                     } catch (error) {
                         lastIdentifier = null;
+                        noFunction = true;
                     }
 
-                    if (lastPath && lastIdentifier) {
-                        result = {
-                            arrayEndLocation: lastPath.loc,
-                            functionEndLocation: lastIdentifier.loc,
-                            emptyArray,
-                            emptyFunction
-                        };
-                    }
+                    result = {
+                        arrayStartIndex: defineArrayBegin,
+                        arrayEndIndex: defineArrayEnd,
+                        arrayEndLocation: lastPath ? lastPath.loc : null,
+                        functionStartIndex: defineFunctionBegin,
+                        functionEndIndex: defineFunctionEnd,
+                        functionEndLocation: lastIdentifier ? lastIdentifier.loc : null,
+                        defineFunctionTokens,
+                        defineArrayTokens,
+                        emptyArray,
+                        emptyFunction,
+                        noFunction,
+                        noArray
+                    };
                 }
             }
         });
@@ -363,7 +398,7 @@ define((require, exports, module) => {
     }
 
     exports.getDefineStatementObjects = getDefineStatementObjects;
-    exports.getDefineStatementEndPositions = getDefineStatementEndPositions;
+    exports.getDefineStatementPositions = getDefineStatementPositions;
     exports.getVariableDeclaratorType = getVariableDeclaratorType;
     exports.getControlIdFromByIdCall = getControlIdFromByIdCall;
     exports.getControllerId = getControllerId;
