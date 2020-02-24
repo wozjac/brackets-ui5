@@ -1,5 +1,12 @@
 # brackets-ui5 changelog
 
+## 1.4.11
+##### Added
+- hints in sap.ui.define
+
+##### Fixed
+- replace require(!text) calls for snippets initalization
+
 ## 1.4.10-beta
 ##### Fixed
 - error handling for missing/incorrect .mockconfig.json
