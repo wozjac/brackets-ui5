@@ -2,6 +2,7 @@ define((require, exports, module) => {
     "use strict";
 
     const ExtensionsUtil = brackets.getModule("utils/ExtensionUtils"),
+        ExtensionUtils = brackets.getModule("utils/ExtensionUtils"),
         strings = require("strings"),
         codeEditor = require("src/editor/codeEditor");
 
@@ -43,14 +44,28 @@ define((require, exports, module) => {
         return title;
     }
 
-    exports.snippet1 = require("text!./files/snippet1");
-    exports.snippet2 = require("text!./files/snippet2");
-    exports.snippet3 = require("text!./files/snippet3");
-    exports.snippet4 = require("text!./files/snippet4");
-    exports.snippet5 = require("text!./files/snippet5");
-    exports.snippet6 = require("text!./files/snippet6");
-    exports.snippet7 = require("text!./files/snippet7");
-    exports.snippet8 = require("text!./files/snippet8");
+    function _readSnippetContent(number) {
+        let result = "";
+        const path = `${ExtensionUtils.getModulePath(module)}files/snippet${number}`;
+
+        jQuery.ajax({
+            url: path,
+            dataType: "text",
+            async: false,
+            success: (text) => {
+                result = text;
+            },
+            error: () => {
+                result = `<< Snippet${number}>> file not found`;
+            }
+        });
+
+        return result;
+    }
+
+    for (let i = 1; i <= 8; i++) {
+        exports[`snippet${i}`] = _readSnippetContent(i);
+    }
 
     exports.insertSnippet1 = insertSnippet(exports.snippet1);
     exports.insertSnippet2 = insertSnippet(exports.snippet2);
