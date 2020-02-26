@@ -1,5 +1,5 @@
 define((require, exports, module) => {
     "use strict";
 
-    module.exports = require("i18n!nls/strings");
+    module.exports = require("nls/root/strings");
 });
