@@ -4,10 +4,12 @@ define((require, exports, module) => {
     const InlineWidget = brackets.getModule("editor/InlineWidget").InlineWidget,
         KeyEvent = brackets.getModule("utils/KeyEvent"),
         Mustache = brackets.getModule("thirdparty/mustache/mustache"),
-        inlineEditorTemplate = require("text!./templates/inlineDocsViewer.html"),
-        membersTemplate = require("text!./templates/members.html"),
+        fileLoader = require("src/main/fileLoader"),
         strings = require("strings"),
         SCROLL_LINE_HEIGHT = 40;
+
+    const inlineEditorTemplate = fileLoader.readTextFileSync(module, "templates/inlineDocsViewer.html"),
+        membersTemplate = fileLoader.readTextFileSync(module, "templates/members.html");
 
     function InlineDocsViewer(objects) {
         InlineWidget.call(this);

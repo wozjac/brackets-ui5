@@ -1,9 +1,9 @@
 define((require, exports, module) => {
     "use strict";
 
-    const ExtensionsUtil = brackets.getModule("utils/ExtensionUtils"),
-        ExtensionUtils = brackets.getModule("utils/ExtensionUtils"),
+    const ExtensionUtils = brackets.getModule("utils/ExtensionUtils"),
         strings = require("strings"),
+        fileLoader = require("src/main/fileLoader"),
         codeEditor = require("src/editor/codeEditor");
 
     function insertSnippet(snippet) {
@@ -18,7 +18,7 @@ define((require, exports, module) => {
     }
 
     function openSnippetsFolder() {
-        const path = ExtensionsUtil.getModulePath(module);
+        const path = ExtensionUtils.getModulePath(module);
 
         brackets.app.showOSFolder(`${path}/files`, (error) => {
             if (error) {
@@ -46,19 +46,12 @@ define((require, exports, module) => {
 
     function _readSnippetContent(number) {
         let result = "";
-        const path = `${ExtensionUtils.getModulePath(module)}files/snippet${number}`;
 
-        jQuery.ajax({
-            url: path,
-            dataType: "text",
-            async: false,
-            success: (text) => {
-                result = text;
-            },
-            error: () => {
-                result = `<< Snippet${number}>> file not found`;
-            }
-        });
+        try {
+            result = fileLoader.readTextFileSync(module, `files/snippet${number}`);
+        } catch (error) {
+            result = `<< Snippet${number}>> file not found`;
+        }
 
         return result;
     }

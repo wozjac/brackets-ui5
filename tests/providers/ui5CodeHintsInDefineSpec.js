@@ -40,24 +40,29 @@ define((require, exports) => {
                 ui5LibrariesLoaded = false;
             });
 
-            it("Should hint in the define function with no partial token before #1", () => {
+            it("Should not hint in the define function with no partial token before #1", () => {
                 testEditor.editor.setCursorPos({
                     line: 1,
                     ch: 26
                 });
 
                 const provider = ui5HintsProvider.getUi5CodeHintsProvider();
-                expect(provider.hasHints(testEditor.editor, null)).toBe(true);
-
-                hintsExpect.waitForHints(provider.getHints(), (hintList) => {
-                    expect(hintList.length).toBe(SAP_LIBRARY_OBJECTS_HINTS_LENGTH);
-                    hintsExpect.expectAllLibraryObjectsHintsEntries(hintList);
-                });
+                expect(provider.hasHints(testEditor.editor, null)).toBe(false);
             });
 
-            it("Should hint in the define function with no partial token before #2", () => {
+            it("Should not hint in the define function with no partial token before #2", () => {
                 testEditor.editor.setCursorPos({
                     line: 1,
+                    ch: 27
+                });
+
+                const provider = ui5HintsProvider.getUi5CodeHintsProvider();
+                expect(provider.hasHints(testEditor.editor, null)).toBe(false);
+            });
+
+            it("Should hint in the define function with no partial token before #1", () => {
+                testEditor.editor.setCursorPos({
+                    line: 3,
                     ch: 27
                 });
 

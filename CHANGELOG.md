@@ -1,5 +1,8 @@
 # brackets-ui5 changelog
 
+## 1.4.12
+- fix loading text files during extension startup
+
 ## 1.4.11
 ##### Added
 - hints in sap.ui.define

@@ -1,4 +1,4 @@
-define((require, exports) => {
+define((require, exports, module) => {
     "use strict";
 
     const Mustache = brackets.getModule("thirdparty/mustache/mustache"),
@@ -12,10 +12,12 @@ define((require, exports) => {
         toolbarButton = require("src/docsPanel/toolbarButton"),
         strings = require("strings"),
         constants = require("src/core/constants"),
-        docsPanelTemplate = require("text!src/docsPanel/templates/panel.html"),
-        hitlistEntryTemplate = require("text!src/docsPanel/templates/hitlistEntry.html"),
-        objectApiTemplate = require("text!src/docsPanel/templates/objectApiEntry.html"),
-        membersTemplate = require("text!src/docsPanel/templates/members.html");
+        fileLoader = require("src/main/fileLoader");
+
+    const docsPanelTemplate = fileLoader.readTextFileSync(module, "templates/panel.html"),
+        hitlistEntryTemplate = fileLoader.readTextFileSync(module, "templates/hitlistEntry.html"),
+        objectApiTemplate = fileLoader.readTextFileSync(module, "templates/objectApiEntry.html"),
+        membersTemplate = fileLoader.readTextFileSync(module, "templates/members.html");
 
     let docsPanel;
 

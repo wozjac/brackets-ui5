@@ -79,7 +79,10 @@ define((require, exports, module) => {
             this.queryToken = session.getToken(cursorPosition);
 
             if (this._cursorInsideDefineArray(editor, cursorPosition)) {
-                if (this.queryToken.string.trim() !== "" && this.queryToken.string !== "[") {
+                if (this.queryToken.string.trim() !== ""
+                    && this.queryToken.string !== "["
+                    && this.queryToken.string !== ",") {
+
                     this.inDefineArrayHint = true;
                     return true;
                 } else {
