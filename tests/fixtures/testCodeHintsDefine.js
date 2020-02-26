@@ -1,7 +1,7 @@
 sap.ui.define([
     "test/BaseController",
     "sap/ui/base/EventProvider",
-    "sap/ui/base/Object",
+    "sap/ui/base/Object", ""
     "ssrt",
     "sap",
     "sap.u",
