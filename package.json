@@ -13,9 +13,6 @@
     "bugs": {
         "url": "https://github.com/wozjac/brackets-ui5/issues"
     },
-    "i18n": [
-        "en"
-    ],
     "engines": {
         "brackets": ">=1.14.0"
     },

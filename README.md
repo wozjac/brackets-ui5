@@ -66,7 +66,7 @@ XML views:
 - SAPUI5/OpenUI5 version configured in the plugin must be >= 1.52
 
 ## Installation
-The extension is not yet added to the Bracket extensions repository. It can be installed using a downloaded ZIP file (drag it to the package manager's install area) - check [releases](https://github.com/wozjac/brackets-ui5/releases).  
+Install via Brackets Extension manager - search for "Brackets UI5".
 
 ![install](http://public_repo.vipserv.org/images/install.png)
 
