@@ -53,6 +53,7 @@ XML views
 - i18n keys for i18n model bindings
 
 Javascript files:
+- sap.ui.define hints
 - UI5 pubic methods and properties
 
 ##### Jump to definition [ctrl+j]
@@ -312,10 +313,13 @@ In XML views:
 ![i18n hints](http://public_repo.vipserv.org/images/i18n_hints_short.gif)
 
 ### Code hints for UI5 objects
-Code hints in JS files displays public properties & methods of a UI5 object. Recognition works for basic cases based on the current scope - please check "UI5 identifier type recognition in Javascript code" section for handled cases. Module memebers (sap.ui for example) are also hintable.  
+Code hints in JS files displays public properties & methods of a UI5 object. Recognition works for basic cases based on the current scope - please check "UI5 identifier type recognition in Javascript code" section for handled cases. Module members (sap.ui for example) are also hintable.  
 A convenient feature is when you use *this.byId("controlId")* function (or any with "byId" in its name) - it will try to find the control type in the associated view.
 
 ![code hints](http://public_repo.vipserv.org/images/code-hints-collage.jpg)
+
+Code hints also works in sap.ui.define and after selection inserts the object into array and function arguments.
+![code hints](http://public_repo.vipserv.org/images/hints-define.gif)
 
 ### Jump to definition
 In XML views quick edit (ctrl+j) will jump to the file with the definition of:
