@@ -13,6 +13,7 @@ define((require, exports, module) => {
             this.tagInfo = null;
             this.editor = null;
             this.exclusion = null;
+            this.originalQuery = null;
         }
 
         hasHints(editor, implicitChar) {
@@ -178,8 +179,9 @@ define((require, exports, module) => {
             let result, namespace;
 
             const namespaces = xmlExtract.extractXmlNamespaces(this.editor.document.getText());
+            const namespaceNames = Object.keys(namespaces);
 
-            if (Object.keys(namespaces).length === 0) { //no namespaces in the source, full search
+            if (namespaceNames.length === 0) { //no namespaces in the source, full search
                 result = this._search(tagQuery);
             } else {
                 try {
@@ -196,6 +198,15 @@ define((require, exports, module) => {
             }
 
             result.sort(hintsSorter.sortWrappedHintList);
+
+            for (const ns of namespaceNames) {
+                if (this.originalQuery.indexOf(":") === -1 && ns.startsWith(tagQuery.toLowerCase())) {
+                    result.unshift(hintsRenderer.buildXmlTagHintListEntry({
+                        name: ns,
+                        keyword: "namespace"
+                    }));
+                }
+            }
 
             return result;
         }
