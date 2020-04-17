@@ -94,7 +94,7 @@ define((require, exports) => {
             });
 
             describe("[wozjac.ui5] xmlViewTagHints.js", () => {
-                it("Should hint for < just before existing tag", () => {
+                it("Should hint with namespace 'c' for < just before existing tag", () => {
                     testEditor.doc.replaceRange("<<", insertPoint);
 
                     testEditor.editor.setCursorPos({
@@ -103,7 +103,19 @@ define((require, exports) => {
                     }); // cursor between the two <s
 
                     const hintList = expectHints(ui5HintsProvider.getXmlViewTagsHintsProvider(), testEditor.editor);
-                    verifyTagHints(hintList, "ActionListItem");
+                    verifyTagHints(hintList, "c");
+                });
+
+                it("Should hint with namespace 'html'", () => {
+                    testEditor.doc.replaceRange("<h", insertPoint);
+
+                    testEditor.editor.setCursorPos({
+                        line: 6,
+                        ch: 2
+                    });
+
+                    const hintList = expectHints(ui5HintsProvider.getXmlViewTagsHintsProvider(), testEditor.editor);
+                    verifyTagHints(hintList, "html");
                 });
 
                 it("Should filter hints by part of a tag", () => {

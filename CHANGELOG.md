@@ -1,6 +1,11 @@
 # brackets-ui5 changelog
 
+## 1.4.13
+##### Added
+- new "distinctValues" option for mock generator
+
 ## 1.4.12
+##### Fixed
 - fix loading text files during extension startup
 
 ## 1.4.11

@@ -25,6 +25,7 @@ define((require, exports, module) => {
         constructor(rootUri = prefs.get(constants.prefs.MOCK_DATA_ROOT_URI), metadataUrl) {
             this._predefinedValuesConfig = {};
             this._skipMockGeneration = [];
+            this._distinctValues = [];
             this._mockConfigLoadError;
 
             if (!metadataUrl) {
@@ -83,7 +84,7 @@ define((require, exports, module) => {
             const entitySets = this._findEntitySets(this._oMetadata);
             const entitySetNames = Object.keys(entitySets);
 
-            //exclude adjsutments
+            //exclude adjustments
             this._skipMockGeneration.forEach((element) => {
                 if (entitySetNames.find((name) => {
                         return name === element;
@@ -140,6 +141,10 @@ define((require, exports, module) => {
 
                         if (this._mockDataConfig.skipMockGeneration) {
                             this._skipMockGeneration = this._mockDataConfig.skipMockGeneration;
+                        }
+
+                        if (this._mockDataConfig.distinctValues) {
+                            this._distinctValues = this._mockDataConfig.distinctValues;
                         }
                     }
                 },
@@ -273,13 +278,48 @@ define((require, exports, module) => {
 
         _generateDataFromEntitySet(oEntitySet, mEntityTypes, mComplexTypes) {
             const oEntityType = mEntityTypes[oEntitySet.type];
-            const aMockedEntries = [];
+            let aMockedEntries = [];
 
             for (let i = 0; i < prefs.get(constants.prefs.MOCK_DATA_ENTITY_SIZE); i++) {
                 aMockedEntries.push(this._generateDataFromEntity(oEntityType, i + 1, mComplexTypes));
             }
 
+            if (this._distinctValues.includes(oEntitySet.name)) {
+                aMockedEntries = this._removeDuplicates(aMockedEntries, oEntityType.keys);
+            }
+
             return aMockedEntries;
+        }
+
+        _removeDuplicates(generatedData, keyFields) {
+            const unique = [];
+            const keys = "x".repeat(keyFields.length);
+            let insert = true;
+
+            generatedData.forEach((element) => {
+                for (let i = 0; i < unique.length; i++) {
+                    let keyMatch = "";
+
+                    keyFields.forEach((key) => {
+                        if (unique[i][key] === element[key]) {
+                            keyMatch += "x";
+                        }
+                    });
+
+                    if (keyMatch === keys) {
+                        insert = false;
+                        break;
+                    }
+                }
+
+                if (insert) {
+                    unique.push(element);
+                }
+
+                insert = true;
+            });
+
+            return unique;
         }
 
         _generateDataFromEntity(oEntityType, iIndex, mComplexTypes) {
