@@ -40,7 +40,7 @@ define((require, exports) => {
                     case constants.prefs.MOCK_DATA_ROOT_URI:
                         return "";
                     case constants.prefs.MOCK_DATA_ENTITY_SIZE:
-                        return 1;
+                        return 5;
                 }
             });
         }

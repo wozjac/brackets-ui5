@@ -284,6 +284,18 @@ for example
 }
 ```
 
+##### Distinct values
+Having predefined values for entities and their key properties, duplicated entries will be present, as the generator always produces the number 
+of entries specified by the *bracketsUi5.mockDataEntitySize* preference.   
+To have only distinct values (based on all key properties):
+```
+{   
+    "variables": [...]
+    "distinctValues": ["EnitytSet1", "EntitySet2"]
+    ...
+}
+```
+
 Please check the Appendix A for sample .mockconfig file.
 
 ### Quick docs
@@ -404,6 +416,7 @@ Sample .mockconfig.json file, based on Northwind oData metadata: https://service
         "categoryIds": ["ID1", "ID2", "ID3"]
     },
     "skipMockGeneration": ["Persons", "Suppliers"],
+    "distinctValues": ["Categories"],
     "predefined": {
         "Product": {
             "Rating": [1, 2, 3],
