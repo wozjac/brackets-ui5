@@ -1,5 +1,10 @@
 # brackets-ui5 changelog
 
+## 1.4.14
+##### Fixed
+- correct handling of expand/collapse for the same names in the hierarchy in the API panel
+- remove i18n error when hint not found
+
 ## 1.4.13
 ##### Added
 - new "distinctValues" option for mock generator
