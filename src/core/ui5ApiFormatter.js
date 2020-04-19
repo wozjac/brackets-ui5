@@ -36,6 +36,7 @@ define((require, exports) => {
             api.methods = JSON.parse(JSON.stringify(api.methods));
 
             api.methods.forEach((method) => {
+                method.objectName = ui5ObjectApi.name;
                 method.description = codeEditor.formatJsDoc(method.description, cleanHtml);
 
                 if (method.deprecated) {
@@ -75,6 +76,7 @@ define((require, exports) => {
             api.events = JSON.parse(JSON.stringify(api.events));
 
             api.events.forEach((event) => {
+                event.objectName = ui5ObjectApi.name;
                 event.description = codeEditor.formatJsDoc(event.description, cleanHtml);
 
                 if (event.deprecated) {
@@ -154,6 +156,7 @@ define((require, exports) => {
                     property.type = "";
                 }
 
+                property.objectName = ui5ObjectApi.name;
                 property.description = codeEditor.formatJsDoc(property.description, cleanHtml);
 
                 if (property.deprecated) {
@@ -178,6 +181,7 @@ define((require, exports) => {
             api.aggregations = JSON.parse(JSON.stringify(api.aggregations));
 
             api.aggregations.forEach((aggregation) => {
+                aggregation.objectName = ui5ObjectApi.name;
                 aggregation.description = codeEditor.formatJsDoc(aggregation.description, cleanHtml);
                 aggregation.apiDocUrl = `${ui5ObjectApi.apiDocUrl}/aggregations`;
             });

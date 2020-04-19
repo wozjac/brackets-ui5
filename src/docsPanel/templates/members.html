@@ -68,8 +68,8 @@
                 </span> <span class="brackets-ui5-docs-panel-return-type">{{returnValue.type}}</span>
                 <a href="#"
                     class="brackets-ui5-docs-panel-expand-link"
-                    data-target-description="pod:{{name}}">[+]</a>
-                <span id="pod:{{name}}">
+                    data-target-description="pod:{{objectName}}:{{name}}">[+]</a>
+                <span id="pod:{{objectName}}:{{name}}">
                     <p class="brackets-ui5-docs-panel-api-description">
                         {{description}}
                     </p>
@@ -104,8 +104,8 @@
                 </a> [{{cardinality}}] <span class="brackets-ui5-docs-panel-return-type"> {{type}}</span>
                 <a href="#"
                     class="brackets-ui5-docs-panel-expand-link"
-                        data-target-description="pod:{{name}}">[+]</a>
-                <p id="pod:{{name}}"
+                        data-target-description="pod:{{objectName}}:{{name}}">[+]</a>
+                <p id="pod:{{objectName}}:{{name}}"
                      class="brackets-ui5-docs-panel-api-description">
                     {{description}}
                 </p>
@@ -129,8 +129,8 @@
                 </a>(<span class="brackets-ui5-element-list">{{#parameters}}<span>{{name}}{{#optional}}(opt){{/optional}}</span>{{/parameters}})</span>
                 <a href="#"
                     class="brackets-ui5-docs-panel-expand-link"
-                    data-target-description="pod:{{name}}">[+]</a>
-                <div id="pod:{{name}}"
+                    data-target-description="pod:{{objectName}}:{{name}}">[+]</a>
+                <div id="pod:{{objectName}}:{{name}}"
                     class="brackets-ui5-docs-panel-api-description">
                     {{description}}
                     {{#parameters}}
@@ -161,9 +161,9 @@
                 </a><span class="brackets-ui5-docs-panel-return-type"> {{type}}</span>
                 <a href="#"
                     class="brackets-ui5-docs-panel-expand-link"
-                    data-target-description="pod:{{name}}">[+]
+                    data-target-description="pod:{{objectName}}:{{name}}">[+]
                 </a>
-                <p id="pod:{{name}}"
+                <p id="pod:{{objectName}}:{{name}}"
                     class="brackets-ui5-docs-panel-api-description">
                     {{description}}
                 </p>
