@@ -272,7 +272,7 @@ define((require, exports, module) => {
                     values = reader.getValuesStartingWith(searchString);
                 }
 
-                return values;
+                return values ? values : [];
             }
 
             return new Promise((resolve) => {
@@ -302,6 +302,10 @@ define((require, exports, module) => {
         }
 
         _prepareI18nValueHints(values) {
+            if (values === undefined) {
+                return;
+            }
+
             const items = [];
 
             values.forEach((entry) => {
