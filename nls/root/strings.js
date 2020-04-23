@@ -52,5 +52,6 @@ define({
     "MODEL_READ_ERROR": `${prefix} Model read error`,
     "COMPONENT_ID_NOT_FOUND": `${prefix} Component Id not found in the manifest file`,
     "FILE_NOT_FOUND": `${prefix} File not found`,
-    "MOCK_CONFIG_ERROR": "Mock config error - check Brackets console for logs"
+    "MOCK_CONFIG_ERROR": "Mock config error - check Brackets console for logs",
+    "MULTIPLE_FUNCTIONS_FOUND": `${prefix} Multiple functions found with the name `
 });
