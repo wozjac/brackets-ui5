@@ -61,34 +61,35 @@ define((require, exports) => {
         const result = new $.Deferred();
         let i18nDocument, i18nFile;
 
-        ui5Files.getModelInfo(i18nInfo.modelName).then((modelInfo) => {
-            i18nFile = modelInfo;
-            return DocumentManager.getDocumentForPath(modelInfo.path);
-        }).then((document) => {
-            i18nDocument = document;
-            return i18nTool.getEntryRange(i18nInfo, i18nDocument);
-        }).then((rangeInfo) => {
-            if (rangeInfo) {
-                CommandManager.execute(Commands.FILE_OPEN, {
-                        fullPath: i18nFile.path
-                    })
-                    .done(() => {
-                        const newEditor = EditorManager.getActiveEditor();
-                        const cursorEndPosition = i18nDocument.getLine(rangeInfo.lineStart).length;
-                        newEditor.setCursorPos(rangeInfo.lineStart, cursorEndPosition, true);
-                        result.resolve(true);
-                    })
-                    .catch((error) => {
-                        result.reject(error);
-                    });
-            } else {
-                result.resolve(null);
-            }
+        ui5Files.getModelInfo(i18nInfo.modelName)
+            .then((modelInfo) => {
+                i18nFile = modelInfo;
+                return DocumentManager.getDocumentForPath(modelInfo.path);
+            })
+            .then(() => {
+                return ui5Files.openFile(i18nFile.path);
+            })
+            .then((document) => {
+                i18nDocument = document;
+                return i18nTool.getEntryRange(i18nInfo, i18nDocument);
+            })
+            .then((rangeInfo) => {
+                const newEditor = EditorManager.getActiveEditor();
 
-        }).catch((error) => {
-            console.log(error);
-            result.reject(error);
-        });
+                if (rangeInfo && rangeInfo.lineStart) {
+                    const cursorEndPosition = i18nDocument.getLine(rangeInfo.lineStart).length;
+                    newEditor.setCursorPos(rangeInfo.lineStart, cursorEndPosition, true);
+                } else {
+                    const lines = i18nDocument.getText().split(/\n/).length;
+                    newEditor.setCursorPos(lines, 0);
+                }
+
+                result.resolve(true);
+            })
+            .catch((error) => {
+                console.log(error);
+                result.reject(error);
+            });
 
         return result.promise();
     }
