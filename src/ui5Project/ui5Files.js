@@ -7,6 +7,9 @@ define((require, exports) => {
         xmlExtract = require("src/code/xmlExtract"),
         strings = require("strings");
 
+    const distFolder = "dist/";
+    const nodeModules = "node_modules/";
+
     function getI18nModelInfo() {
         const promise = new Promise((resolve, reject) => {
             function manifestFound(manifestFile) {
@@ -108,62 +111,84 @@ define((require, exports) => {
         return findFile(controllerName);
     }
 
+    function findFiles(filenameRegex) {
+        return new Promise((resolve, reject) => {
+            ProjectManager.getAllFiles((file) => {
+                    return filenameRegex.test(file.name)
+                        && file.fullPath.indexOf(distFolder) === -1
+                        && file.fullPath.indexOf(nodeModules) === -1;
+                })
+                .done((files) => {
+                    resolve(files);
+                })
+                .fail((error) => {
+                    reject(error);
+                });
+        });
+    }
+
     function findFile(filename) {
         return new Promise((resolve, reject) => {
             ProjectManager.getAllFiles((file) => {
-                return file.name === filename;
-            }).then((files) => {
-                if (files && files.length === 1) {
-                    files[0].read((error, content) => {
-                        if (error) {
-                            reject(error);
-                        }
+                    return file.name === filename
+                        && file.fullPath.indexOf(distFolder) === -1
+                        && file.fullPath.indexOf(nodeModules) === -1;
+                }).done((files) => {
+                    if (files && files.length === 1) {
+                        files[0].read((error, content) => {
+                            if (error) {
+                                reject(error);
+                            }
 
-                        resolve({
-                            content,
-                            path: files[0].parentPath,
-                            file: files[0]
+                            resolve({
+                                content,
+                                path: files[0].parentPath,
+                                file: files[0]
+                            });
                         });
-                    });
-                } else {
+                    } else {
+                        reject(`${strings.FILE_NOT_FOUND}`);
+                    }
+                })
+                .fail(() => {
                     reject(`${strings.FILE_NOT_FOUND}`);
-                }
-            }, () => {
-                reject(`${strings.FILE_NOT_FOUND}`);
-            });
+                });
         });
     }
 
     function findXmlViewsControllers() {
         return new Promise((resolve, reject) => {
             ProjectManager.getAllFiles((file) => {
-                return file.name.search(/.*\.view\.xml/) !== -1;
-            }).then((files) => {
-                const promises = [];
+                    return file.name.search(/.*\.view\.xml/) !== -1
+                        && file.fullPath.indexOf(nodeModules) === -1
+                        && file.fullPath.indexOf(distFolder) === -1;
+                }).done((files) => {
+                    const promises = [];
 
-                for (const file of files) {
-                    const promise = new Promise((resolve, reject) => {
-                        _readFile(file).then((content) => {
-                            const controllerId = xmlExtract.getControllerName(content, true);
+                    for (const file of files) {
+                        const promise = new Promise((resolve, reject) => {
+                            _readFile(file).then((content) => {
+                                const controllerId = xmlExtract.getControllerName(content, true);
 
-                            resolve({
-                                controllerId,
-                                viewName: file.name,
-                                content
+                                resolve({
+                                    controllerId,
+                                    viewName: file.name,
+                                    content
+                                });
+
+                            }, (error) => {
+                                reject(error);
                             });
-
-                        }, (error) => {
-                            reject(error);
                         });
-                    });
 
-                    promises.push(promise);
-                }
+                        promises.push(promise);
+                    }
 
-                resolve(Promise.all(promises));
-            }, () => {
-                reject(`${strings.FILE_NOT_FOUND}`);
-            });
+                    resolve(Promise.all(promises));
+                })
+                .fail(() => {
+                    reject(`${strings.FILE_NOT_FOUND}`);
+                });
         });
     }
 
@@ -274,6 +299,7 @@ define((require, exports) => {
     exports.getComponentId = getComponentId;
     exports.getResourceRootPaths = getResourceRootPaths;
     exports.findFile = findFile;
+    exports.findFiles = findFiles;
     exports.openFile = openFile;
     exports.findXmlViewsControllers = findXmlViewsControllers;
 });

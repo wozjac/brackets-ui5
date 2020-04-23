@@ -1,11 +1,12 @@
 define((require, exports) => {
 
-    const JSUtils = brackets.getModule("language/JSUtils"),
-        EditorManager = brackets.getModule("editor/EditorManager"),
+    const EditorManager = brackets.getModule("editor/EditorManager"),
         DocumentManager = brackets.getModule("document/DocumentManager"),
         codeEditor = require("src/editor/codeEditor"),
         i18nTool = require("src/code/i18nTool"),
         xmlExtract = require("src/code/xmlExtract"),
+        ui5CodeSearch = require("src/code/ui5CodeSearch"),
+        constants = require("src/core/constants"),
         ui5Files = require("src/ui5Project/ui5Files");
 
     class XmlViewJumpToDefProvider {
@@ -43,11 +44,7 @@ define((require, exports) => {
                 const controllerName = xmlExtract.getControllerName(this.editor.document.getText());
 
                 if (!functionName) {
-                    if (!controllerName) {
-                        return null;
-                    } else {
-                        return _handleControllerJump(controllerName);
-                    }
+                    return null;
                 }
 
                 return _handleFunctionJump(functionName, controllerName);
@@ -94,58 +91,75 @@ define((require, exports) => {
 
     function _handleFunctionJump(functionName, controllerName) {
         const result = new $.Deferred();
-        let controllerFileInfo, rangeInfo, matchingFunctions;
 
-        ui5Files.getControllerFile(controllerName)
-            .then((fileInfo) => {
-                controllerFileInfo = fileInfo;
-                return JSUtils.findMatchingFunctions(functionName, [fileInfo.file]);
+        ui5CodeSearch.findFunctionInController(functionName, controllerName)
+            .then((matchingFunctionInfo) => {
+                _openFileOnFunction(matchingFunctionInfo)
+                    .then(() => {
+                        result.resolve();
+                    }, (error) => {
+                        result.reject(error);
+                    });
+
             })
-            .then((resultArray) => {
-                matchingFunctions = resultArray;
-                if (matchingFunctions && matchingFunctions.length > 0) {
-                    rangeInfo = {
-                        document: matchingFunctions[0].document,
-                        name: functionName,
-                        lineStart: matchingFunctions[0].lineStart,
-                        lineEnd: matchingFunctions[0].lineEnd
-                    };
-
-                    return ui5Files.openFile(controllerFileInfo.file.fullPath);
+            .catch((error) => {
+                if (error === "NOT_FOUND") {
+                    return ui5CodeSearch.findFunctionInFiles(functionName, constants.regex.controllerFilesRegex);
                 } else {
-                    return _handleControllerJump(controllerName);
+                    result.reject(error);
                 }
             })
-            .then(() => {
-                const newEditor = EditorManager.getActiveEditor();
-                const cursorEndPosition = matchingFunctions[0].document.getLine(rangeInfo.lineStart).length;
-                newEditor.setCursorPos(rangeInfo.lineStart, cursorEndPosition, true);
-                result.resolve(true);
+            .then((matchingFunctionInfo) => {
+                _openFileOnFunction(matchingFunctionInfo)
+                    .then(() => {
+                        result.resolve();
+                    }, (error) => {
+                        result.reject(error);
+                    });
             })
-            .catch(() => {
-                result.reject();
+            .catch((error) => {
+                if (error === "NOT_FOUND") {
+                    return ui5CodeSearch.findFunctionInFiles(functionName, constants.regex.jsFilesRegex);
+                } else {
+                    result.reject(error);
+                }
+            })
+            .then((matchingFunctionInfo) => {
+                _openFileOnFunction(matchingFunctionInfo)
+                    .then(() => {
+                        result.resolve();
+                    }, (error) => {
+                        result.reject(error);
+                    });
+            })
+            .catch((error) => {
+                if (error === "NOT_FOUND") {
+                    result.reject();
+                } else {
+                    result.reject(error);
+                }
             });
 
         return result.promise();
     }
 
-    function _handleControllerJump(controllerName) {
-        const result = new $.Deferred();
+    function _openFileOnFunction(matchingFunctionInfo, functionRangeInfo) {
+        return new Promise((resolve, reject) => {
+            ui5Files.openFile(matchingFunctionInfo.document.file.fullPath)
+                .then(() => {
+                    _setCursorOnFunction(matchingFunctionInfo, functionRangeInfo);
+                    resolve();
+                })
+                .catch(() => {
+                    reject("ERROR");
+                });
+        });
+    }
 
-        ui5Files.getControllerFile(controllerName)
-            .then((fileInfo) => {
-                return ui5Files.openFile(fileInfo.file.fullPath);
-            })
-            .then(() => {
-                const newEditor = EditorManager.getActiveEditor();
-                newEditor.setCursorPos(0, 0, true);
-                result.resolve(true);
-            })
-            .catch(() => {
-                result.reject();
-            });
-
-        return result.promise();
+    function _setCursorOnFunction(matchingFunctionInfo) {
+        const newEditor = EditorManager.getActiveEditor();
+        const cursorEndPosition = matchingFunctionInfo.document.getLine(matchingFunctionInfo.lineStart).length;
+        newEditor.setCursorPos(matchingFunctionInfo.lineStart, cursorEndPosition, true);
     }
 
     exports.jumpProvider = new XmlViewJumpToDefProvider();
