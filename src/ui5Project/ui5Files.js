@@ -2,6 +2,8 @@ define((require, exports) => {
     "use strict";
 
     const ProjectManager = brackets.getModule("project/ProjectManager"),
+        CommandManager = brackets.getModule("command/CommandManager"),
+        Commands = brackets.getModule("command/Commands"),
         xmlExtract = require("src/code/xmlExtract"),
         strings = require("strings");
 
@@ -165,6 +167,20 @@ define((require, exports) => {
         });
     }
 
+    function openFile(path) {
+        return new Promise((resolve, reject) => {
+            CommandManager.execute(Commands.FILE_OPEN, {
+                    fullPath: path
+                })
+                .done((document) => {
+                    resolve(document);
+                })
+                .fail((error) => {
+                    reject(error);
+                });
+        });
+    }
+
     function _readFile(file) {
         return new Promise((resolve, reject) => {
             file.read((error, content) => {
@@ -258,5 +274,6 @@ define((require, exports) => {
     exports.getComponentId = getComponentId;
     exports.getResourceRootPaths = getResourceRootPaths;
     exports.findFile = findFile;
+    exports.openFile = openFile;
     exports.findXmlViewsControllers = findXmlViewsControllers;
 });
