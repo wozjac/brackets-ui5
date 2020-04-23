@@ -39,7 +39,9 @@ define((require, exports) => {
         headingsTags: /(<\/?h)(\d)(>)/gi,
         tagsAttributes: /<(\w+)(.|[\r\n])*?>/g,
         htmlTagsWoHeaders: /<[^>h\d]+>/ig,
-        htmlTags: /<[^>]+>/ig
+        htmlTags: /<[^>]+>/ig,
+        jsFilesRegex: /^(?!.*controller\.js).*\.js$/,
+        controllerFilesRegex: /\w+.controller.js/
     };
 
     const memberGroupFilter = {
