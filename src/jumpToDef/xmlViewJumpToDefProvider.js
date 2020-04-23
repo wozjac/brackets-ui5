@@ -2,8 +2,6 @@ define((require, exports) => {
 
     const JSUtils = brackets.getModule("language/JSUtils"),
         EditorManager = brackets.getModule("editor/EditorManager"),
-        Commands = brackets.getModule("command/Commands"),
-        CommandManager = brackets.getModule("command/CommandManager"),
         DocumentManager = brackets.getModule("document/DocumentManager"),
         codeEditor = require("src/editor/codeEditor"),
         i18nTool = require("src/code/i18nTool"),
@@ -96,7 +94,7 @@ define((require, exports) => {
 
     function _handleFunctionJump(functionName, controllerName) {
         const result = new $.Deferred();
-        let controllerFileInfo, rangeInfo;
+        let controllerFileInfo, rangeInfo, matchingFunctions;
 
         ui5Files.getControllerFile(controllerName)
             .then((fileInfo) => {
@@ -104,32 +102,28 @@ define((require, exports) => {
                 return JSUtils.findMatchingFunctions(functionName, [fileInfo.file]);
             })
             .then((resultArray) => {
-                if (resultArray && resultArray.length > 0) {
+                matchingFunctions = resultArray;
+                if (matchingFunctions && matchingFunctions.length > 0) {
                     rangeInfo = {
-                        document: resultArray[0].document,
+                        document: matchingFunctions[0].document,
                         name: functionName,
-                        lineStart: resultArray[0].lineStart,
-                        lineEnd: resultArray[0].lineEnd
+                        lineStart: matchingFunctions[0].lineStart,
+                        lineEnd: matchingFunctions[0].lineEnd
                     };
 
-                    CommandManager.execute(Commands.FILE_OPEN, {
-                            fullPath: controllerFileInfo.file.fullPath
-                        })
-                        .done(() => {
-                            const newEditor = EditorManager.getActiveEditor();
-                            const cursorEndPosition = resultArray[0].document.getLine(rangeInfo.lineStart).length;
-                            newEditor.setCursorPos(rangeInfo.lineStart, cursorEndPosition, true);
-                            result.resolve(true);
-                        })
-                        .catch(() => {
-                            result.reject();
-                        });
+                    return ui5Files.openFile(controllerFileInfo.file.fullPath);
                 } else {
-                    _handleControllerJump(controllerName);
+                    return _handleControllerJump(controllerName);
                 }
             })
-            .catch((error) => {
-                result.reject(error);
+            .then(() => {
+                const newEditor = EditorManager.getActiveEditor();
+                const cursorEndPosition = matchingFunctions[0].document.getLine(rangeInfo.lineStart).length;
+                newEditor.setCursorPos(rangeInfo.lineStart, cursorEndPosition, true);
+                result.resolve(true);
+            })
+            .catch(() => {
+                result.reject();
             });
 
         return result.promise();
@@ -140,17 +134,15 @@ define((require, exports) => {
 
         ui5Files.getControllerFile(controllerName)
             .then((fileInfo) => {
-                CommandManager.execute(Commands.FILE_OPEN, {
-                        fullPath: fileInfo.file.fullPath
-                    })
-                    .done(() => {
-                        const newEditor = EditorManager.getActiveEditor();
-                        newEditor.setCursorPos(0, 0, true);
-                        result.resolve(true);
-                    })
-                    .catch(() => {
-                        result.reject();
-                    });
+                return ui5Files.openFile(fileInfo.file.fullPath);
+            })
+            .then(() => {
+                const newEditor = EditorManager.getActiveEditor();
+                newEditor.setCursorPos(0, 0, true);
+                result.resolve(true);
+            })
+            .catch(() => {
+                result.reject();
             });
 
         return result.promise();
