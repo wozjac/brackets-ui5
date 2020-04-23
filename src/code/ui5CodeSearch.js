@@ -17,6 +17,8 @@ define((require, exports) => {
                 .then((matchedFunctions) => {
                     if (matchedFunctions && matchedFunctions.length === 1) {
                         resolve(matchedFunctions[0]);
+                    } else if (matchedFunctions.length > 1) {
+                        reject("MULTIPLE_FOUND");
                     } else {
                         reject("NOT_FOUND");
                     }
@@ -40,6 +42,8 @@ define((require, exports) => {
                 .then((matchedFunctions) => {
                     if (matchedFunctions && matchedFunctions.length === 1) {
                         resolve(matchedFunctions[0]);
+                    } else if (matchedFunctions.length > 1) {
+                        reject("MULTIPLE_FOUND");
                     } else {
                         reject("NOT_FOUND");
                     }

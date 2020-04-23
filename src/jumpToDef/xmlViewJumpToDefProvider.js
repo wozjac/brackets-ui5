@@ -5,6 +5,7 @@ define((require, exports) => {
         codeEditor = require("src/editor/codeEditor"),
         i18nTool = require("src/code/i18nTool"),
         xmlExtract = require("src/code/xmlExtract"),
+        strings = require("strings"),
         ui5CodeSearch = require("src/code/ui5CodeSearch"),
         constants = require("src/core/constants"),
         ui5Files = require("src/ui5Project/ui5Files");
@@ -40,7 +41,8 @@ define((require, exports) => {
                 //function?
                 const position = this.editor.getCursorPos();
                 const token = codeEditor.getToken(position, this.editor);
-                const functionName = xmlExtract.getFunctionNameFromXmlViewElement(token.string);
+                let functionName = xmlExtract.getFunctionNameFromXmlViewElement(token.string);
+                functionName = functionName.split(".").pop();
                 const controllerName = xmlExtract.getControllerName(this.editor.document.getText());
 
                 if (!functionName) {
@@ -103,10 +105,15 @@ define((require, exports) => {
 
             })
             .catch((error) => {
-                if (error === "NOT_FOUND") {
-                    return ui5CodeSearch.findFunctionInFiles(functionName, constants.regex.controllerFilesRegex);
-                } else {
-                    result.reject(error);
+                switch (error) {
+                    case "NOT_FOUND":
+                        return ui5CodeSearch.findFunctionInFiles(functionName, constants.regex.controllerFilesRegex);
+                    case "MULTIPLE_FOUND":
+                        console.info(`${strings.MULTIPLE_FUNCTIONS_FOUND} ${functionName}`);
+                        result.reject();
+                        break;
+                    default:
+                        result.reject(error);
                 }
             })
             .then((matchingFunctionInfo) => {
@@ -118,10 +125,15 @@ define((require, exports) => {
                     });
             })
             .catch((error) => {
-                if (error === "NOT_FOUND") {
-                    return ui5CodeSearch.findFunctionInFiles(functionName, constants.regex.jsFilesRegex);
-                } else {
-                    result.reject(error);
+                switch (error) {
+                    case "NOT_FOUND":
+                        return ui5CodeSearch.findFunctionInFiles(functionName, constants.regex.jsFilesRegex);
+                    case "MULTIPLE_FOUND":
+                        console.info(`${strings.MULTIPLE_FUNCTIONS_FOUND} ${functionName}`);
+                        result.reject();
+                        break;
+                    default:
+                        result.reject(error);
                 }
             })
             .then((matchingFunctionInfo) => {
@@ -133,10 +145,16 @@ define((require, exports) => {
                     });
             })
             .catch((error) => {
-                if (error === "NOT_FOUND") {
-                    result.reject();
-                } else {
-                    result.reject(error);
+                switch (error) {
+                    case "NOT_FOUND":
+                        result.reject();
+                        break;
+                    case "MULTIPLE_FOUND":
+                        console.info(`${strings.MULTIPLE_FUNCTIONS_FOUND} ${functionName}`);
+                        result.reject();
+                        break;
+                    default:
+                        result.reject(error);
                 }
             });
 
