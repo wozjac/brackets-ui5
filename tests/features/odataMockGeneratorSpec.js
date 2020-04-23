@@ -29,13 +29,13 @@ define((require, exports, module) => {
 
             const mockData = generator._getMockData();
             expect(mockData).not.toBeNull();
-            expect(mockData.Advertisements.length).toBe(1);
-            expect(mockData.Categories.length).toBe(1);
-            expect(mockData.PersonDetails.length).toBe(1);
-            expect(mockData.Persons.length).toBe(1);
-            expect(mockData.ProductDetails.length).toBe(1);
-            expect(mockData.Products.length).toBe(1);
-            expect(mockData.Suppliers.length).toBe(1);
+            expect(mockData.Advertisements.length).toBe(5);
+            expect(mockData.Categories.length).toBe(5);
+            expect(mockData.PersonDetails.length).toBe(5);
+            expect(mockData.Persons.length).toBe(5);
+            expect(mockData.ProductDetails.length).toBe(5);
+            expect(mockData.Products.length).toBe(5);
+            expect(mockData.Suppliers.length).toBe(5);
 
             expect(mockData.Persons[0].ID).not.toBeNull();
             expect(mockData.Persons[0].Name).not.toBeNull();
