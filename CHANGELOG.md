@@ -1,5 +1,13 @@
 # brackets-ui5 changelog
 
+## 1.4.15
+##### Added
+- more .js files searched when quick-jump action used
+- more .js files searched when quick-edit action used
+
+##### Fixed
+- fixed several bugs with quick actions
+
 ## 1.4.14
 ##### Fixed
 - correct handling of expand/collapse for the same names in the hierarchy in the API panel

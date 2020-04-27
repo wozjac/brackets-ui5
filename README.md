@@ -58,8 +58,12 @@ Javascript files:
 
 ##### Jump to definition [ctrl+j]
 XML views:
-- controller functions in attributes (complex syntax not supported yet)
+- controller functions in attributes 
 - i18n keys
+
+Preview of quick edit, docs and jump to actions:  
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=DqBN-7dZwIQ" target="_blank"><img src="http://img.youtube.com/vi/DqBN-7dZwIQ/0.jpg" 
+alt="Quick actions - video preview" width="240" height="180" border="10" /></a>
 
 ## Requirements
 - Brackets version >= 1.14
@@ -306,7 +310,7 @@ This feauture is related with Code Hints (resolving types) - please check "UI5 i
 
 ### Quick edit
 In XML views quick edit (ctrl+e) will open inline editor for:
-- controller function names in attributes (comples binding syntax not supported):
+- controller function names in attributes:
 For example pressing ctrl+e on *.handleChange*
 
 ![quickedit function](http://public_repo.vipserv.org/images/quick-edit-function.png)
@@ -314,6 +318,17 @@ For example pressing ctrl+e on *.handleChange*
 - i18n keys in i18n bindings (manifest.json is present and contains a valid i18n model entry, both *uri* and *bundleName* settings are supported). Pressing ctrl+e opens inline editor for the i18n entry; if it don't exist, it will be created and appended at the end of the file.
 
 ![i18n quick edit](http://public_repo.vipserv.org/images/i18n_quick_edit_short.gif)
+
+### Jump to definition
+In XML views quick edit (ctrl+j) will jump to the file with the definition of:
+- controller function
+- i18n entry in i18n bindings (manifest.json is present and contains a valid i18n model entry, both *uri* and *bundleName* settings are supported)
+
+Preview of quick edit, docs and jump to actions:  
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=DqBN-7dZwIQ" target="_blank"><img src="http://img.youtube.com/vi/DqBN-7dZwIQ/0.jpg" 
+alt="Quick actions - video preview" width="240" height="180" border="10" /></a>  
+
+All of the above actions will try to find matching function in your project .js files; *dist* and *node_modules* folders are skipped.
 
 ### Code hints
 In XML views:
@@ -332,11 +347,6 @@ A convenient feature is when you use *this.byId("controlId")* function (or any w
 
 Code hints also works in sap.ui.define and after selection inserts the object into array and function arguments.
 ![code hints](http://public_repo.vipserv.org/images/hints-define.gif)
-
-### Jump to definition
-In XML views quick edit (ctrl+j) will jump to the file with the definition of:
-- controller function
-- i18n entry in i18n bindings (manifest.json is present and contains a valid i18n model entry, both *uri* and *bundleName* settings are supported)
 
 ## UI5 identifier type recognition in Javascript code
 The recognition is relevant for quick docs and code hints in Javascript files, works for basic cases.
