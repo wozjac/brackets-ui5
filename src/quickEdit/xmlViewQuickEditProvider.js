@@ -2,9 +2,10 @@ define((require, exports) => {
     "use strict";
 
     const MultiRangeInlineEditor = brackets.getModule("editor/MultiRangeInlineEditor").MultiRangeInlineEditor,
-        JSUtils = brackets.getModule("language/JSUtils"),
         xmlExtract = require("src/code/xmlExtract"),
-        ui5Files = require("src/ui5Project/ui5Files");
+        ui5CodeSearch = require("src/code/ui5CodeSearch"),
+        strings = require("strings"),
+        constants = require("src/core/constants");
 
     function inlineEditProvider(hostEditor) {
         if (hostEditor.getModeForSelection() !== "xml") {
@@ -17,35 +18,72 @@ define((require, exports) => {
             return null;
         }
 
-        const functionName = _getFunctionName(hostEditor, selection.start);
+        let functionName = _getFunctionName(hostEditor, selection.start);
+        functionName = functionName.split(".").pop();
         const controllerName = _getControllerName(hostEditor);
 
-        if (!controllerName || !functionName) {
+        if (!functionName) {
             return null;
         }
 
+        return _handleQuickEdit(functionName, controllerName, hostEditor);
+    }
+
+    function _handleQuickEdit(functionName, controllerName, hostEditor) {
         const result = new $.Deferred();
 
-        ui5Files.getControllerFile(controllerName)
-            .then((fileInfo) => {
-                return JSUtils.findMatchingFunctions(functionName, [fileInfo.file]);
-            })
-            .then((resultArray) => {
-                if (resultArray && resultArray.length > 0) {
-                    const rangeInfo = {
-                        document: resultArray[0].document,
-                        name: functionName,
-                        lineStart: resultArray[0].lineStart,
-                        lineEnd: resultArray[0].lineEnd
-                    };
-
-                    const inlineEditor = new MultiRangeInlineEditor([rangeInfo]);
-                    inlineEditor.load(hostEditor);
-                    result.resolve(inlineEditor);
-                }
+        ui5CodeSearch.findFunctionInController(functionName, controllerName)
+            .then((matchingFunctionInfo) => {
+                const inlineEditor = new MultiRangeInlineEditor([matchingFunctionInfo]);
+                inlineEditor.load(hostEditor);
+                result.resolve(inlineEditor);
             })
             .catch((error) => {
-                result.reject(error);
+                switch (error) {
+                    case "NOT_FOUND":
+                        return ui5CodeSearch.findFunctionInFiles(functionName, constants.regex.controllerFilesRegex);
+                    case "MULTIPLE_FOUND":
+                        console.info(`${strings.MULTIPLE_FUNCTIONS_FOUND} ${functionName}`);
+                        result.reject();
+                        break;
+                    default:
+                        result.reject(error);
+                }
+            })
+            .then((matchingFunctionInfo) => {
+                const inlineEditor = new MultiRangeInlineEditor([matchingFunctionInfo]);
+                inlineEditor.load(hostEditor);
+                result.resolve(inlineEditor);
+            })
+            .catch((error) => {
+                switch (error) {
+                    case "NOT_FOUND":
+                        return ui5CodeSearch.findFunctionInFiles(functionName, constants.regex.jsFilesRegex);
+                    case "MULTIPLE_FOUND":
+                        console.info(`${strings.MULTIPLE_FUNCTIONS_FOUND} ${functionName}`);
+                        result.reject();
+                        break;
+                    default:
+                        result.reject(error);
+                }
+            })
+            .then((matchingFunctionInfo) => {
+                const inlineEditor = new MultiRangeInlineEditor([matchingFunctionInfo]);
+                inlineEditor.load(hostEditor);
+                result.resolve(inlineEditor);
+            })
+            .catch((error) => {
+                switch (error) {
+                    case "NOT_FOUND":
+                        result.reject();
+                        break;
+                    case "MULTIPLE_FOUND":
+                        console.info(`${strings.MULTIPLE_FUNCTIONS_FOUND} ${functionName}`);
+                        result.reject();
+                        break;
+                    default:
+                        result.reject(error);
+                }
             });
 
         return result.promise();
