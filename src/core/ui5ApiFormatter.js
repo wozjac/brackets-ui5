@@ -2,7 +2,8 @@ define((require, exports) => {
     "use strict";
 
     const codeEditor = require("src/editor/codeEditor"),
-        constants = require("src/core/constants");
+        constants = require("src/core/constants"),
+        ui5ApiService = require("src/core/ui5ApiService");
 
     function getFormattedObjectApi(ui5ObjectApi, cleanHtml = false, inheritedAsArray = false, flatStatic = false) {
         const api = {
@@ -45,7 +46,7 @@ define((require, exports) => {
 
                 if (method.static) {
                     if (flatStatic === true) {
-                        method.name = `${method.name}`;
+                        method.name = method.name;
                     } else {
                         method.name = `${ui5ObjectApi.name}.${method.name}`;
                     }
@@ -60,6 +61,18 @@ define((require, exports) => {
                 if (path.indexOf("module:") !== -1) {
                     path = path.replace("module:", "");
                     path = encodeURIComponent(path);
+                }
+
+                if (method.returnValue && method.returnValue.type) {
+                    const returnType = method.returnValue.type.replace("[]", "");
+                    const returnObject = ui5ApiService.getUi5Objects()[returnType];
+
+                    if (returnObject) {
+                        method.hasUi5ObjectReturnType = true;
+                        method.ui5ObjectReturnType = returnType;
+                    } else {
+                        method.hasUi5ObjectReturnType = false;
+                    }
                 }
 
                 method.apiDocUrl = `${ui5ObjectApi.apiDocUrl}/methods/${path}`;
@@ -154,6 +167,16 @@ define((require, exports) => {
                     || property.type === "undefined") {
 
                     property.type = "";
+                } else {
+                    const theType = property.type.replace("[]", "");
+                    const typeObject = ui5ApiService.getUi5Objects()[theType];
+
+                    if (typeObject) {
+                        property.hasUi5ObjectType = true;
+                        property.ui5ObjectType = theType;
+                    } else {
+                        property.hasUi5ObjectType = false;
+                    }
                 }
 
                 property.objectName = ui5ObjectApi.name;
@@ -182,6 +205,17 @@ define((require, exports) => {
 
             api.aggregations.forEach((aggregation) => {
                 aggregation.objectName = ui5ObjectApi.name;
+
+                const theType = aggregation.type.replace("[]", "");
+                const typeObject = ui5ApiService.getUi5Objects()[theType];
+
+                if (typeObject) {
+                    aggregation.hasUi5ObjectType = true;
+                    aggregation.ui5ObjectType = theType;
+                } else {
+                    aggregation.hasUi5ObjectType = false;
+                }
+
                 aggregation.description = codeEditor.formatJsDoc(aggregation.description, cleanHtml);
                 aggregation.apiDocUrl = `${ui5ObjectApi.apiDocUrl}/aggregations`;
             });

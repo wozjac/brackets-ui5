@@ -65,7 +65,15 @@
                     data-apiDocUrl="{{apiDocUrl}}"
                     data-name="{{name}}">
                     {{name}}</a>(<span class="brackets-ui5-docs-panel-element-list">{{#parameters}}<span>{{name}}{{#optional}}(opt){{/optional}}</span>{{/parameters}})
-                </span> <span class="brackets-ui5-docs-panel-return-type">{{returnValue.type}}</span>
+                </span>
+                {{#hasUi5ObjectReturnType}}
+                    <a href="#" class="brackets-ui5-docs-panel-return-type-link"
+                       data-object-name="{{ui5ObjectReturnType}}">{{returnValue.type}}
+                    </a>
+                {{/hasUi5ObjectReturnType}}
+                {{^hasUi5ObjectReturnType}}
+                    <span class="brackets-ui5-docs-panel-return-type">{{returnValue.type}}</span>
+                {{/hasUi5ObjectReturnType}}
                 <a href="#"
                     class="brackets-ui5-docs-panel-expand-link"
                     data-target-description="pod:{{objectName}}:{{name}}">[+]</a>
@@ -101,7 +109,15 @@
                     data-apiDocUrl="{{apiDocUrl}}"
                     data-name="{{name}}">
                     {{name}}
-                </a> [{{cardinality}}] <span class="brackets-ui5-docs-panel-return-type"> {{type}}</span>
+                </a> [{{cardinality}}]
+                {{#hasUi5ObjectType}}
+                <a href="#" class="brackets-ui5-docs-panel-return-type-link"
+                    data-object-name="{{ui5ObjectType}}">{{type}}
+                </a>
+                {{/hasUi5ObjectType}}
+                {{^hasUi5ObjectType}}
+                    <span class="brackets-ui5-docs-panel-return-type">{{type}}</span>
+                {{/hasUi5ObjectType}}
                 <a href="#"
                     class="brackets-ui5-docs-panel-expand-link"
                         data-target-description="pod:{{objectName}}:{{name}}">[+]</a>
@@ -158,7 +174,15 @@
                     data-apiDocUrl="{{apiDocUrl}}"
                     data-name="{{name}}">
                     {{name}}
-                </a><span class="brackets-ui5-docs-panel-return-type"> {{type}}</span>
+                </a>
+                {{#hasUi5ObjectType}}
+                <a href="#" class="brackets-ui5-docs-panel-return-type-link"
+                    data-object-name="{{ui5ObjectType}}">{{type}}
+                </a>
+                {{/hasUi5ObjectType}}
+                {{^hasUi5ObjectType}}
+                    <span class="brackets-ui5-docs-panel-return-type">{{type}}</span>
+                {{/hasUi5ObjectType}}
                 <a href="#"
                     class="brackets-ui5-docs-panel-expand-link"
                     data-target-description="pod:{{objectName}}:{{name}}">[+]

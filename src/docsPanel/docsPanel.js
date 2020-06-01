@@ -245,6 +245,14 @@ define((require, exports, module) => {
             this._elements.apiDocsElement.append(`<p style="margin-left: 5px">${strings.LOADING}</p>`);
 
             const objects = [];
+            const apiDocs = this._getDesignApi(ui5ObjectPath);
+
+            if (!apiDocs) {
+                this._elements.apiDocsElement.empty();
+                this._elements.apiDocsElement.append(`<p style="margin-left: 5px">${strings.DESIGN_API_NOT_FOUND}</p>`);
+                return;
+            }
+
             objects.push(this._getDesignApi(ui5ObjectPath));
 
             const html = Mustache.render(objectApiTemplate, {
@@ -264,6 +272,10 @@ define((require, exports, module) => {
 
         _getDesignApi(ui5ObjectPath) {
             let designApi = ui5ApiService.getUi5ObjectDesignApi(ui5ObjectPath);
+
+            if (!designApi) {
+                return;
+            }
 
             if (this._memberSearchString || this._memberGroupFilter) {
                 designApi = ui5ApiFormatter.filterApiMembers(designApi, this._memberSearchString, this._memberGroupFilter);
@@ -304,6 +316,10 @@ define((require, exports, module) => {
 
             this._elements.apiDocsElement.on("click", ".brackets-ui5-docs-panel-expand-link", (event) => {
                 this._handleExpandCollapse($(event.target));
+            });
+
+            this._elements.apiDocsElement.on("click", ".brackets-ui5-docs-panel-return-type-link", (event) => {
+                this._displayObjectApi($(event.target).attr("data-object-name"));
             });
 
             const extendsLinkElement = this._elements.apiDocsElement.find("#brackets-ui5-docs-panel-extends-link");
