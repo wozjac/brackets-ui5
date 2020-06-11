@@ -27,6 +27,18 @@ define((require, exports, module) => {
         xmlViewQuickEditProvider = require("src/quickEdit/xmlViewQuickEditProvider"),
         xmlViewJumpToDefProvider = require("src/jumpToDef/xmlViewJumpToDefProvider");
 
+    function filesLoaded() {
+        return new Promise((resolve, reject) => {
+            ProjectManager.getAllFiles()
+                .done(() => {
+                    resolve();
+                })
+                .fail(() => {
+                    reject();
+                });
+        });
+    }
+
     AppInit.appReady(() => {
         preferences.initPreferences();
         commandHandler.registerCommands();
@@ -41,13 +53,22 @@ define((require, exports, module) => {
         CodeHintManager.registerHintProvider(ui5HintsProvider.getUi5CodeHintsProvider(), ["javascript"], 999);
 
         //wait for all files before initialization
-        ProjectManager.getAllFiles().then(() => {
-            ui5ApiService.loadUi5Objects().then(() => {
-                ui5ApiService.loadUi5LibrariesDesignApi();
+        filesLoaded()
+            .then(() => {
+                return ui5ApiService.loadUi5Objects();
+            })
+            .then(() => {
+                return ui5ApiService.loadUi5LibrariesDesignApi();
+            })
+            .then(() => {
+                return ui5HintsProvider.initTernServer();
+            })
+            .catch((error) => {
+                console.error(`[wozjac.ui5] ${error}`);
             });
-            preferences.checkApiVersion();
-            ui5SchemaService.initSchemas();
-        });
+
+        preferences.checkApiVersion();
+        ui5SchemaService.initSchemas();
     });
 
     ExtensionUtils.loadStyleSheet(module, "assets/style.css");

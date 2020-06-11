@@ -3,16 +3,19 @@ define((require, exports) => {
 
     const CommandManager = brackets.getModule("command/CommandManager"),
         Dialogs = brackets.getModule("widgets/Dialogs"),
+        KeyBindingManager = brackets.getModule("command/KeyBindingManager"),
         DefaultDialogs = brackets.getModule("widgets/DefaultDialogs"),
         snippets = require("src/snippets/snippets"),
         docsPanel = require("src/docsPanel/docsPanel"),
         ODataGenerator = require("src/mockGenerator/OdataMockGenerator"),
         constants = require("src/core/constants"),
+        ui5CodeAnalyze = require("src/code/ui5CodeAnalyze"),
+        ui5ApiFinder = require("src/core/ui5ApiFinder"),
         strings = require("strings");
 
     function registerCommands() {
-        CommandManager.register(strings.UI5_MENU_API_REFERENCE, constants.commands.UI5_API_REFERENCE_ID, this.toggleApiReferencePanel);
-        CommandManager.register(strings.UI5_MENU_ODATA_GEN, constants.commands.GENERATE_ODATA_MOCKS_ID, this.generateODataMockData);
+        CommandManager.register(strings.UI5_MENU_API_REFERENCE, constants.commands.UI5_API_REFERENCE_ID, toggleApiReferencePanel);
+        CommandManager.register(strings.UI5_MENU_ODATA_GEN, constants.commands.GENERATE_ODATA_MOCKS_ID, generateODataMockData);
 
         CommandManager.register(`${strings.INSERT}: ${snippets.getSnippetTitle(1)}`, constants.commands.INSERT_SNIPPET1_ID, snippets.insertSnippet1);
         CommandManager.register(`${strings.INSERT}: ${snippets.getSnippetTitle(2)}`, constants.commands.INSERT_SNIPPET2_ID, snippets.insertSnippet2);
@@ -24,6 +27,9 @@ define((require, exports) => {
         CommandManager.register(`${strings.INSERT}: ${snippets.getSnippetTitle(8)}`, constants.commands.INSERT_SNIPPET8_ID, snippets.insertSnippet8);
 
         CommandManager.register(strings.UI5_MENU_OPEN_TEMPL_DIR, constants.commands.OPEN_SNIPPETS_FOLDER_ID, snippets.openSnippetsFolder);
+
+        CommandManager.register(strings.OPEN_OBJECT_IN_PANEL, constants.commands.OPEN_OBJECT_IN_PANEL, openCurrentCursorObjectInApiPanel);
+        KeyBindingManager.addBinding(constants.commands.OPEN_OBJECT_IN_PANEL, "Ctrl-3");
     }
 
     function generateODataMockData() {
@@ -44,6 +50,22 @@ define((require, exports) => {
         } else {
             docsPanelObject.showPanel();
         }
+    }
+
+    function openCurrentCursorObjectInApiPanel() {
+        ui5CodeAnalyze.getUi5Type()
+            .then((typeDefinition) => {
+                if (typeDefinition && typeDefinition.name) {
+                    const ui5Object = ui5ApiFinder.findUi5ObjectByName(typeDefinition.name);
+
+                    if (ui5Object) {
+                        docsPanel.get().openPanelWithUi5Object(ui5Object.name);
+                    }
+                }
+            })
+            .catch((error) => {
+                console.error(`[wozjac.ui5] ${error}`);
+            });
     }
 
     exports.toggleApiReferencePanel = toggleApiReferencePanel;

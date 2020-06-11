@@ -92,6 +92,14 @@ define((require, exports, module) => {
             return this._visible;
         }
 
+        openPanelWithUi5Object(ui5Object) {
+            if (!this.isVisible()) {
+                this.showPanel();
+            }
+
+            this._displayObjectApi(ui5Object);
+        }
+
         _handleSearchInput() {
             clearTimeout(this._searchTimeout);
             const input = this._elements.searchInputElement.val();

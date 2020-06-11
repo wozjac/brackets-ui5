@@ -70,7 +70,11 @@ a.brackets-ui5-docs-expand {
 }
 
 .brackets-ui5-docs-panel-return-type {
-    font-style: italic
+    font-style: italic;
+}
+
+.brackets-ui5-docs-panel-return-type-link {
+    font-style: italic;
 }
 
 .brackets-ui5-docs-panel-api-description {

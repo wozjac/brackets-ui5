@@ -53,6 +53,14 @@ define((require, exports) => {
         }
     }
 
+    function isApiElementEmpty(apiElement) {
+        if (!apiElement || jQuery.isEmptyObject(apiElement) || (Array.isArray(apiElement) && apiElement.length === 0)) {
+            return true;
+        }
+
+        return false;
+    }
+
     function _forEachObject(obj, fn, path) {
         for (const key in obj) {
             const deepPath = path ? `${path}.${key}` : key;
@@ -74,6 +82,7 @@ define((require, exports) => {
         return type === "function" || type === "object" && !!obj;
     }
 
+    exports.isApiElementEmpty = isApiElementEmpty;
     exports.extractDefineObjects = extractDefineObjects;
     exports.isFullUi5Path = isFullUi5Path;
     exports.getUi5ObjectFromDefineStatement = getUi5ObjectFromDefineStatement;

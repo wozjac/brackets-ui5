@@ -102,7 +102,35 @@ define((require, exports) => {
         };
     }
 
+    function createHintCompletionEntry(hint) {
+        const entryElement = $("<span>").addClass("brackets-js-hints");
+        entryElement.addClass("brackets-js-hints-with-type-details");
+        $("<span></span>").text(hint.value).appendTo(entryElement).addClass("brackets-ui5-hint-name");
+
+        if (hint.url) {
+            const documentationLink = $("<a></a>").attr("href", hint.url);
+            documentationLink.addClass("jshint-link brackets-ui5-hint-doc-link");
+            documentationLink.appendTo(entryElement);
+
+            documentationLink.click((event) => {
+                event.stopImmediatePropagation();
+                event.stopPropagation();
+            });
+        }
+
+        if (hint.type) {
+            $("<span></span>").text(hint.type).appendTo(entryElement).addClass("jshint-jsdoc brackets-ui5-hint-type");
+        }
+
+        if (hint.doc) {
+            $("<span></span>").text(hint.doc).appendTo(entryElement).addClass("jshint-jsdoc");
+        }
+
+        return entryElement;
+    }
+
     exports.buildXmlTagHintListEntry = buildXmlTagHintListEntry;
     exports.createLibraryObjectHintEntry = createLibraryObjectHintEntry;
     exports.createObjectMembersHintEntry = createObjectMembersHintEntry;
+    exports.createHintCompletionEntry = createHintCompletionEntry;
 });

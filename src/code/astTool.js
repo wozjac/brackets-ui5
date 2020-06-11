@@ -8,7 +8,7 @@ define((require, exports, module) => {
         ExtensionUtils = brackets.getModule("utils/ExtensionUtils"),
         constants = require("src/core/constants"),
         flatted = require("src/3rdparty/flatted"),
-        variableScopeDomain = new NodeDomain("BracketsUI5", ExtensionUtils.getModulePath(module, "../../node/scopeDomain"));
+        variableScopeDomain = new NodeDomain("BracketsUI5VarScope", ExtensionUtils.getModulePath(module, "../../node/scopeDomain"));
 
     function parseWithScopes(sourceCode, options) {
         return new Promise((resolve, reject) => {

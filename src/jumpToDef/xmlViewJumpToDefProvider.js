@@ -81,7 +81,7 @@ define((require, exports) => {
                     newEditor.setCursorPos(lines, 0);
                 }
 
-                result.resolve(true);
+                result.resolve();
             })
             .catch((error) => {
                 console.log(error);
@@ -113,7 +113,7 @@ define((require, exports) => {
                         result.reject();
                         break;
                     default:
-                        result.reject(error);
+                        result.reject();
                 }
             })
             .then((matchingFunctionInfo) => {

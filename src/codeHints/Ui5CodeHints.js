@@ -4,14 +4,9 @@ define((require, exports, module) => {
     const HintUtils = brackets.getModule("JSUtils/HintUtils"),
         Session = brackets.getModule("JSUtils/Session"),
         CodeHintManager = brackets.getModule("editor/CodeHintManager"),
-        ScopeManager = brackets.getModule("JSUtils/ScopeManager"),
-        EditorManager = brackets.getModule("editor/EditorManager"),
-        ui5ApiService = require("src/core/ui5ApiService"),
         strings = require("strings"),
-        hintsSorter = require("src/codeHints/hintsSorter"),
         hintsRenderer = require("src/codeHints/hintsRenderer"),
-        ui5ApiFormatter = require("src/core/ui5ApiFormatter"),
-        Ui5CodeAnalyzer = require("src/code/Ui5CodeAnalyzer"),
+        ui5CodeAnalyze = require("src/code/ui5CodeAnalyze"),
         ui5ApiFinder = require("src/core/ui5ApiFinder"),
         astTool = require("src/code/astTool"),
         codeEditor = require("src/editor/codeEditor"),
@@ -19,71 +14,30 @@ define((require, exports, module) => {
         prefs = require("src/main/preferences"),
         constants = require("src/core/constants");
 
-    Session.prototype._getContextToken = function (cursor, depth) {
-        const token = this.getToken(cursor);
-
-        if (depth === undefined) {
-            depth = 0;
-        }
-
-        if (token.string === ")") {
-            this._getPreviousToken(cursor);
-            return this._getContextToken(cursor, ++depth);
-        } else if (token.string === "(") {
-            this._getPreviousToken(cursor);
-            return this._getContextToken(cursor, --depth);
-        } else
-        if (depth > 0 || token.string === ".") {
-            this._getPreviousToken(cursor);
-            return this._getContextToken(cursor, depth);
-        } else {
-            return token;
-        }
-    };
-
     let session;
 
     class Ui5CodeHints {
-        static initializeSession(editor, previousEditor) {
-            if (editor) {
-                session = new Session(editor);
-                ScopeManager.handleEditorChange(session, editor.document,
-                    previousEditor ? previousEditor.document : null);
-            }
-        }
-
-        static handleActiveEditorChange(event, currentEditor, previousEditor) {
-            Ui5CodeHints.initializeSession(currentEditor, previousEditor);
-        }
-
         constructor() {
-            this.cachedQuery = null;
-            this.cachedUi5ObjectApi = null;
-            this.cachedUi5Object = null;
-            this.objectIdentifierToken = null;
-            this.objectIdentifier = null;
-            this.inDefineArrayHint = false;
-            this.defineStatementPositions = null;
+            this._queryToken = null;
+            this._editor = null;
+            this._inDefineArrayHint = false;
+            this._defineStatementPositions = null;
         }
 
         hasHints(editor, implicitChar) {
             this._reset();
-            this.editor = editor;
-
-            if (!session) {
-                Ui5CodeHints.initializeSession(editor);
-                EditorManager.on(HintUtils.eventName("activeEditorChange"), Ui5CodeHints.handleActiveEditorChange);
-            }
+            this._editor = editor;
+            session = new Session(editor);
 
             const cursorPosition = session.getCursor();
-            this.queryToken = session.getToken(cursorPosition);
+            this._queryToken = session.getToken(cursorPosition);
 
             if (this._cursorInsideDefineArray(editor, cursorPosition)) {
-                if (this.queryToken.string.trim() !== ""
-                    && this.queryToken.string !== "["
-                    && this.queryToken.string !== ",") {
+                if (this._queryToken.string.trim() !== ""
+                    && this._queryToken.string !== "["
+                    && this._queryToken.string !== ",") {
 
-                    this.inDefineArrayHint = true;
+                    this._inDefineArrayHint = true;
                     return true;
                 } else {
                     return false;
@@ -94,35 +48,7 @@ define((require, exports, module) => {
                 return false;
             }
 
-            if (this.queryToken && HintUtils.hintable(this.queryToken)) {
-                if (this.queryToken.string === ".") {
-                    this.objectIdentifierToken = session._getPreviousToken(cursorPosition);
-                    this.objectIdentifier = this.objectIdentifierToken.string.trim();
-                } else if (this.queryToken.string.endsWith(".")) {
-                    this.objectIdentifierToken = this.queryToken;
-                    this.objectIdentifier = this.queryToken.string.trim().slice(0, -1);
-                } else {
-                    const dotCursor = session.findPreviousDot();
-
-                    if (dotCursor) {
-                        const previous = session._getPreviousToken(dotCursor);
-
-                        if (previous && previous.string === ")") {
-                            this.objectIdentifierToken = previous;
-                            this.objectIdentifier = this.objectIdentifierToken.string.trim();
-                        } else {
-                            this.objectIdentifierToken = session._getContextToken(dotCursor);
-                            this.objectIdentifier = this.objectIdentifierToken.string;
-                        }
-                    }
-                }
-
-                if (this.objectIdentifier) {
-                    return true;
-                }
-            }
-
-            return false;
+            return true;
         }
 
         getHints() {
@@ -130,80 +56,57 @@ define((require, exports, module) => {
                 return null;
             }
 
-            const defrerred = $.Deferred(); //eslint-disable-line
+            const deferred = $.Deferred(); //eslint-disable-line
 
-            if (this.inDefineArrayHint) {
-                this.queryToken.string = this.queryToken.string
+            if (this._inDefineArrayHint) {
+                this._queryToken.string = this._queryToken.string
                     .replace(/['"]/g, "")
                     .replace(/\//g, ".")
                     .replace(/[",[\]()]/g, "")
                     .trim();
 
                 let ui5Objects = ui5ApiFinder.findUi5ApiObjects({
-                    name: `^${this.queryToken.string}.*`
+                    name: `^${this._queryToken.string}.*`
                 });
 
                 if (ui5Objects && ui5Objects.length > 0) {
                     ui5Objects = ui5Objects.slice(0, 30);
                     const hintsObject = this._resolveWithDefineObjects(ui5Objects);
-                    defrerred.resolveWith(null, [hintsObject]);
+                    deferred.resolveWith(null, [hintsObject]);
                 } else {
-                    defrerred.reject();
+                    deferred.reject();
                 }
 
-                return defrerred;
+                return deferred;
             }
 
-            const position = {
-                line: session.getCursor().line,
-                ch: this.objectIdentifierToken.start,
-                chEnd: this.objectIdentifierToken.end
-            };
+            ui5CodeAnalyze.getUi5Hints(this._editor)
+                .then((hints) => {
+                    if (hints) {
+                        const result = hints.map((element) => {
+                            return hintsRenderer.createHintCompletionEntry(element);
+                        });
 
-            const codeAnalyzer = new Ui5CodeAnalyzer(this.editor.document.getText());
+                        deferred.resolveWith(null, [{
+                            hints: result,
+                            match: null,
+                            selectInitial: true,
+                            handleWideResults: false
+                        }]);
 
-            codeAnalyzer.resolveUi5Token(this.objectIdentifier, position, true).then((results) => {
-                if (results.length === 0) {
-                    defrerred.reject();
+                        return true;
+                    } else {
+                        deferred.reject();
+                        return;
+                    }
+                })
+                .catch((error) => {
+                    console.error(`[wozjac.ui5] ${error}`);
+                    deferred.reject();
                     return;
-                }
+                });
 
-                let hintsObject;
-                this.proposedUi5Object = results[0];
-
-                if (!this.proposedUi5Object) {
-                    defrerred.reject();
-                    return;
-                }
-
-                if (this.proposedUi5Object === this.cachedUi5Object
-                    && this.queryToken.string === this.cachedQuery) {
-
-                    //FIXME: restore event handlers for cached events
-                    //return this._resolveWithCachedHints();
-                    this.cachedUi5Object = this.proposedUi5Object;
-                    this.cachedQuery = this.queryToken.string;
-                    hintsObject = this._resolveWithCachedApiObject();
-                } else if (this.proposedUi5Object === this.cachedUi5Object
-                    && this.queryToken.string !== this.cachedQuery) {
-
-                    hintsObject = this._resolveWithCachedApiObject();
-                } else {
-                    hintsObject = this._resolveWithApiObjectSearch();
-                }
-
-                this.cachedUi5Object = this.proposedUi5Object;
-                this.cachedQuery = this.queryToken.string;
-
-                defrerred.resolveWith(null, [hintsObject]);
-                return;
-            }, (error) => {
-                console.log(`[wozjac.ui5] ${error}`);
-                defrerred.reject();
-                return;
-            });
-
-            return defrerred;
+            return deferred;
         }
 
         insertHint(hintObject) {
@@ -212,7 +115,7 @@ define((require, exports, module) => {
 
                 start = {
                     line: cursor.line,
-                    ch: cursor.ch - this.queryToken.string.length
+                    ch: cursor.ch - this._queryToken.string.length
                 },
 
                 end = {
@@ -238,13 +141,13 @@ define((require, exports, module) => {
                 textToInsert += ")";
             }
 
-            if (this.queryToken.string === ".") {
+            if (this._queryToken.string === ".") {
                 start.ch++;
             }
 
-            if (this.inDefineArrayHint) {
-                if (this.queryToken.string.startsWith("'")
-                    || this.queryToken.string.startsWith("\"")) {
+            if (this._inDefineArrayHint) {
+                if (this._queryToken.string.startsWith("'")
+                    || this._queryToken.string.startsWith("\"")) {
 
                     start.ch += 2;
                 }
@@ -254,52 +157,7 @@ define((require, exports, module) => {
                 this._insertObjectNameInDefineFunction(textToInsert);
             }
 
-            this.editor.document.replaceRange(textToInsert, start, end);
-        }
-
-        _resolveWithCachedHints() {
-            return {
-                hints: this.cachedHints,
-                match: null,
-                selectInitial: true,
-                handleWideResults: false
-            };
-        }
-
-        _resolveWithCachedApiObject() {
-            const formattedApi = ui5ApiFormatter.getFormattedObjectApi(this.cachedUi5ObjectApi, false, false, true);
-            const result = this._findObjectMembers(this.queryToken.string, formattedApi);
-
-            this.cachedHints = result;
-
-            return {
-                hints: result,
-                match: null,
-                selectInitial: true,
-                handleWideResults: false
-            };
-        }
-
-        _resolveWithApiObjectSearch() {
-            const api = ui5ApiService.getUi5ObjectDesignApi(this.proposedUi5Object.name);
-
-            //TODO: add library objects in this object namespace if valid
-            //const ui5Objects = ui5ApiFinder.findUi5ApiObjects({
-            //  name: this.proposedUi5Object.name + "."
-            //});
-
-            const formattedApi = ui5ApiFormatter.getFormattedObjectApi(api, false, false, true);
-            const result = this._findObjectMembers(this.queryToken.string, formattedApi);
-
-            this.cachedHints = result;
-            this.cachedUi5ObjectApi = api;
-
-            return {
-                hints: result,
-                match: null,
-                selectInitial: true,
-                handleWideResults: false
-            };
+            this._editor.document.replaceRange(textToInsert, start, end);
         }
 
         _resolveWithDefineObjects(defineObjects) {
@@ -311,93 +169,6 @@ define((require, exports, module) => {
                 selectInitial: true,
                 handleWideResults: false
             };
-        }
-
-        _findObjectMembers(query, apiObject) {
-            if (query === ".") {
-                return this._searchMembers(apiObject, (element) => {
-                    return element.visibility === "public";
-                });
-            } else {
-                return this._searchMembers(apiObject, (element) => {
-                    return element.visibility === "public"
-                        && element.name.toLowerCase().startsWith(query.toLowerCase());
-                });
-            }
-        }
-
-        _searchMembers(apiObject, filterCallback) {
-            let properties = [],
-                methods = [];
-
-            if (apiObject.properties) {
-                properties = this._prepareMembers(apiObject.properties, apiObject, filterCallback, strings.PROPERTY);
-            }
-
-            if (apiObject.methods) {
-                methods = this._prepareMembers(apiObject.methods, apiObject, filterCallback, strings.METHOD);
-            }
-
-            properties.push(...methods);
-
-            return properties.sort(hintsSorter.sortWrappedHintList);
-        }
-
-        _prepareMembers(members, apiObject, filterCallback, type) {
-            let parent, parentMembers;
-
-            members = members.filter(filterCallback);
-
-            if (apiObject.inheritedApi) {
-                for (const objectKey in apiObject.inheritedApi) {
-                    parent = apiObject.inheritedApi[objectKey];
-
-                    switch (type) {
-                        case strings.PROPERTY:
-                            if (parent.properties) {
-                                parentMembers = parent.properties;
-                            }
-
-                            break;
-
-                        case strings.METHOD:
-                            if (parent.methods) {
-                                parentMembers = parent.methods;
-                            }
-
-                            break;
-                    }
-
-                    if (parentMembers) {
-                        parentMembers = parentMembers.map((element) => {
-                            element.borrowedFrom = objectKey;
-                            return element;
-                        });
-
-                        parentMembers = parentMembers.filter(filterCallback);
-
-                        let originMember, parentMember;
-
-                        for (const i in parentMembers) {
-                            parentMember = parentMembers[i];
-
-                            originMember = members.find((element) => {
-                                return element.name === parentMember.name;
-                            });
-
-                            if (originMember === undefined) {
-                                members.push(parentMember);
-                            }
-                        }
-
-                        parentMembers = null;
-                    }
-                }
-            }
-
-            members = members.map(hintsRenderer.createObjectMembersHintEntry(type));
-
-            return members;
         }
 
         _cursorInsideDefineArray(editor, cursorPosition) {
@@ -413,14 +184,6 @@ define((require, exports, module) => {
             }
 
             return false;
-        }
-
-        _reset() {
-            this.objectIdentifierToken = null;
-            this.objectIdentifier = null;
-            this.proposedUi5Object = null;
-            this.inDefineArrayHint = false;
-            this.defineStatementPositions = null;
         }
 
         _insertObjectNameInDefineFunction(defineArrayObjectName) {
@@ -498,7 +261,7 @@ define((require, exports, module) => {
                         }
 
                         if (insertObjectPosition) {
-                            this.editor.document.replaceRange(textToInsert, insertObjectPosition);
+                            this._editor.document.replaceRange(textToInsert, insertObjectPosition);
                             return;
                         }
 
@@ -513,9 +276,14 @@ define((require, exports, module) => {
                         ch: location.end.column
                     };
 
-                    this.editor.document.replaceRange(parts[parts.length - 1], insertObjectPosition);
+                    this._editor.document.replaceRange(parts[parts.length - 1], insertObjectPosition);
                 }
             }
+        }
+
+        _reset() {
+            this._inDefineArrayHint = false;
+            this._defineStatementPositions = null;
         }
     }
 

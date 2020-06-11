@@ -28,7 +28,8 @@ define((require, exports) => {
         INSERT_SNIPPET8_ID: "wozjac.ui5.ui5Menu.insertSnippet8",
         OPEN_SNIPPETS_FOLDER_ID: "wozjac.ui5.ui5Menu.openSnippetsFolder",
         UI5_API_REFERENCE_ID: "wozjac.ui5.ui5Menu.apiReference",
-        GENERATE_ODATA_MOCKS_ID: "wozjac.ui5.ui5Menu.generateOdataMocks"
+        GENERATE_ODATA_MOCKS_ID: "wozjac.ui5.ui5Menu.generateOdataMocks",
+        OPEN_OBJECT_IN_PANEL: "wozjac.ui5.openObjectInPanel"
     };
 
     const regex = {

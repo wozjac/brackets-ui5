@@ -5,25 +5,18 @@ define((require) => {
         ui5ApiSpec = require("tests/core/ui5ApiSpec"),
         ui5ApiFormatterSpec = require("tests/core/ui5ApiFormatterSpec"),
         codeEditorSpec = require("tests/core/codeEditorSpec"),
-
-        ui5CodeAnalyzerSpec = require("tests/code/ui5CodeAnalyzerSpec"),
         xmlExtractSpec = require("tests/code/xmlExtractSpec"),
-
         xmlViewHintsSpec = require("tests/providers/xmlViewHintsSpec"),
-        ui5CodeHintsSpec = require("tests/providers/ui5CodeHintsSpec"),
         ui5CodeHintsInDefineSpec = require("tests/providers/ui5CodeHintsInDefineSpec"),
-        quickDocsSpec = require("tests/providers/quickDocsSpec"),
         xmlViewQuickEditSpec = require("tests/providers/xmlViewQuickEditSpec"),
-
         odataMockGeneratorSpec = require("tests/features/odataMockGeneratorSpec"),
         docsPanelSpec = require("tests/features/docsPanelSpec"),
         snippetsSpec = require("tests/features/snippetsSpec"),
-
         i18nReaderSpec = require("tests/features/i18nReaderSpec"),
         ui5FilesSpec = require("tests/features/ui5FilesSpec"),
-
         jsToolSpec = require("tests/code/jsToolSpec"),
-        astToolSpec = require("tests/code/astToolSpec");
+        astToolSpec = require("tests/code/astToolSpec"),
+        ui5TernSpec = require("tests/code/ui5TernSpec");
 
     describe("[wozjac.ui5] Brackets UI5: core", () => {
         ui5ApiSpec.getTests();
@@ -33,9 +26,7 @@ define((require) => {
     });
 
     describe("[wozjac.ui5] Brackets UI5: providers", () => {
-        ui5CodeHintsSpec.getTests();
         xmlViewHintsSpec.getTests();
-        quickDocsSpec.getTests();
         xmlViewQuickEditSpec.getTests();
     });
 
@@ -54,10 +45,13 @@ define((require) => {
         jsToolSpec.getTests();
         xmlExtractSpec.getTests();
         astToolSpec.getTests();
-        ui5CodeAnalyzerSpec.getTests();
     });
 
     describe("[wozjac.ui5] Brackets UI5: sap.ui.define hints", () => {
         ui5CodeHintsInDefineSpec.getTests();
+    });
+
+    describe("[wozjac.ui5] Brackets UI5: Tern UI5 hints", () => {
+        ui5TernSpec.getTests();
     });
 });

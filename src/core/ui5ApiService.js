@@ -3,13 +3,19 @@ define((require, exports) => {
 
     const constants = require("src/core/constants"),
         strings = require("strings"),
+        ui5TernDefinitions = require("src/code/ui5TernDefinitions"),
         prefs = require("src/main/preferences");
 
     const ui5ObjectsDesignApiBufferLength = 30;
-
     const ui5Objects = {};
     const ui5LibrariesDesignApi = {};
     const ui5ObjectsDesignApiBuffer = [];
+
+    const sapLibraryDefs = {
+        "!name": "sap"
+    };
+
+    const requireJsOverrides = {};
 
     function getApiJson(url) {
         return new Promise((resolve, reject) => {
@@ -100,6 +106,10 @@ define((require, exports) => {
                 }
             });
 
+            if (!objectApi) {
+                return;
+            }
+
             objectApi.apiDocUrl = ui5Object.apiDocUrl;
         }
 
@@ -123,42 +133,57 @@ define((require, exports) => {
     }
 
     function loadUi5Objects() {
-        return new Promise((resolve, reject) => {
-            if (!jQuery.isEmptyObject(ui5Objects)) {
-                resolve(true);
-            } else {
-                getApiIndex().then((apiIndexJson) => {
+        if (!jQuery.isEmptyObject(ui5Objects)) {
+            return Promise.resolve(true);
+        } else {
+            return getApiIndex()
+                .then((apiIndexJson) => {
                     prepareUi5Objects(apiIndexJson);
                     exports.ui5Objects = ui5Objects; //unit testing only
-
                     console.log(`${strings.API_LOADED_INFO} ${prefs.get(constants.prefs.API_URL)}`);
-                    resolve(true);
+                    Promise.resolve(true);
                 }, (error) => {
-                    reject(error);
+                    Promise.reject(error);
                 });
-            }
-        });
+        }
     }
 
     function loadUi5LibrariesDesignApi() {
-        return new Promise((resolve, reject) => {
-            for (const libraryKey in ui5LibrariesDesignApi) {
-                getLibraryApi(libraryKey).then((libraryApiJson) => {
-                    ui5LibrariesDesignApi[libraryKey] = libraryApiJson;
-                }, (error) => {
-                    reject(error);
-                });
+        const promises = [];
 
-                console.log(`${strings.LIBRARY_LOADED_INFO}: ${libraryKey}`);
-                resolve(true);
-            }
-        });
+        for (const libraryKey in ui5LibrariesDesignApi) {
+            promises.push(new Promise((resolve) => {
+                getLibraryApi(libraryKey)
+                    .then((libraryApiJson) => {
+                        if (libraryApiJson.symbols && Array.isArray(libraryApiJson.symbols)) {
+                            libraryApiJson.symbols.forEach((element) => {
+                                element.name = getNormalizedName(element.name);
+                                element.originalName = element.name;
+                                element.apiDocUrl = getUi5ObjectApiDocUrl(element.name);
+                            });
+                        }
+
+                        ui5LibrariesDesignApi[libraryKey] = libraryApiJson;
+                        prepareDefinitions(libraryKey);
+                        console.log(`${strings.LIBRARY_LOADED_INFO}: ${libraryKey}`);
+                        resolve();
+                    })
+                    .catch((error) => {
+                        //continue, no rejections
+                        console.error(`[wozjac.ui5] ${error}`);
+                        return;
+                    });
+            }));
+        }
+
+        return Promise.all(promises);
     }
 
     function prepareUi5Objects(apiEntry) {
         if (apiEntry.symbols) {
             for (const object of apiEntry.symbols) {
-                ui5Objects[object.name] = getEntry(object);
+                object.normalizedObjectName = getNormalizedName(object.name);
+                ui5Objects[object.normalizedObjectName] = getEntry(object);
 
                 //extract library
                 ui5LibrariesDesignApi[object.lib] = {};
@@ -183,7 +208,8 @@ define((require, exports) => {
 
     function getEntry(apiIndexObject) {
         return {
-            name: apiIndexObject.name,
+            name: apiIndexObject.normalizedObjectName,
+            originalName: apiIndexObject.name,
             basename: apiIndexObject.name.substring(apiIndexObject.name.lastIndexOf(".") + 1),
             kind: apiIndexObject.kind,
             library: apiIndexObject.lib,
@@ -212,6 +238,37 @@ define((require, exports) => {
         }
     }
 
+    function prepareDefinitions(libraryKey) {
+        const library = ui5LibrariesDesignApi[libraryKey];
+
+        //        if (libraryKey !== "sap.apf") {
+        //            return;
+        //        }
+
+        for (const symbol of library.symbols) {
+            requireJsOverrides[symbol.name.replace(/\./g, "/")] = `=${symbol.name}`;
+            const nameParts = symbol.name.split(".");
+            let objectRef = sapLibraryDefs;
+
+            for (const [index, namePart] of nameParts.entries()) {
+                if (!objectRef[namePart]) {
+                    objectRef[namePart] = {};
+                }
+
+                objectRef = objectRef[namePart];
+
+                if (index === nameParts.length - 1) {
+                    ui5TernDefinitions.prepareUi5Symbol(objectRef, symbol);
+                }
+            }
+        }
+    }
+
+    function getNormalizedName(name) {
+        return name.replace("module:", "")
+            .replace(/\//g, ".");
+    }
+
     /* for unit testing only */
     exports._buffer = ui5ObjectsDesignApiBuffer;
     exports._bufferLength = ui5ObjectsDesignApiBufferLength;
@@ -223,4 +280,8 @@ define((require, exports) => {
     exports.getUi5ObjectApiDocUrl = getUi5ObjectApiDocUrl;
     exports.loadUi5Objects = loadUi5Objects;
     exports.loadUi5LibrariesDesignApi = loadUi5LibrariesDesignApi;
+    exports.prepareDefinitions = prepareDefinitions;
+    exports.sapLibraryDefinitions = sapLibraryDefs;
+    exports.requirejsOverrides = requireJsOverrides;
+    exports.getNormalizedName = getNormalizedName;
 });

@@ -1,5 +1,12 @@
 # brackets-ui5 changelog
 
+## 1.5.0
+##### Added
+- tern.js as a JS type/hints resolver for UI5 objects (code hints, quick docs)
+- links in API Panel to UI5 objects
+- shorter formatting of optional parameters in API panel / Quick Docs
+- Ctrl+3 for opening UI5 objects form JS code
+
 ## 1.4.15
 ##### Added
 - more .js files searched when quick-jump action used
