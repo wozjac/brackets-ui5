@@ -3,7 +3,7 @@ define((require, exports) => {
 
     const XmlUtils = brackets.getModule("language/XMLUtils"),
         InlineDocsViewer = require("./InlineDocsViewer"),
-        Ui5CodeAnalyzer = require("src/code/Ui5CodeAnalyzer"),
+        ui5CodeAnalyze = require("src/code/ui5CodeAnalyze"),
         codeEditor = require("src/editor/codeEditor"),
         ui5ApiFormatter = require("src/core/ui5ApiFormatter"),
         xmlExtract = require("src/code/xmlExtract"),
@@ -32,31 +32,25 @@ define((require, exports) => {
 
         const result = new $.Deferred();
 
-        const tokenPosition = {
-            line: position.line,
-            ch: token.start,
-            chEnd: token.end
-        };
-
         let ui5ObjectApi;
 
         switch (contentType) {
             case "javascript": {
-                const codeAnalyzer = new Ui5CodeAnalyzer(hostEditor.document.getText());
+                ui5CodeAnalyze.getUi5Type(hostEditor)
+                    .then((typeDefinition) => {
+                        if (!typeDefinition || !typeDefinition.name) {
+                            result.reject();
+                            return;
+                        }
 
-                codeAnalyzer.resolveUi5Token(token.string, tokenPosition, true).then((ui5Objects) => {
-                    if (ui5Objects.length === 0) {
-                        result.reject();
+                        ui5ObjectApi = ui5ApiService.getUi5ObjectDesignApi(typeDefinition.name);
+                        result.resolve(_prepareApiWidget(ui5ObjectApi, hostEditor));
                         return;
-                    }
-
-                    ui5ObjectApi = ui5ApiService.getUi5ObjectDesignApi(ui5Objects[0].name);
-                    result.resolve(_prepareApiWidget(ui5ObjectApi, hostEditor));
-                    return;
-                }, (error) => {
-                    result.reject(error);
-                    return;
-                });
+                    })
+                    .catch((error) => {
+                        result.reject(error);
+                        return;
+                    });
                 break;
             }
             case "xml": {

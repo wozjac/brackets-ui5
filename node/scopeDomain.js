@@ -3,7 +3,7 @@
 const variableScope = require("ecma-variable-scope"),
     flatted = require("flatted");
 
-const NODE_DOMAIN = "BracketsUI5";
+const NODE_DOMAIN = "BracketsUI5VarScope";
 
 function init(domainMgr) {
     if (!domainMgr.hasDomain(NODE_DOMAIN)) {

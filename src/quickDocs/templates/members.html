@@ -8,7 +8,7 @@
             {{/deprecated}}
             {{^deprecated}}
             <strong>{{name}}</strong>
-            {{/deprecated}}(<span class="brackets-ui5-qdocs-element-list">{{#parameters}}<span>{{name}}{{#optional}}(opt){{/optional}}</span>{{/parameters}})</span> <span class="brackets-ui5-qdocs-return-type">{{returnValue.type}}</span>
+            {{/deprecated}}(<span class="brackets-ui5-qdocs-element-list">{{#parameters}}<span>{{name}}{{#optional}}?{{/optional}}</span>{{/parameters}})</span> <span class="brackets-ui5-qdocs-return-type">{{returnValue.type}}</span>
             <div class="brackets-ui5-qdocs-api-description">
                 {{description}}
                 {{#parameters}}
@@ -16,7 +16,7 @@
                     <li>{{name}} ({{type}}): {{description}}
                     {{#parameterProperties}}
                         <ul>
-                            <li>{{name}} ({{type}}{{#optional}},opt{{/optional}}): {{description}}</li>
+                            <li>{{name}} ({{type}}{{#optional}}?{{/optional}}): {{description}}</li>
                         </ul>
                     {{/parameterProperties}}
                     </li>
@@ -33,7 +33,7 @@
         <ul class="brackets-ui5-qdocs-object-members">
         {{#constructorParams}}
         <li>
-                <strong>{{name}}</strong><span class="brackets-ui5-qdocs-return-type"> {{type}}</span>{{#optional}}(opt){{/optional}}<span class="brackets-ui5-qdocs-api-description"> | {{description}}</span>
+                <strong>{{name}}</strong><span class="brackets-ui5-qdocs-return-type"> {{type}}</span>{{#optional}}?{{/optional}}<span class="brackets-ui5-qdocs-api-description"> | {{description}}</span>
         {{/constructorParams}}
         </li>
         </ul>

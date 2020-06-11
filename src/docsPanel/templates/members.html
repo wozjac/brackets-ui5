@@ -14,10 +14,7 @@
             {{#constructorParams}}
                 <li>
                     <span class="brackets-ui5-docs-panel-name">{{name}}</span>
-                    <span class="brackets-ui5-docs-panel-return-type"> {{type}}</span>
-                    {{#optional}}
-                        <span>(opt)</span>
-                    {{/optional}}
+                    <span class="brackets-ui5-docs-panel-return-type"> {{type}}{{#optional}}?{{/optional}}</span>
                     <a href="#"
                         class="brackets-ui5-docs-panel-expand-link"
                         data-target-description="pod:{{objectName}}:{{name}}">[+]</a>
@@ -29,10 +26,7 @@
                         {{#parameterProperties}}
                             <li>
                                 <span class="brackets-ui5-docs-panel-name">{{name}}</span>
-                                <span class="brackets-ui5-docs-panel-return-type"> {{type}}</span>
-                                {{#optional}}
-                                    <span>(opt)</span>
-                                {{/optional}}
+                                <span class="brackets-ui5-docs-panel-return-type"> {{type}}{{#optional}}?{{/optional}}</span>
                                  <a href="#"
                                     class="brackets-ui5-docs-panel-expand-link"
                                     data-target-description="pod:{{objectName}}:{{name}}">[+]</a>
@@ -64,8 +58,16 @@
                            {{/deprecated}}"
                     data-apiDocUrl="{{apiDocUrl}}"
                     data-name="{{name}}">
-                    {{name}}</a>(<span class="brackets-ui5-docs-panel-element-list">{{#parameters}}<span>{{name}}{{#optional}}(opt){{/optional}}</span>{{/parameters}})
-                </span> <span class="brackets-ui5-docs-panel-return-type">{{returnValue.type}}</span>
+                    {{name}}</a>(<span class="brackets-ui5-docs-panel-element-list">{{#parameters}}<span>{{name}}{{#optional}}?{{/optional}}</span>{{/parameters}})
+                </span>
+                {{#hasUi5ObjectReturnType}}
+                    <a href="#" class="brackets-ui5-docs-panel-return-type-link"
+                       data-object-name="{{ui5ObjectReturnType}}">{{returnValue.type}}
+                    </a>
+                {{/hasUi5ObjectReturnType}}
+                {{^hasUi5ObjectReturnType}}
+                    <span class="brackets-ui5-docs-panel-return-type">{{returnValue.type}}</span>
+                {{/hasUi5ObjectReturnType}}
                 <a href="#"
                     class="brackets-ui5-docs-panel-expand-link"
                     data-target-description="pod:{{objectName}}:{{name}}">[+]</a>
@@ -75,7 +77,7 @@
                     </p>
                     <span class="brackets-ui5-docs-panel-api-description">
                         {{#parameters}}
-                            <p>- <span class="brackets-ui5-docs-panel-sbold">{{name}} ({{type}}) {{#optional}}(opt){{/optional}}</span>: {{description}}</p>
+                            <p>- <span class="brackets-ui5-docs-panel-sbold">{{name}} ({{type}}) {{#optional}}?{{/optional}}</span>: {{description}}</p>
                             {{#parameterProperties}}
                                 <ul>
                                     <li>{{name}} ({{type}}): {{description}}</li>
@@ -101,7 +103,15 @@
                     data-apiDocUrl="{{apiDocUrl}}"
                     data-name="{{name}}">
                     {{name}}
-                </a> [{{cardinality}}] <span class="brackets-ui5-docs-panel-return-type"> {{type}}</span>
+                </a> [{{cardinality}}]
+                {{#hasUi5ObjectType}}
+                <a href="#" class="brackets-ui5-docs-panel-return-type-link"
+                    data-object-name="{{ui5ObjectType}}">{{type}}
+                </a>
+                {{/hasUi5ObjectType}}
+                {{^hasUi5ObjectType}}
+                    <span class="brackets-ui5-docs-panel-return-type">{{type}}</span>
+                {{/hasUi5ObjectType}}
                 <a href="#"
                     class="brackets-ui5-docs-panel-expand-link"
                         data-target-description="pod:{{objectName}}:{{name}}">[+]</a>
@@ -126,7 +136,7 @@
                     data-apiDocUrl="{{apiDocUrl}}"
                     data-name="{{name}}">
                     {{name}}
-                </a>(<span class="brackets-ui5-element-list">{{#parameters}}<span>{{name}}{{#optional}}(opt){{/optional}}</span>{{/parameters}})</span>
+                </a>(<span class="brackets-ui5-element-list">{{#parameters}}<span>{{name}}{{#optional}}?{{/optional}}</span>{{/parameters}})</span>
                 <a href="#"
                     class="brackets-ui5-docs-panel-expand-link"
                     data-target-description="pod:{{objectName}}:{{name}}">[+]</a>
@@ -136,7 +146,7 @@
                     {{#parameters}}
                         <ul>
                         {{#parameterProperties}}
-                            <li>{{name}} ({{type}} {{#optional}},opt{{/optional}}): {{description}}</li>
+                            <li>{{name}} ({{type}}{{#optional}}?{{/optional}}): {{description}}</li>
                         {{/parameterProperties}}
                         </ul>
                     {{/parameters}}
@@ -158,7 +168,15 @@
                     data-apiDocUrl="{{apiDocUrl}}"
                     data-name="{{name}}">
                     {{name}}
-                </a><span class="brackets-ui5-docs-panel-return-type"> {{type}}</span>
+                </a>
+                {{#hasUi5ObjectType}}
+                <a href="#" class="brackets-ui5-docs-panel-return-type-link"
+                    data-object-name="{{ui5ObjectType}}">{{type}}
+                </a>
+                {{/hasUi5ObjectType}}
+                {{^hasUi5ObjectType}}
+                    <span class="brackets-ui5-docs-panel-return-type">{{type}}</span>
+                {{/hasUi5ObjectType}}
                 <a href="#"
                     class="brackets-ui5-docs-panel-expand-link"
                     data-target-description="pod:{{objectName}}:{{name}}">[+]

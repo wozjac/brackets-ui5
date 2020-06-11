@@ -13,15 +13,13 @@
     5.4 [Quick docs](#quick-docs)  
     5.5 [Quick edit](#quick-edit)  
     5.6 [Code hints](#code-hints-1)  
-    5.7 [Code hints for UI5 objects](#code-hints-for-ui5-objects)  
-    5.8 [Jump to definition](#jump-to-definition)  
-6. [UI5 identifier type recognition in Javascript code](#ui5-identifier-type-recognition-in-javascript-code)
-7. [Preferences](#preferences)
-8. [Unit tests](#unit-tests)
-9. [License](#license)
-10. [Contributing](#contributing)
-11. [Author](#author)
-12. [Appendix A](#appendix-a)
+    5.7 [Jump to definition](#jump-to-definition)  
+6. [Preferences](#preferences)
+7. [Unit tests](#unit-tests)
+8. [License](#license)
+9. [Contributing](#contributing)
+10. [Author](#author)
+11. [Appendix A](#appendix-a)
 
 ![main](http://public_repo.vipserv.org/images/main.png)
 
@@ -53,8 +51,7 @@ XML views
 - i18n keys for i18n model bindings
 
 Javascript files:
-- sap.ui.define hints
-- UI5 pubic methods and properties
+- hints based on Tern.js, UI5 objects included 
 
 ##### Jump to definition [ctrl+j]
 XML views:
@@ -62,7 +59,7 @@ XML views:
 - i18n keys
 
 Preview of quick edit, docs and jump to actions:  
-<a href="http://www.youtube.com/watch?feature=player_embedded&v=DqBN-7dZwIQ" target="_blank"><img src="http://img.youtube.com/vi/DqBN-7dZwIQ/0.jpg" 
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=v6OuMKnhNYQ" target="_blank"><img src="https://img.youtube.com/vi/v6OuMKnhNYQ/0.jpg" 
 alt="Quick actions - video preview" width="240" height="180" border="10" /></a>
 
 ## Requirements
@@ -70,7 +67,7 @@ alt="Quick actions - video preview" width="240" height="180" border="10" /></a>
 - SAPUI5/OpenUI5 version configured in the plugin must be >= 1.52
 
 ## Installation
-The extension is not yet added to the Bracket extensions repository. It can be installed using a downloaded ZIP file (drag it to the package manager's install area) - check [releases](https://github.com/wozjac/brackets-ui5/releases).  
+Install via Brackets Extension manager - search for "Brackets UI5".
 
 ![install](http://public_repo.vipserv.org/images/install.png)
 
@@ -105,6 +102,7 @@ If something is not working please check the console (F12). Extension's messages
 ### UI5 API reference panel
 The API reference panel shows UI5 documentation in a side panel (thanks to Hirse and his [Brackets Outline List](https://github.com/Hirse/brackets-outline-list) for the example and inspiration).
 It can be opened via the *UI5 tools* menu, Ctrl + 2 or the side icon ![api icon](http://public_repo.vipserv.org/images/icon.png)
+OR by hitting Ctrl+3 in JS code - if the token is resolvable to an UI5 object, it will be opened in the panel.
 
 ![API reference panel](http://public_repo.vipserv.org/images/panel.png)
 
@@ -112,11 +110,12 @@ Functionality:
 - search can be done with or without namespace
 - members search is supported after space, for example typing "m.page add" will show the hitlist with matching objects and then, after selecting desired object, only members matching the "add" word will be showed; anything typed after the space will filter the displayed API - as long as the base object search string (the one before space) has not changed
 ![filtered search](http://public_repo.vipserv.org/images/api_filtered.jpg)
-- displaying specific members: ?p will display only properties, ?c - contructor, ?e - events, ?m - methods; this can be also filtered by a search term. For example to search sap.m.Page properties with "add" term, type: m.page ?padd
+- displaying specific members: ?p will display only properties, ?c - constructor, ?e - events, ?m - methods; this can be also filtered by a search term. For example to search sap.m.Page properties with "add" term, type: m.page ?padd
 ![members_search](http://public_repo.vipserv.org/images/filtered_search.png)
 - clicking the [+]/[-] sign will expand or collapse the description 
-- if the item is clickable (object name, methods, properties etc.): **left click** will insert the name at the current cursor position, **right click** will open element's online documentation in the default browser 
-- items with line-through decoration are deprecated
+- if the member is clickable (object name, methods, properties etc.): **left click** will insert the name at the current cursor position, **right click** will open element's online documentation in the default browser 
+- members with line-through decoration are deprecated
+- if a return or parameter type is a UI5 object, clicking it will open it in the panel
 - *Insert (define)* will insert the object at the end of the **existing** sap.ui.define/sap.ui.require statement; formatting or beautifying is **not** applied. If the preference *brackets.Ui5.insertObjectsInDefine* is set to true (default: false) then object's name (without its namespace) will be also inserted at the current cursor position 
 
 ![insert into define](http://public_repo.vipserv.org/images/insert-define.gif)
@@ -124,7 +123,7 @@ Functionality:
 
 Please check the [preferences](#preferences) for details about preferences.
 
-The panel shows **public** members. Optional items are marked with *opt*.
+The panel shows **public** members. Optional items are marked with *?*.
 
 The format is:
 - methods: name(parameters) *return type*
@@ -304,13 +303,13 @@ Please check the Appendix A for sample .mockconfig file.
 
 ### Quick docs
 Quick docs is a Brackets feature and provide inline documentation for a token at the current cursor position (Ctrl + k). Supported are .js files and XML views.  
-This feauture is related with Code Hints (resolving types) - please check "UI5 identifier type recognition" section for more details.
+In .js code type recognition is done using Tern engine.
 
 ![quick docs](http://public_repo.vipserv.org/images/quick-docs.png)
 
 ### Quick edit
 In XML views quick edit (ctrl+e) will open inline editor for:
-- controller function names in attributes:
+- controller function names in attributes; if function not found in the controller, it will be searched in all .js files (*dist* and *node_modules* folders skipped)
 For example pressing ctrl+e on *.handleChange*
 
 ![quickedit function](http://public_repo.vipserv.org/images/quick-edit-function.png)
@@ -321,14 +320,12 @@ For example pressing ctrl+e on *.handleChange*
 
 ### Jump to definition
 In XML views quick edit (ctrl+j) will jump to the file with the definition of:
-- controller function
+- controller function (for example event handler); if not found in the controller, it will be searched in all .js files (*dist* and *node_modules* folders skipped)
 - i18n entry in i18n bindings (manifest.json is present and contains a valid i18n model entry, both *uri* and *bundleName* settings are supported)
 
-Preview of quick edit, docs and jump to actions:  
+Preview of quick edit, quick docs and jump to actions:  
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=DqBN-7dZwIQ" target="_blank"><img src="http://img.youtube.com/vi/DqBN-7dZwIQ/0.jpg" 
 alt="Quick actions - video preview" width="240" height="180" border="10" /></a>  
-
-All of the above actions will try to find matching function in your project .js files; *dist* and *node_modules* folders are skipped.
 
 ### Code hints
 In XML views:
@@ -339,41 +336,15 @@ In XML views:
 
 ![i18n hints](http://public_repo.vipserv.org/images/i18n_hints_short.gif)
 
-### Code hints for UI5 objects
-Code hints in JS files displays public properties & methods of a UI5 object. Recognition works for basic cases based on the current scope - please check "UI5 identifier type recognition in Javascript code" section for handled cases. Module members (sap.ui for example) are also hintable.  
+In JS code:
+- Tern is used for getting hints; UI5 objects definitions (methods and properties) are included
+
 A convenient feature is when you use *this.byId("controlId")* function (or any with "byId" in its name) - it will try to find the control type in the associated view.
 
 ![code hints](http://public_repo.vipserv.org/images/code-hints-collage.jpg)
 
 Code hints also works in sap.ui.define and after selection inserts the object into array and function arguments.
 ![code hints](http://public_repo.vipserv.org/images/hints-define.gif)
-
-## UI5 identifier type recognition in Javascript code
-The recognition is relevant for quick docs and code hints in Javascript files, works for basic cases.
-
-Currently, the type of an identifier will be resolved from:
-1. A special comment *//ui5: object*. It will search the current line or the variable declaration.
-```javascript
-const button = getButton() //ui5: sap.m.Button
-    if(button) { //Ctrl+k opens quick docs and typing . after the variable opens hints
-        ...
-    }
-```
-
-2. Variable initialization with *new* with objects from the *define* statement
-```javascript
-this.page = new MasterPage();
-this.page. //ctrl+k, hints
-const range = new DateRangeSelection();
-range.  //ctrl+k, hints
-```
-
-3. *this.byId("controlId"), or other method with "byId" in the name*
-It will try to recognize the control type using the associated view.
-```javascript
-const control = this.byId("myId");
-    control. //ctrl+k, hints - if it will find the view and myId inside it
-```
 
 ## Preferences
 The extension uses Brackets [preferences](https://github.com/adobe/brackets/wiki/How-to-Use-Brackets) system, which means that you can specify per project settings by defining a .brackets.json in the root directory of your project. Below is a sample file with all options and their default values, which can be copy-pasted or used as a reference. For more information about specific option please check the related feature documentation.
@@ -416,7 +387,10 @@ This plugin is licensed under the [MIT license](http://opensource.org/licenses/M
 See [CONTRIBUTING](CONTRIBUTING.md).
 
 ## Author
-Feel free to contact me: wozjac@zoho.com or via LinkedIn (https://www.linkedin.com/in/jacek-wznk).
+Feel free to contact me:  
+- wozjac@zoho.com 
+- Twitter (https://twitter.com/jacekwoz)  
+- LinkedIn (https://www.linkedin.com/in/jacek-wznk)
 
 ## Appendix A
 Sample .mockconfig.json file, based on Northwind oData metadata: https://services.odata.org/V3/OData/OData.svc/$metadata

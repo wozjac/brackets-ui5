@@ -4,6 +4,7 @@ define((require, exports) => {
     exports.ui5ApiObjects = {
         "sap.ui.base.Object": {
             name: "sap.ui.base.Object",
+            originalName: "sap.ui.base.Object",
             basename: "Object",
             kind: "class",
             library: "sap.ui.core",
@@ -11,6 +12,7 @@ define((require, exports) => {
         },
         "sap.ui.base.EventProvider": {
             name: "sap.ui.base.EventProvider",
+            originalName: "sap.ui.base.EventProvider",
             basename: "EventProvider",
             kind: "class",
             library: "sap.ui.core",
@@ -18,6 +20,7 @@ define((require, exports) => {
         },
         "sap.m.Tree": {
             name: "sap.m.Tree",
+            originalName: "sap.m.Tree",
             basename: "Tree",
             kind: "class",
             library: "sap.m",
@@ -25,6 +28,7 @@ define((require, exports) => {
         },
         "sap.m.ColumnListItem": {
             name: "sap.m.ColumnListItem",
+            originalName: "sap.m.ColumnListItem",
             basename: "ColumnListItem",
             kind: "class",
             library: "sap.m",
@@ -32,6 +36,7 @@ define((require, exports) => {
         },
         "jQuery.Event": {
             name: "jQuery.Event",
+            originalName: "jQuery.Event",
             basename: "Event",
             kind: "class",
             library: "sap.ui.core",
@@ -39,6 +44,7 @@ define((require, exports) => {
         },
         "sap.ui": {
             name: "sap.ui",
+            originalName: "sap.ui",
             basename: "ui",
             kind: "namespace",
             library: "sap.ui.core",

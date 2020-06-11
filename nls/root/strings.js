@@ -53,5 +53,8 @@ define({
     "COMPONENT_ID_NOT_FOUND": `${prefix} Component Id not found in the manifest file`,
     "FILE_NOT_FOUND": `${prefix} File not found`,
     "MOCK_CONFIG_ERROR": "Mock config error - check Brackets console for logs",
-    "MULTIPLE_FUNCTIONS_FOUND": `${prefix} Multiple functions found with the name `
+    "MULTIPLE_FUNCTIONS_FOUND": `${prefix} Multiple functions found with the name `,
+    "TERN_SERVER_INIT_FAILED": `${prefix} Multiple functions found with the name `,
+    "DESIGN_API_NOT_FOUND": "Design documentation not found",
+    "OPEN_OBJECT_IN_PANEL": "Open in API panel"
 });

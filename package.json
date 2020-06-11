@@ -1,7 +1,7 @@
 {
     "name": "wozjac.ui5",
     "title": "Brackets UI5",
-    "version": "1.4.15",
+    "version": "1.5.0",
     "homepage": "https: //github.com/wozjac/brackets-ui5#readme",
     "description": "Brackets extension providing helpers (quick docs, code hints and more) for SAP© UI5 library.",
     "keywords": [
@@ -13,9 +13,6 @@
     "bugs": {
         "url": "https://github.com/wozjac/brackets-ui5/issues"
     },
-    "i18n": [
-        "en"
-    ],
     "engines": {
         "brackets": ">=1.14.0"
     },
