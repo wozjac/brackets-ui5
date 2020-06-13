@@ -321,7 +321,7 @@ define((require, exports) => {
     function _sanitazeName(name) {
         let result = name;
 
-        result = result.replace(/[\][{}:<>+]/g, "");
+        result = result.replace(/[\][{}:<>+,]/g, "");
 
         if (result.trim() === "") {
             result = "p";

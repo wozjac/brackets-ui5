@@ -64,8 +64,7 @@ Preview of quick edit, docs and jump to actions:
 alt="Quick actions - video preview" width="240" height="180" border="10" /></a>
 
 ## Requirements
-- Brackets version >= 1.14
-- SAPUI5/OpenUI5 version configured in the plugin must be >= 1.52
+- Brackets version 1.14.2
 
 ## Installation
 Install via Brackets Extension manager - search for "Brackets UI5".
@@ -77,7 +76,7 @@ After successful installation the *UI5 tools* menu should be available.
 ![menu](http://public_repo.vipserv.org/images/menu.png)
 
 By default, the extension uses the OpenUI5 version 1.72.4. 
-This can be changed using Brackets [preferences](#preferences). Create .brackets.json file in the project's root and set the required library version (>= 1.52.0): 
+This can be changed using Brackets [preferences](#preferences). Create .brackets.json file in the project's root and set the required library version. Please check the [wiki page](https://github.com/wozjac/brackets-ui5/wiki/OpenUI5-SAPUI5-library-versions) for valid library versions, which can be safely used.
 ```javascript
 {
     "bracketsUi5.apiUrl": "https://openui5.hana.ondemand.com/1.70.0"
@@ -88,12 +87,7 @@ Switching to SAPUI5:
 {
     "bracketsUi5.apiUrl": "https://sapui5.hana.ondemand.com/1.70.0"
 }
-```
-**PLEASE NOTE: the most recent versions are usually not fully working:**: 
-- schema files are not available
-- not all API documentation is published  
-
-Available versions can be checked here: [https://openui5.hana.ondemand.com/versionoverview.html](https://openui5.hana.ondemand.com/versionoverview.html), scroll down to the section "Available OpenUI5 Versions". For SAP UI5 please use [https://sapui5.hana.ondemand.com/versionoverview.html](https://sapui5.hana.ondemand.com/versionoverview.html).  
+``` 
 
 If something is not working please check the console (F12). Extension's messages are prefixed with [wozjac.ui5].
 

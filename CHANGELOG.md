@@ -1,5 +1,18 @@
 # brackets-ui5 changelog
 
+## 1.5.3
+##### Fixed
+- fix ui5 objects initialization and preparation of the API/tern definitions
+- adjust README to the current state
+
+## 1.5.2
+##### Fixed
+- correct hints in js code while definig new variables
+
+## 1.5.1
+##### Fixed
+- minor corrections to previous version
+
 ## 1.5.0
 ##### Added
 - tern.js as a JS type/hints resolver for UI5 objects (code hints, quick docs)

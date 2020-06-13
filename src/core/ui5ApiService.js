@@ -180,10 +180,12 @@ define((require, exports) => {
     }
 
     function prepareUi5Objects(apiEntry) {
+        let normalizedName;
+
         if (apiEntry.symbols) {
             for (const object of apiEntry.symbols) {
-                object.normalizedObjectName = getNormalizedName(object.name);
-                ui5Objects[object.normalizedObjectName] = getEntry(object);
+                normalizedName = getNormalizedName(object.name);
+                ui5Objects[normalizedName] = getEntry(object);
 
                 //extract library
                 ui5LibrariesDesignApi[object.lib] = {};
@@ -195,7 +197,8 @@ define((require, exports) => {
                 }
             }
         } else {
-            ui5Objects[apiEntry.name] = getEntry(apiEntry);
+            normalizedName = getNormalizedName(apiEntry.name);
+            ui5Objects[normalizedName] = getEntry(apiEntry);
             ui5LibrariesDesignApi[apiEntry.lib] = {};
 
             if (apiEntry.nodes) {
@@ -208,7 +211,7 @@ define((require, exports) => {
 
     function getEntry(apiIndexObject) {
         return {
-            name: apiIndexObject.normalizedObjectName,
+            name: getNormalizedName(apiIndexObject.name),
             originalName: apiIndexObject.name,
             basename: apiIndexObject.name.substring(apiIndexObject.name.lastIndexOf(".") + 1),
             kind: apiIndexObject.kind,
@@ -241,10 +244,6 @@ define((require, exports) => {
     function prepareDefinitions(libraryKey) {
         const library = ui5LibrariesDesignApi[libraryKey];
 
-        //        if (libraryKey !== "sap.apf") {
-        //            return;
-        //        }
-
         for (const symbol of library.symbols) {
             requireJsOverrides[symbol.name.replace(/\./g, "/")] = `=${symbol.name}`;
             const nameParts = symbol.name.split(".");
@@ -265,7 +264,8 @@ define((require, exports) => {
     }
 
     function getNormalizedName(name) {
-        return name.replace("module:", "")
+        return name
+            .replace("module:", "")
             .replace(/\//g, ".");
     }
 
