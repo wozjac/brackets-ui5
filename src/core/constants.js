@@ -12,7 +12,7 @@ define((require, exports) => {
         MOCK_DATA_DIR: "mockDataDir",
         MOCK_DATA_ENTITY_SIZE: "mockDataEntitySize",
         MOCK_DATA_OVERWRITE: "mockDataOverwrite",
-        INSERT_METHOD_SIGNATURE: "insertMethodSignature"
+        INSERT_METHOD_SIGNATURE: "insertMethodSignature" //not used for now
     };
 
     const commands = {

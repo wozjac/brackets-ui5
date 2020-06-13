@@ -21,7 +21,7 @@ const TERN_COMMANDS = {
 };
 
 const config = {
-    debug: true
+    debug: false
 };
 
 let _domainManager,
@@ -139,17 +139,17 @@ function _handleInitTernServer(definitions, requireJsDefinitions, files) {
 
         ternServer.reset();
         Infer.resetGuessing();
+    } else {
+        ternServer = new Tern.Server(ternOptions);
+        ternServer.addDefs(definitions);
+        ternServer.addDefs(browserDefs);
+        ternServer.addDefs(ecmascript);
+        ternServer.addDefs(jQuery);
+
+        files.forEach((file) => {
+            ternServer.addFile(file.name, file.text);
+        });
     }
-
-    ternServer = new Tern.Server(ternOptions);
-    ternServer.addDefs(definitions);
-    ternServer.addDefs(browserDefs);
-    ternServer.addDefs(ecmascript);
-    ternServer.addDefs(jQuery);
-
-    files.forEach((file) => {
-        ternServer.addFile(file.name, file.text);
-    });
 }
 
 function _resetTernServer() {
@@ -175,14 +175,12 @@ function _handleAddFiles(files) {
 }
 
 function _handleUpdateFile(filename, text) {
-    console.time("r1");
     _debug("Update file command handler");
     ternServer.addFile(filename, text);
     _debug(`Updated file ${filename}`);
     //reset to get the best hints with the updated file (to check, not working well with the current hinting)
     //ternServer.reset();
     //Infer.resetGuessing();
-    console.timeEnd("r1");
 }
 
 function _handleGetType(filename, offset) {

@@ -339,8 +339,6 @@ In XML views:
 In JS code:
 - Tern is used for getting hints; UI5 objects definitions (methods and properties) are included
 
-A convenient feature is when you use *this.byId("controlId")* function (or any with "byId" in its name) - it will try to find the control type in the associated view.
-
 ![code hints](http://public_repo.vipserv.org/images/code-hints-collage.jpg)
 
 Code hints also works in sap.ui.define and after selection inserts the object into array and function arguments.
@@ -359,8 +357,7 @@ The extension uses Brackets [preferences](https://github.com/adobe/brackets/wiki
     "bracketsUi5.mockDataDir": "localService/mockData",
     "bracketsUi5.mockDataRootUri": "",
     "bracketsUi5.mockDataEntitySize": 30,
-    "bracketsUi5.mockDataOverwrite": true,
-    "bracketsUi5.insertMethodSignature": true
+    "bracketsUi5.mockDataOverwrite": true
 }
 ```
 
@@ -375,10 +372,16 @@ oData mock data generator:
 - mockDataRootUri: the root URI for mock data
 - mockDataEntitySize: how many entries should be created
 - mockDataOverwrite: whether to overwrite or not existing JSON files
-- insertMethodSignature: whether to insert method signature when using code hints
 
 ## Unit tests
 Unit tests are using Brackets embedded mechanism based on Jasmine. The entry point is the unittests.js file, you can run in via menu path Debug->Run Tests. Please keep in mind, that this option is not available in the standard version; to reveal it a version [build from source](https://github.com/adobe/brackets/wiki/How-to-Hack-on-Brackets) is required.
+
+## Credits
+- Tern.js [Tern](https://ternjs.net) used as Javascript code analysis engine  
+- properties file handling based on Matt Steele [java-properties](https://github.com/mattdsteele/java-properties) code  
+- xml-parser by Yusuke Kawasaki  
+- flatted from Andrea Giammarchi [https://github.com/WebReflection](https://github.com/WebReflection)  
+- ODataMockGenerator based on [OpenUI5](https://github.com/SAP/openui5) original MockGenerator
 
 ## License
 This plugin is licensed under the [MIT license](http://opensource.org/licenses/MIT).

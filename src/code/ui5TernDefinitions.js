@@ -17,6 +17,7 @@ define((require, exports) => {
             case "interface":
             case "enum":
             case "typedef":
+            case "member":
                 prepareClass(objectRef, symbol);
                 break;
             case "function":
@@ -88,6 +89,7 @@ define((require, exports) => {
 
     function prepareNamespace(objectRef, symbol) {
         preparePropertiesDefinitions(objectRef, symbol);
+        prepareMethodsDefinitions(objectRef, symbol);
     }
 
     function prepareClass(objectRef, symbol) {

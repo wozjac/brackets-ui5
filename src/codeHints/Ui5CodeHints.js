@@ -4,15 +4,12 @@ define((require, exports, module) => {
     const HintUtils = brackets.getModule("JSUtils/HintUtils"),
         Session = brackets.getModule("JSUtils/Session"),
         CodeHintManager = brackets.getModule("editor/CodeHintManager"),
-        strings = require("strings"),
         hintsRenderer = require("src/codeHints/hintsRenderer"),
         ui5CodeAnalyze = require("src/code/ui5CodeAnalyze"),
         ui5ApiFinder = require("src/core/ui5ApiFinder"),
         astTool = require("src/code/astTool"),
         codeEditor = require("src/editor/codeEditor"),
-        textTool = require("src/editor/textTool"),
-        prefs = require("src/main/preferences"),
-        constants = require("src/core/constants");
+        textTool = require("src/editor/textTool");
 
     let session;
 
@@ -77,75 +74,55 @@ define((require, exports, module) => {
                     deferred.reject();
                 }
 
-                return deferred;
-            }
+            } else {
+                ui5CodeAnalyze.getUi5Hints(this._editor)
+                    .then((hints) => {
+                        if (hints) {
+                            const result = hints.map((element) => {
+                                return hintsRenderer.createHintCompletionEntry(element);
+                            });
 
-            ui5CodeAnalyze.getUi5Hints(this._editor)
-                .then((hints) => {
-                    if (hints) {
-                        const result = hints.map((element) => {
-                            return hintsRenderer.createHintCompletionEntry(element);
-                        });
-
-                        deferred.resolveWith(null, [{
-                            hints: result,
-                            match: null,
-                            selectInitial: true,
-                            handleWideResults: false
+                            deferred.resolveWith(this, [{
+                                hints: result,
+                                match: null,
+                                selectInitial: true,
+                                handleWideResults: false
                         }]);
-
-                        return true;
-                    } else {
+                        } else {
+                            deferred.reject();
+                        }
+                    })
+                    .catch((error) => {
+                        console.error(`[wozjac.ui5] ${error}`);
                         deferred.reject();
-                        return;
-                    }
-                })
-                .catch((error) => {
-                    console.error(`[wozjac.ui5] ${error}`);
-                    deferred.reject();
-                    return;
-                });
+                    });
+            }
 
             return deferred;
         }
 
         insertHint(hintObject) {
             let textToInsert = hintObject.find("span.brackets-ui5-hint-name").text();
-            const cursor = session.getCursor(),
 
+            const cursor = session.getCursor(),
+                query = session.getQuery();
+
+            let start = {
+                line: cursor.line,
+                ch: cursor.ch - query.length
+            };
+
+            const end = {
+                line: cursor.line,
+                ch: cursor.ch
+            };
+
+            if (this._inDefineArrayHint) {
                 start = {
                     line: cursor.line,
                     ch: cursor.ch - this._queryToken.string.length
-                },
-
-                end = {
-                    line: cursor.line,
-                    ch: cursor.ch
                 };
 
-            if (!session.getFunctionInfo().inFunctionCall
-                && hintObject._ui5Type === strings.METHOD) {
-
-                textToInsert += "(";
-
-                if (prefs.get(constants.prefs.INSERT_METHOD_SIGNATURE) && hintObject._ui5Parameters) {
-                    for (let i = 0; i < hintObject._ui5Parameters.length; i++) {
-                        textToInsert += hintObject._ui5Parameters[i].name;
-
-                        if (hintObject._ui5Parameters.length > 1 && i < hintObject._ui5Parameters.length - 1) {
-                            textToInsert += ",";
-                        }
-                    }
-                }
-
-                textToInsert += ")";
-            }
-
-            if (this._queryToken.string === ".") {
-                start.ch++;
-            }
-
-            if (this._inDefineArrayHint) {
                 if (this._queryToken.string.startsWith("'")
                     || this._queryToken.string.startsWith("\"")) {
 
@@ -157,7 +134,15 @@ define((require, exports, module) => {
                 this._insertObjectNameInDefineFunction(textToInsert);
             }
 
-            this._editor.document.replaceRange(textToInsert, start, end);
+            // Replace the current token with the completion
+            // HACK (tracking adobe/brackets#1688): We talk to the private CodeMirror instance
+            // directly to replace the range instead of using the Document, as we should. The
+            // reason is due to a flaw in our current document synchronization architecture when
+            // inline editors are open.
+            session.editor._codeMirror.replaceRange(textToInsert, start, end);
+
+            // Return false to indicate that another hinting session is not needed
+            return false;
         }
 
         _resolveWithDefineObjects(defineObjects) {
@@ -178,8 +163,8 @@ define((require, exports, module) => {
             const definePositions = astTool.getDefineStatementPositions(ast, sourceCode);
 
             if (definePositions && cursorIndex >= definePositions.arrayStartIndex && cursorIndex <= definePositions.arrayEndIndex) {
-                this.defineStatementPositions = definePositions;
-                this.cursorIndex = cursorIndex;
+                this._defineStatementPositions = definePositions;
+                this._cursorIndex = cursorIndex;
                 return true;
             }
 
@@ -187,9 +172,9 @@ define((require, exports, module) => {
         }
 
         _insertObjectNameInDefineFunction(defineArrayObjectName) {
-            if (this.defineStatementPositions && !this.defineStatementPositions.noFunction && defineArrayObjectName) {
-                let defineArrayTokens = this.defineStatementPositions.defineArrayTokens;
-                const defineFunctionTokens = this.defineStatementPositions.defineFunctionTokens;
+            if (this._defineStatementPositions && !this._defineStatementPositions.noFunction && defineArrayObjectName) {
+                let defineArrayTokens = this._defineStatementPositions.defineArrayTokens;
+                const defineFunctionTokens = this._defineStatementPositions.defineFunctionTokens;
                 const parts = defineArrayObjectName.split("/");
                 let textToInsert = parts[parts.length - 1];
                 let insertObjectPosition, referenceToken;
@@ -199,7 +184,7 @@ define((require, exports, module) => {
                     defineArrayTokens = defineArrayTokens.filter((element) => {
                         let isCursorInsideEmptyQuotes = false;
 
-                        if (element.value === "" && this.cursorIndex > element.start && this.cursorIndex < element.end) {
+                        if (element.value === "" && this._cursorIndex > element.start && this._cursorIndex < element.end) {
                             isCursorInsideEmptyQuotes = true;
                         }
 
@@ -213,7 +198,7 @@ define((require, exports, module) => {
                     let previousToken;
 
                     for (const [index, element] of defineArrayTokens.entries()) {
-                        if (index === 0 && this.cursorIndex < element.start) { //before first
+                        if (index === 0 && this._cursorIndex < element.start) { //before first
                             referenceToken = defineFunctionTokens[index];
 
                             insertObjectPosition = {
@@ -222,7 +207,7 @@ define((require, exports, module) => {
                             };
 
                             textToInsert += ", ";
-                        } else if (previousToken && this.cursorIndex > previousToken.end && this.cursorIndex < element.start) { //between some tokens
+                        } else if (previousToken && this._cursorIndex > previousToken.end && this._cursorIndex < element.start) { //between some tokens
                             referenceToken = defineFunctionTokens[index - 1];
 
                             insertObjectPosition = {
@@ -231,7 +216,7 @@ define((require, exports, module) => {
                             };
 
                             textToInsert = `, ${textToInsert}`;
-                        } else if (this.cursorIndex > element.start && this.cursorIndex < element.end) { //in the partial token
+                        } else if (this._cursorIndex > element.start && this._cursorIndex < element.end) { //in the partial token
                             if (defineFunctionTokens.length > 0) {
                                 referenceToken = defineFunctionTokens[index - 1];
 
@@ -242,14 +227,14 @@ define((require, exports, module) => {
 
                                 textToInsert = `, ${textToInsert}`;
                             } else {
-                                const location = this.defineStatementPositions.functionEndLocation;
+                                const location = this._defineStatementPositions.functionEndLocation;
 
                                 insertObjectPosition = {
                                     line: location.end.line - 1,
                                     ch: location.end.column
                                 };
                             }
-                        } else if (index === defineArrayTokens.length - 1 && this.cursorIndex > element.end) { //after all
+                        } else if (index === defineArrayTokens.length - 1 && this._cursorIndex > element.end) { //after all
                             referenceToken = defineFunctionTokens[index];
 
                             insertObjectPosition = {
@@ -267,9 +252,9 @@ define((require, exports, module) => {
 
                         previousToken = element;
                     }
-                } else if (this.defineStatementPositions.functionEndIndex) { //empty define function
+                } else if (this._defineStatementPositions.functionEndIndex) { //empty define function
                     const parts = defineArrayObjectName.split("/");
-                    const location = this.defineStatementPositions.functionEndLocation;
+                    const location = this._defineStatementPositions.functionEndLocation;
 
                     insertObjectPosition = {
                         line: location.end.line - 1,
