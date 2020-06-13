@@ -11,23 +11,22 @@ define((require, exports, module) => {
         codeEditor = require("src/editor/codeEditor"),
         textTool = require("src/editor/textTool");
 
-    let session;
-
     class Ui5CodeHints {
         constructor() {
             this._queryToken = null;
             this._editor = null;
             this._inDefineArrayHint = false;
             this._defineStatementPositions = null;
+            this._session = null;
         }
 
         hasHints(editor, implicitChar) {
             this._reset();
             this._editor = editor;
-            session = new Session(editor);
+            this._session = new Session(editor);
 
-            const cursorPosition = session.getCursor();
-            this._queryToken = session.getToken(cursorPosition);
+            const cursorPosition = this._session.getCursor();
+            this._queryToken = this._session.getToken(cursorPosition);
 
             if (this._cursorInsideDefineArray(editor, cursorPosition)) {
                 if (this._queryToken.string.trim() !== ""
@@ -82,6 +81,12 @@ define((require, exports, module) => {
                                 return hintsRenderer.createHintCompletionEntry(element);
                             });
 
+                            const token = this._session.getToken();
+
+                            if (token && token.type && token.type === "def") {
+                                deferred.reject();
+                            }
+
                             deferred.resolveWith(this, [{
                                 hints: result,
                                 match: null,
@@ -104,8 +109,8 @@ define((require, exports, module) => {
         insertHint(hintObject) {
             let textToInsert = hintObject.find("span.brackets-ui5-hint-name").text();
 
-            const cursor = session.getCursor(),
-                query = session.getQuery();
+            const cursor = this._session.getCursor(),
+                query = this._session.getQuery();
 
             let start = {
                 line: cursor.line,
@@ -139,7 +144,7 @@ define((require, exports, module) => {
             // directly to replace the range instead of using the Document, as we should. The
             // reason is due to a flaw in our current document synchronization architecture when
             // inline editors are open.
-            session.editor._codeMirror.replaceRange(textToInsert, start, end);
+            this._session.editor._codeMirror.replaceRange(textToInsert, start, end);
 
             // Return false to indicate that another hinting session is not needed
             return false;

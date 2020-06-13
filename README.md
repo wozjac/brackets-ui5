@@ -8,18 +8,19 @@
 4. [Installation](#installation)
 5. [Features details](#features)  
     5.1 [UI5 API reference panel](#ui5-api-reference-panel)  
-    5.2 [Configurable code snippets](#configurable-code-snippets)  
-    5.3 [oData mock data generator](#odata-mock-data-generator)  
-    5.4 [Quick docs](#quick-docs)  
-    5.5 [Quick edit](#quick-edit)  
-    5.6 [Code hints](#code-hints-1)  
-    5.7 [Jump to definition](#jump-to-definition)  
+    5.2 [Quick docs](#quick-docs)    
+    5.3 [Quick edit](#quick-edit)  
+    5.4 [Code hints](#code-hints-1)   
+    5.5 [Jump to definition](#jump-to-definition)  
+    5.6 [Configurable code snippets](#configurable-code-snippets)  
+    5.7 [oData mock data generator](#odata-mock-data-generator)  
 6. [Preferences](#preferences)
 7. [Unit tests](#unit-tests)
-8. [License](#license)
-9. [Contributing](#contributing)
-10. [Author](#author)
-11. [Appendix A](#appendix-a)
+8. [Credits](#credits)
+9. [License](#license)
+10. [Contributing](#contributing)
+11. [Author](#author)
+12. [Appendix A](#appendix-a)
 
 ![main](http://public_repo.vipserv.org/images/main.png)
 
@@ -131,6 +132,49 @@ The format is:
 - properties: name *type*
 - aggergations [cardinality] *type*
 - constructor: parameter's name *type*
+
+### Quick docs
+Quick docs is a Brackets feature and provide inline documentation for a token at the current cursor position (Ctrl + k). Supported are .js files and XML views.  
+In .js code type recognition is done using Tern engine.
+
+![quick docs](http://public_repo.vipserv.org/images/quick-docs.png)
+
+### Quick edit
+In XML views quick edit (ctrl+e) will open inline editor for:
+- controller function names in attributes; if function not found in the controller, it will be searched in all .js files (*dist* and *node_modules* folders skipped)
+For example pressing ctrl+e on *.handleChange*
+
+![quickedit function](http://public_repo.vipserv.org/images/quick-edit-function.png)
+
+- i18n keys in i18n bindings (manifest.json is present and contains a valid i18n model entry, both *uri* and *bundleName* settings are supported). Pressing ctrl+e opens inline editor for the i18n entry; if it don't exist, it will be created and appended at the end of the file.
+
+![i18n quick edit](http://public_repo.vipserv.org/images/i18n_quick_edit_short.gif)
+
+### Code hints
+In XML views:
+- tags and attributes (namespaces are supported)
+
+![xml hints](http://public_repo.vipserv.org/images/xml-hints-collage.jpg)
+- i18n keys in i18n bindings (manifest.json is present and contains a valid i18n model entry, both *uri* and *bundleName* settings are supported)
+
+![i18n hints](http://public_repo.vipserv.org/images/i18n_hints_short.gif)
+
+In JS code:
+- Tern is used for getting hints; UI5 objects definitions (methods and properties) are included
+
+![code hints](http://public_repo.vipserv.org/images/hints-collage.png)
+
+Code hints also works in sap.ui.define and after selection inserts the object into array and function arguments.
+![code hints](http://public_repo.vipserv.org/images/hints-define.gif)
+
+### Jump to definition
+In XML views quick edit (ctrl+j) will jump to the file with the definition of:
+- controller function (for example event handler); if not found in the controller, it will be searched in all .js files (*dist* and *node_modules* folders skipped)
+- i18n entry in i18n bindings (manifest.json is present and contains a valid i18n model entry, both *uri* and *bundleName* settings are supported)
+
+Preview of quick edit, quick docs and jump to actions:  
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=DqBN-7dZwIQ" target="_blank"><img src="http://img.youtube.com/vi/DqBN-7dZwIQ/0.jpg" 
+alt="Quick actions - video preview" width="240" height="180" border="10" /></a>  
 
 ### Configurable code snippets
 The extension provides 8 configurable code snippets, available via the *UI5 tools* menu or using Ctrl-Alt-1..8 shortcut. They are inserted at the current cursor position. By default, there are a component, XML view, index.html etc. but this can be adjusted - *Open snippets folder* will open the folder with snippets files, which can be edited (do not change the filenames!). The first line is reserved for the title in form of *// my title*. The "my title" will be then used in the menu as *Insert: my title*.
@@ -300,49 +344,6 @@ To have only distinct values (based on all key properties):
 ```
 
 Please check the Appendix A for sample .mockconfig file.
-
-### Quick docs
-Quick docs is a Brackets feature and provide inline documentation for a token at the current cursor position (Ctrl + k). Supported are .js files and XML views.  
-In .js code type recognition is done using Tern engine.
-
-![quick docs](http://public_repo.vipserv.org/images/quick-docs.png)
-
-### Quick edit
-In XML views quick edit (ctrl+e) will open inline editor for:
-- controller function names in attributes; if function not found in the controller, it will be searched in all .js files (*dist* and *node_modules* folders skipped)
-For example pressing ctrl+e on *.handleChange*
-
-![quickedit function](http://public_repo.vipserv.org/images/quick-edit-function.png)
-
-- i18n keys in i18n bindings (manifest.json is present and contains a valid i18n model entry, both *uri* and *bundleName* settings are supported). Pressing ctrl+e opens inline editor for the i18n entry; if it don't exist, it will be created and appended at the end of the file.
-
-![i18n quick edit](http://public_repo.vipserv.org/images/i18n_quick_edit_short.gif)
-
-### Jump to definition
-In XML views quick edit (ctrl+j) will jump to the file with the definition of:
-- controller function (for example event handler); if not found in the controller, it will be searched in all .js files (*dist* and *node_modules* folders skipped)
-- i18n entry in i18n bindings (manifest.json is present and contains a valid i18n model entry, both *uri* and *bundleName* settings are supported)
-
-Preview of quick edit, quick docs and jump to actions:  
-<a href="http://www.youtube.com/watch?feature=player_embedded&v=DqBN-7dZwIQ" target="_blank"><img src="http://img.youtube.com/vi/DqBN-7dZwIQ/0.jpg" 
-alt="Quick actions - video preview" width="240" height="180" border="10" /></a>  
-
-### Code hints
-In XML views:
-- tags and attributes (namespaces are supported)
-
-![xml hints](http://public_repo.vipserv.org/images/xml-hints-collage.jpg)
-- i18n keys in i18n bindings (manifest.json is present and contains a valid i18n model entry, both *uri* and *bundleName* settings are supported)
-
-![i18n hints](http://public_repo.vipserv.org/images/i18n_hints_short.gif)
-
-In JS code:
-- Tern is used for getting hints; UI5 objects definitions (methods and properties) are included
-
-![code hints](http://public_repo.vipserv.org/images/code-hints-collage.jpg)
-
-Code hints also works in sap.ui.define and after selection inserts the object into array and function arguments.
-![code hints](http://public_repo.vipserv.org/images/hints-define.gif)
 
 ## Preferences
 The extension uses Brackets [preferences](https://github.com/adobe/brackets/wiki/How-to-Use-Brackets) system, which means that you can specify per project settings by defining a .brackets.json in the root directory of your project. Below is a sample file with all options and their default values, which can be copy-pasted or used as a reference. For more information about specific option please check the related feature documentation.
