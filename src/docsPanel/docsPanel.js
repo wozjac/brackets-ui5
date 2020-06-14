@@ -97,6 +97,7 @@ define((require, exports, module) => {
                 this.showPanel();
             }
 
+            this._elements.searchInputElement.val(ui5Object);
             this._displayObjectApi(ui5Object);
         }
 

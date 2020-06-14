@@ -1,5 +1,9 @@
 # brackets-ui5 changelog
 
+## 1.5.4
+##### Fixed
+- correct API panel search input value while object is opened via ctrl+3
+
 ## 1.5.3
 ##### Fixed
 - fix ui5 objects initialization and preparation of the API/tern definitions
