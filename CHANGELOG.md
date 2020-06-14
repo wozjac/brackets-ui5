@@ -1,5 +1,9 @@
 # brackets-ui5 changelog
 
+## 1.5.5
+##### Fixed
+- case insesitive hints search 
+
 ## 1.5.4
 ##### Fixed
 - correct API panel search input value while object is opened via ctrl+3

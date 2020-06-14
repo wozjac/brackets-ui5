@@ -255,7 +255,7 @@ function _buildRequest(filename, query, offset) {
     query.types = true;
     query.docs = true;
     query.urls = true;
-    query.caseInsensitive = false;
+    query.caseInsensitive = true;
     query.guess = false;
 
     //query.start = offset;
