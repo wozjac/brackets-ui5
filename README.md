@@ -67,7 +67,8 @@ alt="Quick actions - video preview" width="240" height="180" border="10" /></a>
 - Brackets version 1.14.2
 
 ## Installation
-Install via Brackets Extension manager - search for "Brackets UI5".
+Install via Brackets Extension manager - search for "Brackets UI5".  
+If the extension is not present (happens) - download wozjac.ui5.zip file from the Releases page and drag into the extension installer.
 
 ![install](http://public_repo.vipserv.org/images/install.png)
 
