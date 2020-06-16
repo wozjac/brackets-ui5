@@ -94,6 +94,8 @@ If something is not working please check the console (F12). Extension's messages
 
 ![console](http://public_repo.vipserv.org/images/console.png)
 
+To avoid Brackets built-in ESLint errors like "sap is not defined", install ESLint first (npm install eslint), then add ESLint configuration in the project with your desired settings and *sap* in the globals section (and other used globally UI5 like QUnit, assert etc.)
+
 ## Features
 ### UI5 API reference panel
 The API reference panel shows UI5 documentation in a side panel (thanks to Hirse and his [Brackets Outline List](https://github.com/Hirse/brackets-outline-list) for the example and inspiration).
