@@ -1,5 +1,10 @@
 # brackets-ui5 changelog
 
+## 1.5.6
+##### Fixed
+- remove hinting in string literals
+- update documentation
+
 ## 1.5.5
 ##### Fixed
 - case insesitive hints search 
