@@ -77,7 +77,7 @@ After successful installation the *UI5 tools* menu should be available.
 ![menu](http://public_repo.vipserv.org/images/menu.png)
 
 By default, the extension uses the OpenUI5 version 1.72.4. 
-This can be changed using Brackets [preferences](#preferences). Create .brackets.json file in the project's root and set the required library version. Please check the [wiki page](https://github.com/wozjac/brackets-ui5/wiki/OpenUI5-SAPUI5-library-versions) for valid library versions, which can be safely used.
+This can be changed using Brackets [preferences](#preferences). Create .brackets.json file in the project's root and set the required library version. Please check the [wiki page](https://github.com/wozjac/brackets-ui5/wiki/OpenUI5-SAPUI5-library-versions) (updated 21-04-2021) for valid library versions, which can be safely used.
 ```javascript
 {
     "bracketsUi5.apiUrl": "https://openui5.hana.ondemand.com/1.70.0"
